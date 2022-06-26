@@ -67,6 +67,7 @@ const initialState: AppState = {
 		ratio: false,
 		release_time: false,
 		threshold: false,
+		output_gain: false,
 	},
 	languagesSettings: {},
 	videoSchedule: [],

@@ -85,10 +85,10 @@ export const StreamSettings = ({ onClose }: Props) => {
 						<div
 							className={classNames("nav-link", { active: language === selectedLanguage })}
 							aria-current="page"
-							onClick={({ isDefaultPrevented }) => {
-								if (!isDefaultPrevented()) {
-									setSelectedLanguage(language);
-								}
+							onClick={() => {
+								// if (!isDefaultPrevented()) {
+								setSelectedLanguage(language);
+								// }
 							}}
 						>
 							<span className="nav-link-text">{language}</span>

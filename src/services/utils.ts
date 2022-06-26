@@ -3,7 +3,7 @@ import store, { AppDispatch } from "../store/store";
 
 export const buildUrl = (serverUrl: ServerUrl, urlPath?: string, params?: string) => {
 	const { protocol, ipAddress, port } = serverUrl;
-	return `${protocol}://${ipAddress}:${port}/${urlPath || ""}${params || ""}`;
+	return `${protocol}://${ipAddress}:${port}${urlPath || ""}${params || ""}`;
 };
 
 const dispatchErrorStatus = (dispatch: AppDispatch) => {

@@ -30,6 +30,7 @@ const EMPTY_SIDECHAIN_SETTINGS: SidechainSettings = {
 	ratio: 32,
 	release_time: 1000,
 	threshold: -15,
+	output_gain: 0,
 };
 
 const EMPTY_GDRIVE_SETTINGS: GDriveSettings = {

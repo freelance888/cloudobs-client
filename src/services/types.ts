@@ -56,6 +56,7 @@ export type SidechainSettings = {
 	ratio: number;
 	release_time: number;
 	threshold: number;
+	output_gain: number;
 };
 
 type AnySettings =

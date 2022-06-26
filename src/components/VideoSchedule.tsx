@@ -103,26 +103,39 @@ export const VideoSchedule = ({ onClose }: Props) => {
 												</div>
 											) : (
 												<div>
-													<button
-														className="btn btn-sm btn-success"
-														type="button"
-														title="Play now"
-														onClick={() => dispatch(playMedia(videoRecord.name) as any)}
-													>
-														<i className="bi bi-play-fill me-1" />
-														Play now
-													</button>
-													<button
-														className="btn btn-sm btn-secondary ms-3"
-														type="button"
-														title="Edit"
-														onClick={() => {
-															setEditedVideoRecord({ ...videoRecord });
-															setEditedVideoRecordIndex(index);
-														}}
-													>
-														<i className="bi bi-pencil-fill me-0" />
-													</button>
+													{!videoRecord.alreadyPlayed && (
+														<button
+															className="btn btn-sm btn-success"
+															type="button"
+															title="Play now"
+															onClick={() => {
+																dispatch(playMedia(videoRecord.name) as any);
+																const updatedVideoSchedule = [...editedVideoSchedule];
+																updatedVideoSchedule[index] = {
+																	...updatedVideoSchedule[index],
+																	alreadyPlayed: true,
+																};
+
+																setEditedVideoSchedule(updatedVideoSchedule);
+															}}
+														>
+															<i className="bi bi-play-fill me-1" />
+															Play now
+														</button>
+													)}
+													{!videoRecord.alreadyPlayed && (
+														<button
+															className="btn btn-sm btn-secondary ms-3"
+															type="button"
+															title="Edit"
+															onClick={() => {
+																setEditedVideoRecord({ ...videoRecord });
+																setEditedVideoRecordIndex(index);
+															}}
+														>
+															<i className="bi bi-pencil-fill me-0" />
+														</button>
+													)}
 													<button
 														className="btn btn-sm btn-primary ms-3"
 														type="button"

@@ -35,7 +35,7 @@ const Language: React.FC<LanguageProps> = ({ language, languageSettings }: Langu
 	const syncedParameters = useSelector(selectSyncedParameters);
 
 	const { sourceVolume, translationVolume, translationOffset } = languageSettings.streamParameters;
-	const { ratio, release_time, threshold } = languageSettings.sidechain;
+	const { ratio, release_time, threshold, output_gain } = languageSettings.sidechain;
 
 	return (
 		<div
@@ -44,7 +44,14 @@ const Language: React.FC<LanguageProps> = ({ language, languageSettings }: Langu
 				{ "Language--live": languageSettings.streamParameters.streamActive, collapsed },
 			])}
 		>
-			<div className="language-header" onClick={() => setCollapsed(!collapsed)}>
+			<div
+				className="language-header"
+				onClick={(ev) => {
+					setCollapsed(!collapsed);
+					ev.preventDefault();
+					ev.stopPropagation();
+				}}
+			>
 				<StreamActiveToggle language={language} languageSettings={languageSettings} />
 				<div className="language-name">{language}</div>
 				<EditableStreamDestinationSettings language={language} languageSettings={languageSettings} />
@@ -95,6 +102,7 @@ const Language: React.FC<LanguageProps> = ({ language, languageSettings }: Langu
 								step={TS_OFFSET_STEP}
 								syncAll={syncedParameters.translationOffset}
 								value={translationOffset}
+								units={"ms"}
 								onValueChanged={(updatedTranslationOffset) =>
 									dispatch(setTranslationOffset({ [language]: updatedTranslationOffset }) as any)
 								}
@@ -143,6 +151,19 @@ const Language: React.FC<LanguageProps> = ({ language, languageSettings }: Langu
 									dispatch(setSidechain({ [language]: { threshold: updatedThreshold } }) as any)
 								}
 								// onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ threshold: updatedSyncAll }))}
+							/>
+
+							<RangeInput
+								label="Output gain"
+								minValue={-32}
+								maxValue={32}
+								value={output_gain}
+								// syncAll={syncedParameters.output_gain}
+								units={"dB"}
+								onValueChanged={(updatedOutputGain) =>
+									dispatch(setSidechain({ [language]: { output_gain: updatedOutputGain } }) as any)
+								}
+								// onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ output_gain: updatedSyncAll }))}
 							/>
 						</div>
 					</div>

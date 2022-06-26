@@ -44,6 +44,9 @@ const EditableStreamDestinationSettings = ({ language, languageSettings }: Props
 							placeholder="Server URL"
 							autoFocus={true}
 							value={updatedDestinationSettings.server}
+							onClickCapture={(event) => {
+								event.stopPropagation();
+							}}
 							onChange={(event) => {
 								setUpdatedDestinationSettings(
 									produce(updatedDestinationSettings, (draft) => {
@@ -64,6 +67,9 @@ const EditableStreamDestinationSettings = ({ language, languageSettings }: Props
 							className="form-control"
 							placeholder="Stream Key"
 							value={updatedDestinationSettings.key}
+							onClickCapture={(event) => {
+								event.stopPropagation();
+							}}
 							onChange={(event) => {
 								setUpdatedDestinationSettings(
 									produce(updatedDestinationSettings, (draft) => {
