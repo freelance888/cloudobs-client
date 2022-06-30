@@ -8,7 +8,7 @@ export type GlobalSettings = {
 	ts_offset: { value: number };
 	ts_volume: { value: number };
 	source_volume: { value: number };
-	sidechain: { ratio: number; release_time: number; threshold: number };
+	sidechain: SidechainSettings;
 	transition: { transition_name: "Cut" | "Stinger"; path: string; transition_point: number };
 	gdrive_settings: GDriveSettings;
 };
@@ -31,6 +31,7 @@ export type GDriveSettings = {
 	api_key: string;
 	sync_seconds: number;
 	gdrive_sync_addr: string;
+	objvers: string;
 };
 
 export type InitialSettings = {

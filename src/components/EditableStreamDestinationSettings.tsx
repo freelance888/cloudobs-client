@@ -1,5 +1,5 @@
 import produce from "immer";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { LanguageSettings } from "../services/types";
 import { setStreamSettings } from "../store/slices/app";
@@ -32,6 +32,13 @@ const EditableStreamDestinationSettings = ({ language, languageSettings }: Props
 
 	const streamUrl = buildStreamUrl();
 	const streamUrlEmpty = streamUrl === "/";
+
+	useEffect(() => {
+		if (languageSettings.streamParameters.streamActive) {
+			setUpdatedDestinationSettings(languageSettings.streamDestination);
+			setDestinationSettingsOpen(false);
+		}
+	}, [languageSettings.streamParameters.streamActive, languageSettings.streamDestination]);
 
 	return (
 		<div className="language-stream-settings">
@@ -100,12 +107,14 @@ const EditableStreamDestinationSettings = ({ language, languageSettings }: Props
 			) : (
 				<div className="language-stream-settings-readonly">
 					{!streamUrlEmpty && <div className="language-stream-url me-2">{streamUrl}</div>}
-					<button
-						className={"btn btn-sm language-stream-url-edit" + (streamUrlEmpty ? " btn-outline-info" : "")}
-						onClickCapture={() => setDestinationSettingsOpen(true)}
-					>
-						{streamUrlEmpty ? "Set destination" : "Edit"}
-					</button>
+					{!languageSettings.streamParameters.streamActive && (
+						<button
+							className={"btn btn-sm language-stream-url-edit" + (streamUrlEmpty ? " btn-outline-info" : "")}
+							onClickCapture={() => setDestinationSettingsOpen(true)}
+						>
+							{streamUrlEmpty ? "Set destination" : "Edit"}
+						</button>
+					)}
 				</div>
 			)}
 		</div>

@@ -39,6 +39,7 @@ const EMPTY_GDRIVE_SETTINGS: GDriveSettings = {
 	api_key: "",
 	sync_seconds: 10,
 	gdrive_sync_addr: "http://localhost:7000",
+	objvers: "",
 };
 
 export const EMPTY_LANGUAGE_SETTINGS: LanguageSettings = {

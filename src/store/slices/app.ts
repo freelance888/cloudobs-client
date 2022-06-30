@@ -7,7 +7,7 @@ import {
 	All,
 	getAllGDriveSettings,
 	getAllInitialSettings,
-	InitialSettings,
+	GlobalSettings,
 	LanguagesSettings,
 	MediaPlaySettings,
 	SidechainSettings,
@@ -89,37 +89,11 @@ const processStatus = async (dispatch: AppDispatch, result: ApiResult) => {
 	}
 };
 
-const fetchInitialSettings = async (dispatch: AppDispatch): Promise<All<InitialSettings>> => {
-	const result = await ApiService.getInit();
+const fetchInitialSettings = async (dispatch: AppDispatch): Promise<All<GlobalSettings>> => {
+	// const result = await ApiService.getInit();
+	const result = await ApiService.getInfo();
 	processStatus(dispatch, result);
 	return result.data;
-};
-
-const fetchStreamParametersSettings = async (): Promise<All<StreamParametersSettings>> => {
-	const [sourceVolumeResult, translationVolumeResult, translationOffsetResult] = await Promise.all([
-		ApiService.getSourceVolume(),
-		ApiService.getTsVolume(),
-		ApiService.getTsOffset(),
-	]);
-
-	const sourceVolumeSettings = sourceVolumeResult.data;
-	const translationVolumeSettings = translationVolumeResult.data;
-	const translationOffsetSettings = translationOffsetResult.data;
-
-	const streamParametersSettings: All<StreamParametersSettings> = {};
-
-	const languages = Object.keys(sourceVolumeSettings);
-
-	languages.forEach((language) => {
-		streamParametersSettings[language] = {
-			sourceVolume: sourceVolumeSettings[language],
-			translationVolume: translationVolumeSettings[language],
-			translationOffset: translationOffsetSettings[language],
-			streamActive: false,
-		};
-	});
-
-	return streamParametersSettings;
 };
 
 export const initialize: AsyncThunk<LanguagesSettings, LanguagesSettings, { state: RootState }> = createAsyncThunk<
@@ -137,36 +111,16 @@ export const initialize: AsyncThunk<LanguagesSettings, LanguagesSettings, { stat
 	return languagesSettings;
 });
 
-export const fetchLanguagesSettings: AsyncThunk<LanguagesSettings, void, { state: RootState }> = createAsyncThunk<
-	LanguagesSettings,
+export const fetchLanguagesSettings: AsyncThunk<
+	All<GlobalSettings | "#">,
 	void,
 	{ state: RootState }
->("app/fetchCurrentSettings", async (_, { dispatch }) => {
-	const languagesSettings: LanguagesSettings = {};
-
-	const allInitialSettings = await fetchInitialSettings(dispatch as AppDispatch);
-
-	const languages = Object.keys(allInitialSettings);
-	languages.forEach((language) => {
-		languagesSettings[language] = {
-			...EMPTY_LANGUAGE_SETTINGS,
-			initial: allInitialSettings[language],
-		};
-	});
-
-	if (languages.length > 0) {
-		const allStreamParametersSettings = await fetchStreamParametersSettings();
-
-		languages.forEach((language) => {
-			languagesSettings[language] = {
-				...languagesSettings[language],
-				streamParameters: allStreamParametersSettings[language],
-			};
-		});
+> = createAsyncThunk<All<GlobalSettings | "#">, void, { state: RootState }>(
+	"app/fetchCurrentSettings",
+	async (_, { dispatch }) => {
+		return fetchInitialSettings(dispatch as AppDispatch);
 	}
-
-	return languagesSettings;
-});
+);
 
 export const cleanup: AsyncThunk<void, void, { state: RootState }> = createAsyncThunk<void, void, { state: RootState }>(
 	"app/cleanup",
@@ -384,14 +338,35 @@ const { actions, reducer } = createSlice({
 				state.languagesSettings = payload;
 				state.initialLanguageSettingsLoaded = true;
 			})
-			.addCase(initialize.rejected, (state, action) => {
+			.addCase(initialize.rejected, (state) => {
 				state.activeRequest = null;
 			})
 			.addCase(fetchLanguagesSettings.pending, (state) => {
 				state.initialLanguageSettingsLoaded = false;
 			})
 			.addCase(fetchLanguagesSettings.fulfilled, (state, { payload }) => {
-				state.languagesSettings = payload;
+				Object.keys(payload).forEach((lang) => {
+					const languageSettings = payload[lang];
+
+					if (languageSettings === "#") {
+						state.languagesSettings[lang] = EMPTY_LANGUAGE_SETTINGS;
+					} else {
+						const streamParameters: StreamParametersSettings = {
+							streamActive: languageSettings.stream_on?.value,
+							sourceVolume: languageSettings.source_volume?.value,
+							translationVolume: languageSettings.ts_volume?.value,
+							translationOffset: languageSettings.ts_offset?.value,
+						};
+
+						state.languagesSettings[lang] = {
+							initial: languageSettings.server_langs,
+							sidechain: languageSettings.sidechain,
+							gDrive: languageSettings.gdrive_settings,
+							streamDestination: languageSettings.stream_settings,
+							streamParameters,
+						};
+					}
+				});
 				state.initialLanguageSettingsLoaded = true;
 			})
 			.addCase(cleanup.pending, (state) => {

@@ -19,7 +19,7 @@ import {
 import { sendGetRequest, sendPostRequest } from "./utils";
 
 const API_URL_INIT = "/init";
-const API_URL_INIT_V2 = "/initv2";
+const API_URL_INFO = "/info";
 const API_URL_CLEANUP = "/cleanup";
 const API_URL_MEDIA_PLAY = "/media/play";
 const API_URL_MEDIA_SCHEDULE = "/media/schedule";
@@ -107,8 +107,13 @@ export const getInit = (): Promise<ApiResult<All<InitialSettings>>> => {
 	});
 };
 
-export const getInitV2 = (): Promise<ApiResult<All<GlobalSettings>>> => {
-	return processResponse(sendGetRequest(API_URL_INIT_V2), {
+/**
+ * GET /info
+ * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#get-info
+ */
+
+export const getInfo = (): Promise<ApiResult<All<GlobalSettings>>> => {
+	return processResponse(sendGetRequest(API_URL_INFO), {
 		success: "Initial data fetched",
 		error: "Initial data fetching failed",
 	});
