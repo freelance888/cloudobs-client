@@ -1,8 +1,8 @@
-# cloudobs-client
+# CloudOBS UI client
 
 UI client for [cloudobs](https://github.com/ALLATRA-IT/cloudobs) project.
 
-# Running the project locally
+## Running the project locally
 
 - Clone the repository:
 
@@ -16,3 +16,9 @@ UI client for [cloudobs](https://github.com/ALLATRA-IT/cloudobs) project.
 - Run `npm install`
 
 - After install, run `npm start`. The project will start on `localhost:3000`
+
+## Docker mode
+```
+docker build -t $(basename $(pwd)) . --no-cache
+docker run -p 3000:3000 $(basename $(pwd))
+```
