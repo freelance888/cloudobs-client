@@ -22,7 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-      name: Build the Docker image
+
+    - name: Build the Docker image
       run: |
         docker build -t ${{ github.repository }} . --no-cache
         docker save ${{ github.repository }} > ${{ github.repository }}.tar
