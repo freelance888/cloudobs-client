@@ -4,7 +4,7 @@ USER node
 WORKDIR /app
 ADD . .
 
-RUN rm -rf ./node_modules
+RUN chown node:node /app && rm -rf ./node_modules
 RUN npm install
 
 # COPY --chown=node:node --from=builder /wiki/node_modules ./node_modules
