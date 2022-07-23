@@ -12,29 +12,29 @@ on:
     types: PROD_DEPLOY
 
 env:
-    PROD_HOST: control@${{ secrets.PROD_HOST }}
+    PROD_HOST: control@${{ secrets.PROD_HOST_IP }}
     PRIVATE_SSH_KEY: control@${{ secrets.PROD_PRIVATE_SSH_KEY }}
     # ENV_FILE: ${{ secrets.ENV_FILE }}
 
 jobs:
 
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
+  # build:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v3
 
-    - name: Build the Docker image
-      run: |
-        docker build -t ${{ github.event.repository.name }} . --no-cache
-        docker save ${{ github.event.repository.name }} > ${{ github.event.repository.name }}.tar
-        ls -1
+  #   - name: Build the Docker image
+  #     run: |
+  #       docker build -t ${{ github.event.repository.name }} . --no-cache
+  #       docker save ${{ github.event.repository.name }} > ${{ github.event.repository.name }}.tar
+  #       ls -1
 
-    - name: Saving docker image to artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: docker-image
-        path: ${{ github.event.repository.name }}.tar
-        retention-days: 5
+  #   - name: Saving docker image to artifacts
+  #     uses: actions/upload-artifact@v3
+  #     with:
+  #       name: docker-image
+  #       path: ${{ github.event.repository.name }}.tar
+  #       retention-days: 2
 
   deploy:
     runs-on: ubuntu-latest
@@ -51,11 +51,11 @@ jobs:
         which rsync || ( apt-get update -y && apt-get install rsync -y )
         which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
         eval $(ssh-agent -s)
-        echo "${{ secrets.PRIVATE_SSH_KEY }}" | tr -d '\r' | ssh-add - > /dev/null
+        echo "${PRIVATE_SSH_KEY}" | tr -d '\r' | ssh-add - > /dev/null
         mkdir -p ~/.ssh
         chmod 700 ~/.ssh
         '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-        ssh control@${{ secrets.PRIVATE_SSH_KEY }} docker system prune -af &
-        rsync -a -v --progress --delete --quiet docker-compose.yaml ${{ github.repository }}.tar control@${{ secrets.PRIVATE_SSH_KEY }}:~
-        ssh control@${{ secrets.PRIVATE_SSH_KEY }} docker load ${{ github.repository }}.tar
-        ssh control@${{ secrets.PRIVATE_SSH_KEY }} "docker-compose down && docker-compose up -d && sleep 10 && docker-compose ls"
+        ssh ${PROD_HOST} docker system prune -af &
+        rsync -a -v --progress --delete --quiet docker-compose.yaml ${{ github.repository }}.tar ${PROD_HOST}:~
+        ssh ${PROD_HOST} docker load ${{ github.repository }}.tar
+        ssh ${PROD_HOST} "docker-compose down && docker-compose up -d && sleep 10 && docker-compose ls"
