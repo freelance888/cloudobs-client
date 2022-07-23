@@ -4,6 +4,7 @@ WORKDIR /app
 RUN chown node:node /app
 
 USER node
+
 ADD . .
 
 RUN stat /app
@@ -11,8 +12,6 @@ RUN rm -rf ./node_modules
 RUN npm install
 
 # COPY --chown=node:node --from=builder /wiki/node_modules ./node_modules
-
-# VOLUME ["/app/.env"]
 
 EXPOSE 3000
 
