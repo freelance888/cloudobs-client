@@ -1,11 +1,13 @@
 FROM node:14-alpine AS builder
-USER node
 
 WORKDIR /app
+RUN chown node:node /app
+
+USER node
 ADD . .
 
 RUN stat /app
-RUN chown node:node /app && rm -rf ./node_modules
+RUN rm -rf ./node_modules
 RUN npm install
 
 # COPY --chown=node:node --from=builder /wiki/node_modules ./node_modules
