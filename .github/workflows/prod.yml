@@ -59,7 +59,7 @@ jobs:
         chmod 700 ~/.ssh
         echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
         ssh ${PROD_HOST} docker system prune -af &
-        rsync -a -v --progress --delete --quiet docker-compose.yaml ${{ github.event.repository.name }}.tar ${PROD_HOST}:~
+        rsync -a -v --progress --delete --quiet docker-compose.yml ${{ github.event.repository.name }}.tar ${PROD_HOST}:~
         ssh ${PROD_HOST} docker load ${{ github.event.repository.name }}.tar
         ssh ${PROD_HOST} "docker-compose down && docker-compose up -d && sleep 10 && docker-compose ls"
 
