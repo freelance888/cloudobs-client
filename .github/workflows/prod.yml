@@ -3,21 +3,22 @@ name: PROD | Build and Deploy
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches: [ "feature/adding-cicd" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "feature/adding-cicd" ]
 
 
   repository_dispatch:
     types: PROD_DEPLOY
 
 env:
-    ENV_FILE: ${{ secrets.ENV_FILE }}
+    PROD_HOST: control@${{ secrets.PROD_HOST }}
+    PRIVATE_SSH_KEY: control@${{ secrets.PROD_PRIVATE_SSH_KEY }}
+    # ENV_FILE: ${{ secrets.ENV_FILE }}
 
 jobs:
 
   build:
-
     runs-on: ubuntu-latest
     steps:
     - name: Build the Docker image
@@ -49,11 +50,11 @@ jobs:
         which rsync || ( apt-get update -y && apt-get install rsync -y )
         which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
         eval $(ssh-agent -s)
-        echo "${PROD_SSH_PRIVATE_KEY}" | tr -d '\r' | ssh-add - > /dev/null
+        echo "${{ secrets.PRIVATE_SSH_KEY }}" | tr -d '\r' | ssh-add - > /dev/null
         mkdir -p ~/.ssh
         chmod 700 ~/.ssh
         '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-        ssh control@${PROD_SERVER} docker system prune -af &
-        rsync -a -v --progress --delete --quiet docker-compose.yaml ${{ github.repository }}.tar control@${PROD_SERVER}:~
-        ssh control@${PROD_SERVER} docker load ${{ github.repository }}.tar
-        ssh control@${PROD_SERVER} "docker-compose down && docker-compose up -d && sleep 10 && docker-compose ls"
+        ssh control@${{ secrets.PRIVATE_SSH_KEY }} docker system prune -af &
+        rsync -a -v --progress --delete --quiet docker-compose.yaml ${{ github.repository }}.tar control@${{ secrets.PRIVATE_SSH_KEY }}:~
+        ssh control@${{ secrets.PRIVATE_SSH_KEY }} docker load ${{ github.repository }}.tar
+        ssh control@${{ secrets.PRIVATE_SSH_KEY }} "docker-compose down && docker-compose up -d && sleep 10 && docker-compose ls"

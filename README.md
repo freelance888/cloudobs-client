@@ -51,3 +51,15 @@ cloudobs          latest    310b6bcc7d97   46 minutes ago   394MB
 docker-compose up -d
 ```
 * Open http://localhost:3003
+
+# CI/CD Secrets setup
+
+# Encode private ssh key to base64 hash.
+```
+base64 <<< $(cat <PATH TO YOUR PRIVATE SSH KEY>)
+```
+received hash paste to
+```
+gh secret set PRIVATE_SSH_KEY --body "<PRIVATE SSH KEY HASH>" -r ALLATRA-IT/cloudobs-client
+gh secret set PROD_HOST_IP --body "<HOST IP>" -r ALLATRA-IT/cloudobs-client
+```
