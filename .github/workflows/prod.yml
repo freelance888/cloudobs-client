@@ -13,7 +13,7 @@ on:
 
 env:
     PROD_HOST: control@${{ secrets.PROD_HOST_IP }}
-    PRIVATE_SSH_KEY: control@${{ secrets.PROD_PRIVATE_SSH_KEY }}
+    PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
     # ENV_FILE: ${{ secrets.ENV_FILE }}
 
 jobs:
