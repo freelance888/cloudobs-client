@@ -39,6 +39,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
+    steps:
 
     - name: Restoring docker image from artifacts
       uses: actions/download-artifact@v3
