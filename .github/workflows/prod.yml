@@ -66,7 +66,6 @@ jobs:
 
     - name: Uploading artifact to the server
       run: |
-        env
         which rsync || ( apt-get update -y && apt-get install rsync -y )
         which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
         eval $(ssh-agent -s)
