@@ -54,12 +54,7 @@ docker-compose up -d
 
 # CI/CD Secrets setup
 
-# Encode private ssh key to base64 hash.
 ```
-base64 <<< $(cat <PATH TO YOUR PRIVATE SSH KEY>)
-```
-received hash paste to
-```
-gh secret set PRIVATE_SSH_KEY --body "<PRIVATE SSH KEY HASH>" -r ALLATRA-IT/cloudobs-client
+gh secret set PRIVATE_SSH_KEY --body "<PRIVATE SSH KEY AS IS>" -r ALLATRA-IT/cloudobs-client
 gh secret set PROD_HOST_IP --body "<HOST IP>" -r ALLATRA-IT/cloudobs-client
 ```
