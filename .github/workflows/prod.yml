@@ -35,7 +35,7 @@ jobs:
         name: docker-image
         path: |
           ${{ github.event.repository.name }}.tar
-          docker-compose.yaml
+          docker-compose.yml
         retention-days: 2
 
   deploy:
@@ -50,7 +50,6 @@ jobs:
 
     - name: Uploading artifact to the server
       run: |
-        cp docker-image/* .
         ls -1
         which rsync || ( apt-get update -y && apt-get install rsync -y )
         which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
