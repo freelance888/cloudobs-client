@@ -33,7 +33,9 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: docker-image
-        path: ${{ github.event.repository.name }}.tar
+        path: |
+          ${{ github.event.repository.name }}.tar
+          docker-compose.yaml
         retention-days: 2
 
   deploy:
