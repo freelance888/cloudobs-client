@@ -25,8 +25,9 @@ jobs:
 
     - name: Build the Docker image
       run: |
-        docker build -t ${{ github.repository }} . --no-cache
-        docker save ${{ github.repository }} > ${{ github.repository }}.tar
+        docker build -t ${{ github.event.repository.name }} . --no-cache
+        docker save ${{ github.event.repository.name }} > ${{ github.event.repository.name }}.tar
+        ls -1
 
     - name: Saving docker image to artifacts
       uses: actions/upload-artifact@v3
