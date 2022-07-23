@@ -34,27 +34,26 @@ jobs:
         path: $(basename $(pwd)).tar
         retention-days: 5
 
-  deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
-    needs: build
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: build
 
-    - name: Restoring docker image from artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: docker-image
+  #   - name: Restoring docker image from artifacts
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #       name: docker-image
 
-    - name: Uploading artifact to the server
-      # uses: actions/checkout@v3
-      run: |
-        which rsync || ( apt-get update -y && apt-get install rsync -y )
-        which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
-        eval $(ssh-agent -s)
-        echo "${{ secrets.PRIVATE_SSH_KEY }}" | tr -d '\r' | ssh-add - > /dev/null
-        mkdir -p ~/.ssh
-        chmod 700 ~/.ssh
-        '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-        ssh control@${{ secrets.PRIVATE_SSH_KEY }} docker system prune -af &
-        rsync -a -v --progress --delete --quiet docker-compose.yaml ${{ github.repository }}.tar control@${{ secrets.PRIVATE_SSH_KEY }}:~
-        ssh control@${{ secrets.PRIVATE_SSH_KEY }} docker load ${{ github.repository }}.tar
-        ssh control@${{ secrets.PRIVATE_SSH_KEY }} "docker-compose down && docker-compose up -d && sleep 10 && docker-compose ls"
+  #   - name: Uploading artifact to the server
+  #     # uses: actions/checkout@v3
+  #     run: |
+  #       which rsync || ( apt-get update -y && apt-get install rsync -y )
+  #       which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
+  #       eval $(ssh-agent -s)
+  #       echo "${{ secrets.PRIVATE_SSH_KEY }}" | tr -d '\r' | ssh-add - > /dev/null
+  #       mkdir -p ~/.ssh
+  #       chmod 700 ~/.ssh
+  #       '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  #       ssh control@${{ secrets.PRIVATE_SSH_KEY }} docker system prune -af &
+  #       rsync -a -v --progress --delete --quiet docker-compose.yaml ${{ github.repository }}.tar control@${{ secrets.PRIVATE_SSH_KEY }}:~
+  #       ssh control@${{ secrets.PRIVATE_SSH_KEY }} docker load ${{ github.repository }}.tar
+  #       ssh control@${{ secrets.PRIVATE_SSH_KEY }} "docker-compose down && docker-compose up -d && sleep 10 && docker-compose ls"
