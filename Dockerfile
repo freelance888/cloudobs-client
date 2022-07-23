@@ -4,6 +4,7 @@ USER node
 WORKDIR /app
 ADD . .
 
+RUN stat /app
 RUN chown node:node /app && rm -rf ./node_modules
 RUN npm install
 
