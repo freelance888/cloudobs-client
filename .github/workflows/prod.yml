@@ -14,7 +14,7 @@ on:
 env:
     PROD_HOST: control@${{ secrets.PROD_HOST_IP }}
     PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
-    # ENV_FILE: ${{ secrets.ENV_FILE }}
+    ENV_FILE: ${{ secrets.PROD_ENV_FILE }}
 
 jobs:
 
@@ -59,7 +59,8 @@ jobs:
         chmod 700 ~/.ssh
         echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
         ssh ${PROD_HOST} docker system prune -af &
-        rsync -a -v --progress --delete --quiet docker-compose.yml ${{ github.event.repository.name }}.tar ${PROD_HOST}:~
+        echo "${ENV_FILE}" > .env
+        rsync -a -v --progress --delete --quiet .env docker-compose.yml ${{ github.event.repository.name }}.tar ${PROD_HOST}:~
         ssh ${PROD_HOST} docker load --input ${{ github.event.repository.name }}.tar
         ssh ${PROD_HOST} "docker-compose down && docker-compose up -d && sleep 10 && docker-compose ls"
 
