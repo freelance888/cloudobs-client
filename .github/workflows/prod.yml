@@ -60,7 +60,7 @@ jobs:
         ssh ${PROD_HOST} docker image rm -f $(docker images --filter=reference="${{ github.event.repository.name }}:*" -q) &
         rsync -a -v --progress --delete --quiet env docker-compose.yml ${{ github.event.repository.name }}.tar ${PROD_HOST}:~
         ssh ${PROD_HOST} docker load --input ${{ github.event.repository.name }}.tar
-        ssh ${PROD_HOST} "docker-compose down && docker-compose up -d && sleep 10 && docker-compose ls"
+        ssh ${PROD_HOST} "docker-compose down && docker-compose up -d && sleep 10 && docker-compose ps"
 
   # debug:
   #   runs-on: ubuntu-latest
@@ -78,4 +78,4 @@ jobs:
   #       ssh ${PROD_HOST} docker system prune -af &
   #       rsync -a -v --progress --delete --quiet docker-compose.yaml ${{ github.event.repository.name }}.tar ${PROD_HOST}:~
   #       ssh ${PROD_HOST} docker load ${{ github.event.repository.name }}.tar
-  #       ssh ${PROD_HOST} "docker-compose down && docker-compose up -d && sleep 10 && docker-compose ls"
+  #       ssh ${PROD_HOST} "docker-compose down && docker-compose up -d && sleep 10 && docker-compose ps"
