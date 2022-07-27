@@ -51,3 +51,10 @@ cloudobs          latest    310b6bcc7d97   46 minutes ago   394MB
 docker-compose up -d
 ```
 * Open http://localhost:3003
+
+# CI/CD Secrets setup
+
+```
+gh secret set PRIVATE_SSH_KEY --body "<PRIVATE SSH KEY AS IS>" -r ALLATRA-IT/cloudobs-client
+gh secret set PROD_HOST_IP --body "<HOST IP>" -r ALLATRA-IT/cloudobs-client
+```
