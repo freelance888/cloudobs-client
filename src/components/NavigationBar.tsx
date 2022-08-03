@@ -2,7 +2,7 @@ import { Link, NavLink } from "react-router-dom";
 
 const NavigationBar: React.FC = () => {
 	return (
-		<nav className="navbar navbar-expand-lg navbar-light bg-light">
+		<nav className="navigation-bar navbar navbar-expand-lg navbar-light bg-light">
 			<div className="container-fluid">
 				<Link className="navbar-brand" to="/">
 					<img src="images/cs-logo.svg" alt="" width="30" height="24" className="d-inline-block align-text-top" />

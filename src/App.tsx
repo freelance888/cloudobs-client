@@ -10,7 +10,7 @@ import "./App.css";
 import { Route, Routes } from "react-router-dom";
 import NavigationBar from "./components/NavigationBar";
 import EnvironmentSettings from "./components/EnvironmentSettings";
-import AppLogs from "./components/AppLogs";
+import AppLogs from "./components/Logs";
 
 export const MIN_TS_OFFSET = 0;
 export const MAX_TS_OFFSET = 20000;

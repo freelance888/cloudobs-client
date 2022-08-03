@@ -20,6 +20,7 @@ import {
 	VideoSchedule,
 } from "../../services/types";
 import { AppDispatch, RootState } from "../store";
+import { logMessage } from "./logs";
 
 export type HostAddress = {
 	protocol: string;
@@ -78,9 +79,11 @@ const processStatus = async (dispatch: AppDispatch, result: ApiResult) => {
 	if (result.status === "success") {
 		const message = messages?.success || "Success";
 		dispatch(updateStatus({ type: "success", message }));
+		dispatch(logMessage({ text: message, severity: "success" }));
 	} else {
 		const message = messages?.error || "Error";
 		dispatch(updateStatus({ type: "error", message }));
+		dispatch(logMessage({ text: message, severity: "error" }));
 	}
 };
 

@@ -6,12 +6,24 @@
 * E4FDE1
 */
 
+html,
+body,
+#root,
+.App {
+	height: 100%;
+}
+
+.navigation-bar {
+	height: 60px;
+}
+
 .cloudobs-navbar-version {
 	font-size: 0.75rem;
 	margin-inline-start: 0.25rem;
 }
 
 .content-panel {
+	height: calc(100% - 60px);
 	padding: 0.5rem;
 }
 
@@ -67,6 +79,20 @@ i.bi {
 
 .nav-link.active {
 	font-weight: bold;
+}
+
+.logs__message {
+	margin-bottom: 0.5rem;
+	cursor: pointer;
+}
+
+.logs__message:hover {
+	background-color: #f3f3f3;
+}
+
+.logs__message-timestamp {
+	opacity: 0.9;
+	font-size: 0.8rem;
 }
 
 .stream-settings-heading {
@@ -148,6 +174,7 @@ i.bi {
 	transition: all 0.3s ease-in-out;
 	white-space: normal;
 	overflow: auto;
+	cursor: pointer;
 }
 
 .status-bar.show {

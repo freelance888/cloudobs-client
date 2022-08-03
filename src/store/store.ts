@@ -1,9 +1,11 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 
 import app from "./slices/app";
+import logs from "./slices/logs";
 
 const rootReducer = combineReducers({
 	app,
+	logs,
 });
 
 const store = configureStore({
