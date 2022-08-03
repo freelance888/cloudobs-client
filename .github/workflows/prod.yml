@@ -61,21 +61,3 @@ jobs:
         rsync -a -v --progress --delete --quiet docker-compose.yml ${{ github.event.repository.name }}.tar ${PROD_HOST}:~
         ssh ${PROD_HOST} docker load --input ${{ github.event.repository.name }}.tar
         ssh ${PROD_HOST} "docker-compose down && docker-compose up -d && sleep 10 && docker-compose ps"
-
-  # debug:
-  #   runs-on: ubuntu-latest
-  #   steps:
-
-  #   - name: Uploading artifact to the server
-  #     run: |
-  #       which rsync || ( apt-get update -y && apt-get install rsync -y )
-  #       which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
-  #       eval $(ssh-agent -s)
-  #       echo "${PRIVATE_SSH_KEY}" | tr -d '\r' | ssh-add - > /dev/null
-  #       mkdir -p ~/.ssh
-  #       chmod 700 ~/.ssh
-  #       echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-  #       ssh ${PROD_HOST} docker system prune -af &
-  #       rsync -a -v --progress --delete --quiet docker-compose.yaml ${{ github.event.repository.name }}.tar ${PROD_HOST}:~
-  #       ssh ${PROD_HOST} docker load ${{ github.event.repository.name }}.tar
-  #       ssh ${PROD_HOST} "docker-compose down && docker-compose up -d && sleep 10 && docker-compose ps"
