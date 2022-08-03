@@ -21,7 +21,7 @@ const BulkImport: React.FC<Props> = ({ onImport, onGoBackClicked }: Props) => {
 				/>
 			</div>
 
-			<div className="mt-3 stream-settings-buttons">
+			<div className="mt-3 content-panel_actions">
 				<button
 					className="btn btn-primary"
 					onClick={async () => {

@@ -1,5 +1,5 @@
 import { AsyncThunk, createAsyncThunk, createSlice, PayloadAction, Selector } from "@reduxjs/toolkit";
-import { LS_KEY_SERVER_IP } from "../../components/ServerUrlScreen";
+import { loadHostAddress } from "../../components/EnvironmentSettings";
 import * as ApiService from "../../services/api";
 import { ApiResult } from "../../services/api";
 import { EMPTY_LANGUAGE_SETTINGS } from "../../services/emptyData";
@@ -21,11 +21,10 @@ import {
 } from "../../services/types";
 import { AppDispatch, RootState } from "../store";
 
-export type ServerUrlProtocol = "http" | "https";
-export type ServerUrl = {
-	protocol: ServerUrlProtocol;
+export type HostAddress = {
+	protocol: string;
 	ipAddress: string;
-	port: number;
+	port: string;
 };
 
 type StatusType = "none" | "error" | "success";
@@ -40,7 +39,7 @@ type AppState = {
 	initialLanguageSettingsLoaded: boolean;
 	streamParametersLoaded: boolean;
 	status: Status;
-	serverUrl: ServerUrl;
+	hostAddress: HostAddress;
 	activeRequest: ActiveRequest | null;
 	syncedParameters: SyncableSettingsFlags;
 	languagesSettings: LanguagesSettings;
@@ -54,11 +53,7 @@ const initialState: AppState = {
 		type: "none",
 		message: "",
 	},
-	serverUrl: {
-		protocol: "http",
-		ipAddress: localStorage.getItem(LS_KEY_SERVER_IP) || "",
-		port: 5000,
-	},
+	hostAddress: loadHostAddress(),
 	activeRequest: null,
 	syncedParameters: {
 		sourceVolume: false,
@@ -110,6 +105,15 @@ export const initialize: AsyncThunk<LanguagesSettings, LanguagesSettings, { stat
 
 	return languagesSettings;
 });
+
+export const initializeV2: AsyncThunk<void, { sheetUrl: string; worksheetName: string }, { state: RootState }> =
+	createAsyncThunk<void, { sheetUrl: string; worksheetName: string }, { state: RootState }>(
+		"app/initializeV2",
+		async (data, { dispatch }) => {
+			const result = await ApiService.postInitV2(data);
+			processStatus(dispatch as AppDispatch, result);
+		}
+	);
 
 export const fetchLanguagesSettings: AsyncThunk<
 	All<GlobalSettings | "#">,
@@ -314,9 +318,8 @@ const { actions, reducer } = createSlice({
 		updateStatus(state, { payload }: PayloadAction<Status>) {
 			state.status = payload;
 		},
-		updateServerUrl(state, { payload }: PayloadAction<ServerUrl>) {
-			localStorage.setItem(LS_KEY_SERVER_IP, payload.ipAddress);
-			state.serverUrl = payload;
+		updateHostAddress(state, { payload }: PayloadAction<HostAddress>) {
+			state.hostAddress = payload;
 		},
 		updateActiveRequest(state, { payload }: PayloadAction<ActiveRequest | null>) {
 			state.activeRequest = payload;
@@ -340,6 +343,13 @@ const { actions, reducer } = createSlice({
 			})
 			.addCase(initialize.rejected, (state) => {
 				state.activeRequest = null;
+			})
+			.addCase(initializeV2.pending, (state) => {
+				state.activeRequest = "postInit";
+			})
+			.addCase(initializeV2.fulfilled, (state) => {
+				state.activeRequest = null;
+				state.initialLanguageSettingsLoaded = true;
 			})
 			.addCase(fetchLanguagesSettings.pending, (state) => {
 				state.initialLanguageSettingsLoaded = false;
@@ -427,7 +437,7 @@ const { actions, reducer } = createSlice({
 			}),
 });
 
-export const { updateStatus, updateServerUrl, updateActiveRequest, updateSyncedParameters } = actions;
+export const { updateStatus, updateActiveRequest, updateHostAddress, updateSyncedParameters } = actions;
 
 export const selectInitialLanguagesSettingsLoaded: Selector<RootState, boolean> = ({ app }) =>
 	app.initialLanguageSettingsLoaded;
@@ -436,7 +446,7 @@ export const selectActiveRequest: Selector<RootState, ActiveRequest | null> = ({
 
 export const selectSyncedParameters: Selector<RootState, SyncableSettingsFlags> = ({ app }) => app.syncedParameters;
 
-export const selectServerUrl: Selector<RootState, ServerUrl> = ({ app }) => app.serverUrl;
+export const selectHostAddress: Selector<RootState, HostAddress> = ({ app }) => app.hostAddress;
 
 export const selectStatus: Selector<RootState, Status> = ({ app }) => app.status;
 

@@ -1,14 +1,16 @@
-import React, { useCallback, useState } from "react";
-import Controls from "./components/Controls";
+import React, { useEffect } from "react";
 import LanguageSettings from "./components/LanguageSettings";
-import ServerUrlScreen from "./components/ServerUrlScreen";
 import StatusBar from "./components/StatusBar";
 import StreamSettings from "./components/StreamSettings";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchLanguagesSettings, selectInitialLanguagesSettingsLoaded } from "./store/slices/app";
+import VideoSchedule from "./components/VideoSchedule";
 
 import "./App.css";
-import { useSelector } from "react-redux";
-import { selectInitialLanguagesSettingsLoaded, selectLanguagesSettings } from "./store/slices/app";
-import VideoSchedule from "./components/VideoSchedule";
+import { Route, Routes } from "react-router-dom";
+import NavigationBar from "./components/NavigationBar";
+import EnvironmentSettings from "./components/EnvironmentSettings";
+import AppLogs from "./components/AppLogs";
 
 export const MIN_TS_OFFSET = 0;
 export const MAX_TS_OFFSET = 20000;
@@ -21,38 +23,13 @@ export const MIN_SOURCE_VOLUME = -100;
 export const MAX_SOURCE_VOLUME = 0;
 
 const App: React.FC = () => {
-	const [isServerUrlSelected, setIsServerUrlSelected] = useState(false);
-	const [streamSettingsOpen, setStreamSettingsOpen] = useState(false);
-	const [videoScheduleOpen, setVideoScheduleOpen] = useState(false);
+	const dispatch = useDispatch();
+
 	const loaded = useSelector(selectInitialLanguagesSettingsLoaded);
 
-	const languagesSettings = useSelector(selectLanguagesSettings);
-
-	const renderStreamSettings = useCallback(() => {
-		return <StreamSettings onClose={() => setStreamSettingsOpen(false)} />;
-	}, []);
-
-	const renderLanguageSettings = useCallback(() => {
-		return (
-			<>
-				<Controls
-					onSetStreamSettingsClicked={() => {
-						setStreamSettingsOpen(!streamSettingsOpen);
-					}}
-					onVideoScheduleClicked={() => {
-						setVideoScheduleOpen(true);
-					}}
-					onGoogleDriveSyncClicked={() => {}}
-				/>
-
-				<LanguageSettings />
-			</>
-		);
-	}, [streamSettingsOpen]);
-
-	if (!isServerUrlSelected) {
-		return <ServerUrlScreen onUrlSet={() => setIsServerUrlSelected(true)} />;
-	}
+	useEffect(() => {
+		dispatch(fetchLanguagesSettings() as any);
+	}, [dispatch]);
 
 	if (!loaded) {
 		<div className="App">Loading...</div>;
@@ -60,13 +37,16 @@ const App: React.FC = () => {
 
 	return (
 		<div className="App">
-			{streamSettingsOpen || Object.keys(languagesSettings).length === 0 ? (
-				renderStreamSettings()
-			) : videoScheduleOpen ? (
-				<VideoSchedule onClose={() => setVideoScheduleOpen(false)} />
-			) : (
-				renderLanguageSettings()
-			)}
+			<NavigationBar />
+
+			<Routes>
+				<Route path="/" element={<LanguageSettings />} />
+				<Route path="/settings" element={<StreamSettings />} />
+				<Route path="/videos" element={<VideoSchedule />} />
+				<Route path="/environment" element={<EnvironmentSettings />} />
+				<Route path="/logs" element={<AppLogs />} />
+			</Routes>
+
 			<StatusBar />
 		</div>
 	);

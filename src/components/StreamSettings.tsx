@@ -1,85 +1,61 @@
-import classNames from "classnames";
-import produce from "immer";
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { EMPTY_LANGUAGE_SETTINGS } from "../services/emptyData";
-import { ALL_LANGUAGES } from "../services/languages";
-import { LanguageSettings, LanguagesSettings } from "../services/types";
-import { initialize, selectActiveRequest, selectLanguagesSettings } from "../store/slices/app";
+import { cleanup, initializeV2, selectActiveRequest } from "../store/slices/app";
+import ContentPanel from "./ContentPanel";
 
-type Props = {
-	onClose: () => void;
-};
-
-export const StreamSettings = ({ onClose }: Props) => {
+export const StreamSettings: React.FC = () => {
 	const dispatch = useDispatch();
 	const activeRequest = useSelector(selectActiveRequest);
 
-	const languagesSettings = useSelector(selectLanguagesSettings);
-	const [updatedLanguagesSettings, setUpdatedLanguagesSettings] = useState<LanguagesSettings>(languagesSettings);
+	// const languagesSettings = useSelector(selectLanguagesSettings);
+	// const [updatedLanguagesSettings, setUpdatedLanguagesSettings] = useState<LanguagesSettings>(languagesSettings);
 
-	const [addedLanguage, setAddedLanguage] = useState("");
-
-	const languages = useMemo(() => Object.keys(updatedLanguagesSettings), [updatedLanguagesSettings]);
-	const languagesCount = useMemo(() => languages.length, [languages]);
-
-	const [selectedLanguage, setSelectedLanguage] = useState(languages?.[0] || "");
-
-	const addLanguage = useCallback(() => {
-		if (addedLanguage === "") {
-			return;
-		}
-
-		if (languagesCount === 0) {
-			setSelectedLanguage(addedLanguage);
-		}
-
-		if (!(addedLanguage in languages)) {
-			const availableLanguages = ALL_LANGUAGES.filter(
-				({ langCode }) => ![...languages, addedLanguage].includes(langCode)
-			);
-			const firstAvailableLanguage = availableLanguages?.[0]?.langCode;
-			setAddedLanguage(firstAvailableLanguage);
-
-			const newLanguage: LanguageSettings = { ...EMPTY_LANGUAGE_SETTINGS };
-
-			setUpdatedLanguagesSettings(
-				produce(updatedLanguagesSettings, (draft) => {
-					draft[addedLanguage] = newLanguage;
-				})
-			);
-
-			setSelectedLanguage(addedLanguage);
-		}
-	}, [languages, languagesCount, addedLanguage, updatedLanguagesSettings]);
+	const [sheetUrl, setSheetUrl] = useState("");
+	const [worksheetName, setWorkSheetName] = useState("");
+	// const languages = useMemo(() => Object.keys(updatedLanguagesSettings), [updatedLanguagesSettings]);
 
 	return (
-		<div className="stream-settings">
-			<div className="stream-settings-heading">Stream Settings</div>
-
+		<ContentPanel
+			mainActions={
+				<button
+					className="btn btn-primary"
+					disabled={activeRequest === "postInit"}
+					onClick={() => dispatch(initializeV2({ sheetUrl, worksheetName }) as any)}
+				>
+					<i className={activeRequest === "postInit" ? "bi bi-arrow-clockwise spin" : "bi  bi-cloud-arrow-up"} />
+					<span>Init</span>
+				</button>
+			}
+			endActions={
+				<button
+					className="btn btn-info"
+					disabled={activeRequest === "postCleanup"}
+					onClick={() => dispatch(cleanup() as any)}
+				>
+					<i className={activeRequest === "postCleanup" ? "bi bi-arrow-clockwise spin" : "bi bi-trash-fill"} />
+					<span>Cleanup</span>
+				</button>
+			}
+		>
 			<label htmlFor="language" className="form-label">
-				Languages ({languagesCount})
+				Google spreadsheet URL
 			</label>
 			<div className="input-group mb-3">
-				<select
-					className="form-select"
-					id="language"
-					value={addedLanguage}
-					onChange={(event) => setAddedLanguage(event.target.value)}
-				>
-					<option value={""} />
-					{ALL_LANGUAGES.filter(({ langCode }) => !languages.includes(langCode)).map(({ langCode, langName }) => (
-						<option value={langCode} key={langCode}>
-							{langCode} {langName}
-						</option>
-					))}
-				</select>
-				<button className="btn btn-outline-primary" type="button" onClick={addLanguage}>
-					Add
-				</button>
+				<input className="form-control" value={sheetUrl} onChange={(event) => setSheetUrl(event.target.value)} />
 			</div>
 
-			<ul className="nav nav-tabs">
+			<label htmlFor="language" className="form-label">
+				Worksheet name
+			</label>
+			<div className="input-group mb-3">
+				<input
+					className="form-control"
+					value={worksheetName}
+					onChange={(event) => setWorkSheetName(event.target.value)}
+				/>
+			</div>
+
+			{/* <ul className="nav nav-tabs">
 				{languages.map((language) => (
 					<li className="nav-item" key={`tab-lang-${language}`}>
 						<div
@@ -115,9 +91,9 @@ export const StreamSettings = ({ onClose }: Props) => {
 						</div>
 					</li>
 				))}
-			</ul>
+			</ul> */}
 
-			{languages.map((language) => (
+			{/* {languages.map((language) => (
 				<div key={language} className={classNames("language-settings-form", { active: language === selectedLanguage })}>
 					<div className="row mt-2">
 						<div className="col-md-4">
@@ -348,34 +324,15 @@ export const StreamSettings = ({ onClose }: Props) => {
 												draft[language].gDrive.gdrive_sync_addr = event.target.value;
 											})
 										);
+
 									}}
 								/>
 							</div>
 						</div>
 					</div>
 				</div>
-			))}
-
-			<div className="mt-3 stream-settings-buttons">
-				<button
-					className="btn btn-primary"
-					disabled={activeRequest === "postInit" || languagesCount === 0}
-					onClick={async () => {
-						const r = await dispatch(initialize(updatedLanguagesSettings) as any);
-
-						if (r.payload.status !== "error") {
-							onClose();
-						}
-					}}
-				>
-					<i className={activeRequest === "postInit" ? "bi bi-arrow-clockwise spin" : "bi  bi-cloud-arrow-up"} />
-					<span>Init</span>
-				</button>
-				<button className="btn btn-secondary btn-cancel ms-2" onClick={() => onClose()}>
-					Cancel
-				</button>
-			</div>
-		</div>
+			))} */}
+		</ContentPanel>
 	);
 };
 

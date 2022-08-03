@@ -3,12 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { VideoRecord, VideoSchedule as VideoScheduleType } from "../services/types";
 import { playMedia, selectVideoSchedule, setVideoSchedule } from "../store/slices/app";
 import BulkImport from "./BulkImport";
+import ContentPanel from "./ContentPanel";
 
-type Props = {
-	onClose: () => void;
-};
-
-export const VideoSchedule = ({ onClose }: Props) => {
+export const VideoSchedule = () => {
 	const dispatch = useDispatch();
 
 	const videoSchedule = useSelector(selectVideoSchedule);
@@ -21,8 +18,7 @@ export const VideoSchedule = ({ onClose }: Props) => {
 	const [editedVideoRecord, setEditedVideoRecord] = useState<VideoRecord>();
 
 	return (
-		<div className="stream-settings">
-			<div className="stream-settings-heading">Video schedule</div>
+		<ContentPanel>
 			{!bulkImportOpen && (
 				<div>
 					<div className="video-schedule-list col-10 mb-3">
@@ -213,25 +209,16 @@ export const VideoSchedule = ({ onClose }: Props) => {
 						</div>
 					</div>
 
-					<div className="mt-3 stream-settings-buttons">
+					<div className="mt-3 content-panel_actions">
 						<button
 							className="btn btn-primary"
 							onClick={async () => {
 								dispatch(setVideoSchedule(editedVideoSchedule) as any);
 								// await dispatch(initialize(updatedLanguagesSettings) as any);
-								onClose();
+								// onClose();
 							}}
 						>
-							<i className={"bi bi-cloud-arrow-up"} />
 							<span>Save</span>
-						</button>
-						<button
-							className="btn btn-secondary btn-cancel ms-2"
-							onClick={() => {
-								onClose();
-							}}
-						>
-							Cancel
 						</button>
 						<button
 							className="btn btn-success ms-2"
@@ -251,7 +238,7 @@ export const VideoSchedule = ({ onClose }: Props) => {
 					onGoBackClicked={() => setBulkImportOpen(false)}
 				/>
 			)}
-		</div>
+		</ContentPanel>
 	);
 };
 

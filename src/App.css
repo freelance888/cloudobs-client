@@ -6,15 +6,38 @@
 * E4FDE1
 */
 
+.cloudobs-navbar-version {
+	font-size: 0.75rem;
+	margin-inline-start: 0.25rem;
+}
+
+.content-panel {
+	padding: 0.5rem;
+}
+
+.content-panel_actions {
+	display: flex;
+	align-items: center;
+}
+
+.content-panel_actions {
+	margin: 1rem 0;
+}
+
+.content-panel__actions-end {
+	margin-inline-start: auto;
+}
+
 i.bi {
 	margin-right: 0.4rem;
 }
 
-.App {
-	margin: 0.25rem 0.5rem;
-	max-width: 800px;
-	padding-bottom: 40px;
-	position: relative;
+.navbar {
+	border-style: none none solid none;
+}
+
+.navbar .nav-link.active {
+	font-weight: normal;
 }
 
 .server-url-screen {
@@ -28,13 +51,7 @@ i.bi {
 }
 
 .stream-settings {
-	display: flex;
-	flex-direction: column;
-	border: 1px solid #eee;
-	box-shadow: 2px 1px 7px #ccc;
-	margin-bottom: 0.75rem;
 	padding: 0.5rem;
-	margin-top: 1rem;
 }
 
 .nav-link {
@@ -101,11 +118,6 @@ i.bi {
 	display: block;
 }
 
-.stream-settings-buttons {
-	display: flex;
-	align-items: center;
-}
-
 .show-advanced-settings {
 	color: #585858;
 }
@@ -162,10 +174,6 @@ i.bi {
 
 .buttons button {
 	margin-right: 0.5rem;
-}
-
-.languages {
-	margin-top: 2rem;
 }
 
 .Language {
@@ -252,4 +260,8 @@ i.bi {
 	border: 1px solid #ccc;
 	margin-top: -1px;
 	padding: 0.25rem 0;
+}
+
+.sync-all-cursor-help {
+	cursor: help;
 }

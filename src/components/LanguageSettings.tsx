@@ -1,7 +1,9 @@
 // import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { selectLanguagesSettings } from "../store/slices/app";
+import ContentPanel from "./ContentPanel";
 import Language from "./Language";
+import StartStopStreamingButton from "./StartStopStreamingButton";
 
 const LanguageSettings = () => {
 	// const dispatch = useDispatch();
@@ -14,11 +16,11 @@ const LanguageSettings = () => {
 	// }, []);
 
 	return (
-		<div className="languages">
+		<ContentPanel mainActions={<StartStopStreamingButton />} actionsOnTop>
 			{Object.entries(languagesSettings).map(([language, settings]) => (
 				<Language key={language} language={language} languageSettings={settings} />
 			))}
-		</div>
+		</ContentPanel>
 	);
 };
 

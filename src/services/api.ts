@@ -96,6 +96,29 @@ export const postInit = (initialSettings: All<InitialSettings>): Promise<ApiResu
 };
 
 /**
+ * POST /init
+ * Use Google Spreadsheet data source
+ * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-init
+ */
+export const postInitV2 = ({
+	sheetUrl,
+	worksheetName,
+}: {
+	sheetUrl: string;
+	worksheetName: string;
+}): Promise<ApiResult> => {
+	const data = {
+		sheet_url: sheetUrl,
+		worksheet_name: worksheetName,
+	};
+
+	return processResponse(sendPostRequest(API_URL_INIT, data, 3000), {
+		success: "Init successful",
+		error: "Init failed",
+	});
+};
+
+/**
  * GET /init
  * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#get-init
  */

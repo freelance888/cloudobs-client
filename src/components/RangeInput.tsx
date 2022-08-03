@@ -41,7 +41,7 @@ const RangeInput: React.FC<RangeInputProps> = (props: RangeInputProps) => {
 			<label htmlFor={toKebabCase(label)}>
 				{onSyncAllChanged && (
 					<input
-						className="form-check-input me-2"
+						className="form-check-input me-2 sync-all-cursor-help"
 						type="checkbox"
 						title="Apply to all languages"
 						checked={syncAll}
