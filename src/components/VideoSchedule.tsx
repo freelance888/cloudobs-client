@@ -121,7 +121,7 @@ export const VideoSchedule = () => {
 													)}
 													{!videoRecord.alreadyPlayed && (
 														<button
-															className="btn btn-sm btn-secondary ms-3"
+															className="btn btn-sm btn-secondary ms-2"
 															type="button"
 															title="Edit"
 															onClick={() => {
@@ -133,14 +133,12 @@ export const VideoSchedule = () => {
 														</button>
 													)}
 													<button
-														className="btn btn-sm btn-primary ms-3"
+														className="btn btn-sm btn-primary ms-2"
 														type="button"
 														title="Remove"
 														onClick={() => {
 															const updatedVideoSchedule = [...editedVideoSchedule];
 															updatedVideoSchedule.splice(index, 1);
-															console.log("# UPD", updatedVideoSchedule);
-
 															setEditedVideoSchedule(updatedVideoSchedule);
 														}}
 													>
@@ -154,62 +152,50 @@ export const VideoSchedule = () => {
 							})}
 						</div>
 					</div>
-					<div className="col-md-10">
-						<div className="container">
-							<div className="input-group row mb-3">
-								<div className="col-5">
-									<input
-										type="text"
-										className="form-control"
-										value={videoName}
-										onChange={(event) => setVideoName(event.target.value)}
-									/>
-								</div>
-								<div className="col-4">
-									<input
-										type="number"
-										className="form-control"
-										value={videoTiming}
-										onChange={(event) => setVideoTiming(Number(event.target.value))}
-									/>
-								</div>
-								<div className="col-1">
-									<button
-										className="btn btn-outline-primary"
-										type="button"
-										onClick={() => {
-											if (!editedVideoSchedule.find((video) => video.name === videoName)) {
-												setEditedVideoSchedule([
-													...editedVideoSchedule,
-													{
-														name: videoName,
-														secondsFromStart: videoTiming,
-														alreadyPlayed: false,
-													},
-												]);
-											}
-										}}
-									>
-										Add
-									</button>
-								</div>
-								<div className="col-1">
-									<button
-										className="btn btn-outline-secondary"
-										type="button"
-										onClick={() => {
-											setVideoName("");
-											setVideoTiming(0);
-										}}
-									>
-										Clear
-									</button>
-								</div>
-							</div>
-						</div>
+					<div className="input-group mb-3">
+						<input
+							type="text"
+							className="form-control"
+							value={videoName}
+							onChange={(event) => setVideoName(event.target.value)}
+						/>
+						<input
+							type="number"
+							className="form-control"
+							value={videoTiming}
+							onChange={(event) => setVideoTiming(Number(event.target.value))}
+						/>
+						<button
+							className="btn btn-outline-primary"
+							type="button"
+							onClick={() => {
+								if (!editedVideoSchedule.find((video) => video.name === videoName)) {
+									setEditedVideoSchedule([
+										...editedVideoSchedule,
+										{
+											name: videoName,
+											secondsFromStart: videoTiming,
+											alreadyPlayed: false,
+										},
+									]);
+								}
+							}}
+						>
+							Add
+						</button>
+						<button
+							className="btn btn-outline-secondary"
+							type="button"
+							onClick={() => {
+								setVideoName("");
+								setVideoTiming(0);
+							}}
+						>
+							Clear
+						</button>
 					</div>
 
-					<div className="mt-3 content-panel_actions">
+					<div className="mt-3 content-panel__actions">
 						<button
 							className="btn btn-primary"
 							onClick={async () => {

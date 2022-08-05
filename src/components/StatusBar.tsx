@@ -1,33 +1,35 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { selectStatus } from "../store/slices/app";
 import { useNavigate } from "react-router-dom";
+import { selectLogMessages } from "../store/slices/logs";
 
 const STATUS_BAR_TIMEOUT_MS = 8000;
 
 const StatusBar = () => {
-	const status = useSelector(selectStatus);
+	const logMessages = useSelector(selectLogMessages);
 	const navigate = useNavigate();
 
 	const [classes, setClasses] = useState("");
-	const [text, setText] = useState("");
+	const [statusText, setStatusText] = useState("");
+
+	const latestLogMessage = logMessages?.[0] ?? null;
 
 	useEffect(() => {
-		const { type, message } = status;
-
-		if (type === "none") {
+		if (!latestLogMessage) {
 			return;
 		}
 
-		const statusClasses = type === "error" ? "error" : "success";
+		const { text, severity } = latestLogMessage;
+
+		const statusClasses = severity === "error" ? "error" : "success";
 
 		setClasses(`${statusClasses} show`);
-		setText(message);
+		setStatusText(text);
 
 		setTimeout(() => {
 			setClasses(statusClasses);
 		}, STATUS_BAR_TIMEOUT_MS);
-	}, [status]);
+	}, [latestLogMessage]);
 
 	return (
 		<div
@@ -36,7 +38,7 @@ const StatusBar = () => {
 				navigate("/logs", { replace: true });
 			}}
 		>
-			{text}
+			{statusText}
 		</div>
 	);
 };

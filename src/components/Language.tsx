@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
 	MIN_SOURCE_VOLUME,
@@ -26,11 +25,18 @@ import StreamActiveToggle from "./StreamActiveToggle";
 export type LanguageProps = {
 	language: string;
 	languageSettings: LanguageSettings;
+	collapsed: boolean;
+	onCollapsedToggled: () => void;
 };
 
-const Language: React.FC<LanguageProps> = ({ language, languageSettings }: LanguageProps) => {
+const Language: React.FC<LanguageProps> = ({
+	language,
+	languageSettings,
+	collapsed,
+	onCollapsedToggled,
+}: LanguageProps) => {
 	const dispatch = useDispatch();
-	const [collapsed, setCollapsed] = useState(false);
+	// const [collapsed, setCollapsed] = useState(false);
 
 	const syncedParameters = useSelector(selectSyncedParameters);
 
@@ -44,17 +50,14 @@ const Language: React.FC<LanguageProps> = ({ language, languageSettings }: Langu
 				{ "Language--live": languageSettings.streamParameters.streamActive, collapsed },
 			])}
 		>
-			<div
-				className="language-header"
-				onClick={(ev) => {
-					setCollapsed(!collapsed);
-					ev.preventDefault();
-					ev.stopPropagation();
-				}}
-			>
+			<div className="language-header">
 				<StreamActiveToggle language={language} languageSettings={languageSettings} />
 				<div className="language-name">{language}</div>
 				<EditableStreamDestinationSettings language={language} languageSettings={languageSettings} />
+
+				<button className="language-block-collapse-btn btn btn-sm ms-auto" type="button" onClick={onCollapsedToggled}>
+					<i className={classNames("bi bi-no-margin", collapsed ? "bi-chevron-down" : "bi-chevron-up")} />
+				</button>
 			</div>
 
 			<div className="language-body">

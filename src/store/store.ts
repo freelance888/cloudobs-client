@@ -1,10 +1,13 @@
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { AnyAction, combineReducers, configureStore, Middleware, ThunkDispatch } from "@reduxjs/toolkit";
+import { loggerMiddleware } from "./loggerMiddleware";
 
 import app from "./slices/app";
+import environment from "./slices/environment";
 import logs from "./slices/logs";
 
 const rootReducer = combineReducers({
 	app,
+	environment,
 	logs,
 });
 
@@ -13,9 +16,11 @@ const store = configureStore({
 	devTools: {
 		name: "CloudOBS",
 	},
+	middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(loggerMiddleware),
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
-export type AppDispatch = typeof store.dispatch;
+export type AppDispatch = ThunkDispatch<RootState, void, AnyAction>;
+export type AppMiddleware = Middleware<null, RootState, AppDispatch>;
 
 export default store;

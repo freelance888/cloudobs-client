@@ -1,8 +1,6 @@
 import { AsyncThunk, createAsyncThunk, createSlice, PayloadAction, Selector } from "@reduxjs/toolkit";
-import { loadHostAddress } from "../../components/EnvironmentSettings";
 import * as ApiService from "../../services/api";
 import { ApiResult } from "../../services/api";
-import { EMPTY_LANGUAGE_SETTINGS } from "../../services/emptyData";
 import {
 	All,
 	getAllGDriveSettings,
@@ -19,8 +17,7 @@ import {
 	TranslationVolumeSettings,
 	VideoSchedule,
 } from "../../services/types";
-import { AppDispatch, RootState } from "../store";
-import { logMessage } from "./logs";
+import { RootState } from "../store";
 
 export type HostAddress = {
 	protocol: string;
@@ -28,19 +25,11 @@ export type HostAddress = {
 	port: string;
 };
 
-type StatusType = "none" | "error" | "success";
-type Status = {
-	type: StatusType;
-	message: string;
-};
-
 type ActiveRequest = keyof typeof ApiService;
 
 type AppState = {
 	initialLanguageSettingsLoaded: boolean;
 	streamParametersLoaded: boolean;
-	status: Status;
-	hostAddress: HostAddress;
 	activeRequest: ActiveRequest | null;
 	syncedParameters: SyncableSettingsFlags;
 	languagesSettings: LanguagesSettings;
@@ -50,11 +39,6 @@ type AppState = {
 const initialState: AppState = {
 	initialLanguageSettingsLoaded: false,
 	streamParametersLoaded: false,
-	status: {
-		type: "none",
-		message: "",
-	},
-	hostAddress: loadHostAddress(),
 	activeRequest: null,
 	syncedParameters: {
 		sourceVolume: false,
@@ -73,37 +57,15 @@ const getAllLanguages: (state: RootState) => string[] = (state) => {
 	return Object.keys(state.app.languagesSettings);
 };
 
-const processStatus = async (dispatch: AppDispatch, result: ApiResult) => {
-	const { messages } = result;
-
-	if (result.status === "success") {
-		const message = messages?.success || "Success";
-		dispatch(updateStatus({ type: "success", message }));
-		dispatch(logMessage({ text: message, severity: "success" }));
-	} else {
-		const message = messages?.error || "Error";
-		dispatch(updateStatus({ type: "error", message }));
-		dispatch(logMessage({ text: message, severity: "error" }));
-	}
-};
-
-const fetchInitialSettings = async (dispatch: AppDispatch): Promise<All<GlobalSettings>> => {
-	// const result = await ApiService.getInit();
-	const result = await ApiService.getInfo();
-	processStatus(dispatch, result);
-	return result.data;
-};
-
 export const initialize: AsyncThunk<LanguagesSettings, LanguagesSettings, { state: RootState }> = createAsyncThunk<
 	LanguagesSettings,
 	LanguagesSettings,
 	{ state: RootState }
->("app/initialize", async (languagesSettings, { dispatch, rejectWithValue }) => {
+>("app/initialize", async (languagesSettings, { rejectWithValue }) => {
 	const result = await ApiService.postInit(getAllInitialSettings(languagesSettings));
-	processStatus(dispatch as AppDispatch, result);
 
 	if (result.status === "error") {
-		return rejectWithValue(result);
+		return rejectWithValue(result.message);
 	}
 
 	return languagesSettings;
@@ -112,28 +74,40 @@ export const initialize: AsyncThunk<LanguagesSettings, LanguagesSettings, { stat
 export const initializeV2: AsyncThunk<void, { sheetUrl: string; worksheetName: string }, { state: RootState }> =
 	createAsyncThunk<void, { sheetUrl: string; worksheetName: string }, { state: RootState }>(
 		"app/initializeV2",
-		async (data, { dispatch }) => {
+		async (data, { rejectWithValue }) => {
 			const result = await ApiService.postInitV2(data);
-			processStatus(dispatch as AppDispatch, result);
+
+			if (result.status === "error") {
+				return rejectWithValue(result.message);
+			}
 		}
 	);
 
 export const fetchLanguagesSettings: AsyncThunk<
-	All<GlobalSettings | "#">,
+	ApiResult<All<GlobalSettings>>,
 	void,
 	{ state: RootState }
-> = createAsyncThunk<All<GlobalSettings | "#">, void, { state: RootState }>(
-	"app/fetchCurrentSettings",
-	async (_, { dispatch }) => {
-		return fetchInitialSettings(dispatch as AppDispatch);
+> = createAsyncThunk<ApiResult<All<GlobalSettings>>, void, { state: RootState }>(
+	"app/fetchLanguagesSettings",
+	async (_, { rejectWithValue }) => {
+		const result = await ApiService.getInfo();
+
+		if (result.status === "error") {
+			return rejectWithValue(result.message);
+		}
+
+		return result;
 	}
 );
 
 export const cleanup: AsyncThunk<void, void, { state: RootState }> = createAsyncThunk<void, void, { state: RootState }>(
 	"app/cleanup",
-	async (_, { dispatch }) => {
+	async (_, { rejectWithValue }) => {
 		const result = await ApiService.postCleanup();
-		processStatus(dispatch as AppDispatch, result);
+
+		if (result.status === "error") {
+			return rejectWithValue(result.message);
+		}
 	}
 );
 
@@ -143,9 +117,12 @@ export const setStreamSettings: AsyncThunk<
 	{ state: RootState }
 > = createAsyncThunk<All<StreamDestinationSettings>, All<StreamDestinationSettings>, { state: RootState }>(
 	"app/setStreamSettings",
-	async (streamSettings, { dispatch }) => {
+	async (streamSettings, { rejectWithValue }) => {
 		const result = await ApiService.postStreamSettings(streamSettings);
-		processStatus(dispatch as AppDispatch, result);
+
+		if (result.status === "error") {
+			return rejectWithValue(result.message);
+		}
 
 		return streamSettings;
 	}
@@ -155,12 +132,15 @@ export const startStreaming: AsyncThunk<string[], string[] | undefined, { state:
 	string[],
 	string[] | undefined,
 	{ state: RootState }
->("app/startStreaming", async (languages, { dispatch, getState }) => {
+>("app/startStreaming", async (languages, { getState, rejectWithValue }) => {
 	const languagesSet = Array.isArray(languages);
 	const affectedLanguages = languagesSet ? languages : getAllLanguages(getState());
 
 	const result = await ApiService.postStreamStart(affectedLanguages);
-	processStatus(dispatch as AppDispatch, result);
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
 
 	return affectedLanguages;
 });
@@ -169,12 +149,15 @@ export const stopStreaming: AsyncThunk<string[], string[] | undefined, { state: 
 	string[],
 	string[] | undefined,
 	{ state: RootState }
->("app/stopStreaming", async (languages, { dispatch, getState }) => {
+>("app/stopStreaming", async (languages, { getState, rejectWithValue }) => {
 	const languagesSet = Array.isArray(languages);
 	const affectedLanguages = languagesSet ? languages : getAllLanguages(getState());
 
 	const result = await ApiService.postStreamStop(affectedLanguages);
-	processStatus(dispatch as AppDispatch, result);
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
 
 	return affectedLanguages;
 });
@@ -204,7 +187,7 @@ export const setSourceVolume: AsyncThunk<
 	{ state: RootState }
 > = createAsyncThunk<All<SourceVolumeSettings>, All<SourceVolumeSettings>, { state: RootState }>(
 	"app/setSourceVolume",
-	async (volumeSettings, { dispatch, getState }) => {
+	async (volumeSettings, { getState, rejectWithValue }) => {
 		const { app } = getState();
 
 		const specifiedVolumeSettings = processSynchronization(
@@ -214,7 +197,10 @@ export const setSourceVolume: AsyncThunk<
 		);
 
 		const result = await ApiService.postSourceVolume(specifiedVolumeSettings);
-		processStatus(dispatch as AppDispatch, result);
+
+		if (result.status === "error") {
+			return rejectWithValue(result.message);
+		}
 
 		return specifiedVolumeSettings;
 	}
@@ -226,7 +212,7 @@ export const setTranslationVolume: AsyncThunk<
 	{ state: RootState }
 > = createAsyncThunk<All<TranslationVolumeSettings>, All<TranslationVolumeSettings>, { state: RootState }>(
 	"app/setTranslationVolume",
-	async (volumeSettings, { dispatch, getState }) => {
+	async (volumeSettings, { getState, rejectWithValue }) => {
 		const { app } = getState();
 
 		const specifiedVolumeSettings = processSynchronization(
@@ -236,7 +222,10 @@ export const setTranslationVolume: AsyncThunk<
 		);
 
 		const result = await ApiService.postTsVolume(specifiedVolumeSettings);
-		processStatus(dispatch as AppDispatch, result);
+
+		if (result.status === "error") {
+			return rejectWithValue(result.message);
+		}
 
 		return specifiedVolumeSettings;
 	}
@@ -248,7 +237,7 @@ export const setTranslationOffset: AsyncThunk<
 	{ state: RootState }
 > = createAsyncThunk<All<TranslationOffsetSettings>, All<TranslationOffsetSettings>, { state: RootState }>(
 	"app/setTranslationOffset",
-	async (offsetSettings, { dispatch, getState }) => {
+	async (offsetSettings, { getState, rejectWithValue }) => {
 		const { app } = getState();
 
 		const specifiedOffsetSettings = processSynchronization(
@@ -258,7 +247,10 @@ export const setTranslationOffset: AsyncThunk<
 		);
 
 		const result = await ApiService.postTsOffset(specifiedOffsetSettings);
-		processStatus(dispatch as AppDispatch, result);
+
+		if (result.status === "error") {
+			return rejectWithValue(result.message);
+		}
 
 		return specifiedOffsetSettings;
 	}
@@ -270,9 +262,12 @@ export const setSidechain: AsyncThunk<
 	{ state: RootState }
 > = createAsyncThunk<All<Partial<SidechainSettings>>, All<Partial<SidechainSettings>>, { state: RootState }>(
 	"app/setSidechain",
-	async (sidechainSettings, { dispatch }) => {
+	async (sidechainSettings, { rejectWithValue }) => {
 		const result = await ApiService.postUpdateFiltersSidechain(sidechainSettings);
-		processStatus(dispatch as AppDispatch, result);
+
+		if (result.status === "error") {
+			return rejectWithValue(result.message);
+		}
 
 		return sidechainSettings;
 	}
@@ -282,9 +277,12 @@ export const setVideoSchedule: AsyncThunk<VideoSchedule, VideoSchedule, { state:
 	VideoSchedule,
 	VideoSchedule,
 	{ state: RootState }
->("app/setVideoSchedule", async (videoSchedule, { dispatch }) => {
+>("app/setVideoSchedule", async (videoSchedule, { rejectWithValue }) => {
 	const result = await ApiService.postMediaSchedule(videoSchedule);
-	processStatus(dispatch as AppDispatch, result);
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
 
 	return videoSchedule;
 });
@@ -293,11 +291,14 @@ export const playMedia: AsyncThunk<string, string, { state: RootState }> = creat
 	string,
 	string,
 	{ state: RootState }
->("app/playMedia", async (videoName, { dispatch }) => {
+>("app/playMedia", async (videoName, { rejectWithValue }) => {
 	const mediaPlaySettings: All<MediaPlaySettings> = { __all__: { name: videoName, search_by_num: 0 } };
 
 	const result = await ApiService.postMediaPlay(mediaPlaySettings);
-	processStatus(dispatch as AppDispatch, result);
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
 
 	return videoName;
 });
@@ -306,24 +307,21 @@ export const syncGoogleDrive: AsyncThunk<void, void, { state: RootState }> = cre
 	void,
 	void,
 	{ state: RootState }
->("app/syncGoogleDrive", async (_, { dispatch, getState }) => {
+>("app/syncGoogleDrive", async (_, { getState, rejectWithValue }) => {
 	const { app } = getState();
 	const gDriveSettings = getAllGDriveSettings(app.languagesSettings);
 
 	const result = await ApiService.postGDriveSync(gDriveSettings);
-	processStatus(dispatch as AppDispatch, result);
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
 });
 
 const { actions, reducer } = createSlice({
 	name: "app",
 	initialState,
 	reducers: {
-		updateStatus(state, { payload }: PayloadAction<Status>) {
-			state.status = payload;
-		},
-		updateHostAddress(state, { payload }: PayloadAction<HostAddress>) {
-			state.hostAddress = payload;
-		},
 		updateActiveRequest(state, { payload }: PayloadAction<ActiveRequest | null>) {
 			state.activeRequest = payload;
 		},
@@ -358,12 +356,14 @@ const { actions, reducer } = createSlice({
 				state.initialLanguageSettingsLoaded = false;
 			})
 			.addCase(fetchLanguagesSettings.fulfilled, (state, { payload }) => {
-				Object.keys(payload).forEach((lang) => {
-					const languageSettings = payload[lang];
+				if (payload.data) {
+					Object.keys(payload.data).forEach((lang) => {
+						const languageSettings = payload.data?.[lang] as GlobalSettings;
 
-					if (languageSettings === "#") {
-						state.languagesSettings[lang] = EMPTY_LANGUAGE_SETTINGS;
-					} else {
+						// TODO handle "#" situation
+						// if (languageSettings === "#") {
+						// 	state.languagesSettings[lang] = EMPTY_LANGUAGE_SETTINGS;
+						// } else {
 						const streamParameters: StreamParametersSettings = {
 							streamActive: languageSettings.stream_on?.value,
 							sourceVolume: languageSettings.source_volume?.value,
@@ -378,9 +378,13 @@ const { actions, reducer } = createSlice({
 							streamDestination: languageSettings.stream_settings,
 							streamParameters,
 						};
-					}
-				});
+						// }
+					});
+				}
 				state.initialLanguageSettingsLoaded = true;
+			})
+			.addCase(fetchLanguagesSettings.rejected, (state, action) => {
+				// console.log("# Rejectect:", action.payload);
 			})
 			.addCase(cleanup.pending, (state) => {
 				state.activeRequest = "postCleanup";
@@ -440,7 +444,7 @@ const { actions, reducer } = createSlice({
 			}),
 });
 
-export const { updateStatus, updateActiveRequest, updateHostAddress, updateSyncedParameters } = actions;
+export const { updateActiveRequest, updateSyncedParameters } = actions;
 
 export const selectInitialLanguagesSettingsLoaded: Selector<RootState, boolean> = ({ app }) =>
 	app.initialLanguageSettingsLoaded;
@@ -448,10 +452,6 @@ export const selectInitialLanguagesSettingsLoaded: Selector<RootState, boolean> 
 export const selectActiveRequest: Selector<RootState, ActiveRequest | null> = ({ app }) => app.activeRequest;
 
 export const selectSyncedParameters: Selector<RootState, SyncableSettingsFlags> = ({ app }) => app.syncedParameters;
-
-export const selectHostAddress: Selector<RootState, HostAddress> = ({ app }) => app.hostAddress;
-
-export const selectStatus: Selector<RootState, Status> = ({ app }) => app.status;
 
 export const selectLanguagesSettings: Selector<RootState, LanguagesSettings> = ({ app }) => app.languagesSettings;
 

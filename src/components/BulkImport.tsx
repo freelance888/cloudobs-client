@@ -21,10 +21,15 @@ const BulkImport: React.FC<Props> = ({ onImport, onGoBackClicked }: Props) => {
 				/>
 			</div>
 
-			<div className="mt-3 content-panel_actions">
+			<div className="mt-3 content-panel__actions">
 				<button
 					className="btn btn-primary"
+					disabled={textareaText.trim().length === 0}
 					onClick={async () => {
+						if (textareaText.length === 0) {
+							return;
+						}
+
 						const lines = textareaText.split("\n");
 
 						const videoSchedule: VideoSchedule = lines.map((line) => {

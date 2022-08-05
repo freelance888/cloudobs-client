@@ -35,48 +35,42 @@ const API_URL_GDRIVE_SYNC = "/gdrive/sync";
 
 export type ApiResult<T extends {} = {}> = {
 	status: "success" | "error";
-	data: T;
-	messages: {
-		success?: string;
-		error?: string;
-	};
+	message: string;
+	data?: T;
 };
 
 const processResponse = async <T extends {} = {}>(
 	responsePromise: Promise<Response>,
-	messages?: {
-		success?: string;
-		error?: string;
+	messages: {
+		success: string;
+		error: string;
 	}
 ): Promise<ApiResult<T>> => {
+	let data: T = {} as T;
+	const { success } = messages;
+
 	try {
 		const response = await responsePromise;
 
-		if (response.status === 200) {
-			let data: T = {} as T;
+		// Failed request
+		if (!response.status) {
+			const message = (response as any).message;
+			return { status: "error", message };
+		}
+		// Successful request
+		else if (response.status === 200) {
 			try {
 				data = await response.json();
 			} catch (error) {}
-			const message = messages?.success || "Success";
-
-			console.info(message);
-
-			return { status: "success", data, messages: { success: message } };
-		} else {
-			const data: T = {} as T;
+			return { status: "success", message: success, data };
+		}
+		// Error response
+		else {
 			const message = await response.text();
-
-			console.error(message);
-
-			return { status: "error", data, messages: { error: message } };
+			return { status: "error", message };
 		}
 	} catch (error) {
-		const data: T = {} as T;
-		const message = String(error);
-
-		console.error(message);
-
-		return { status: "error", data, messages: { error: message } };
+		return { status: "error", message: String(error) };
 	}
 };
 
@@ -162,7 +156,10 @@ export const postMediaPlay = (mediaPlaySettings: All<MediaPlaySettings>): Promis
 		params: mediaPlaySettings,
 	};
 
-	return processResponse(sendPostRequest(API_URL_MEDIA_PLAY, data));
+	return processResponse(sendPostRequest(API_URL_MEDIA_PLAY, data), {
+		success: "Video successfully played",
+		error: "Video play failed",
+	});
 };
 
 /**
@@ -312,7 +309,10 @@ export const postTransition = (transitionSettings: All<TransitionSettings>): Pro
 		transition_settings: transitionSettings,
 	};
 
-	return processResponse(sendPostRequest(API_URL_TRANSITION, data));
+	return processResponse(sendPostRequest(API_URL_TRANSITION, data), {
+		success: "Transition complete",
+		error: "Transition failed",
+	});
 };
 
 /**

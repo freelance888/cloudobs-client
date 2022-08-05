@@ -20,7 +20,6 @@ const StreamActiveToggle = ({ language, languageSettings }: Props) => {
 				role="switch"
 				id="stream-on"
 				checked={streamActive}
-				onClick={(event) => event.stopPropagation()}
 				onChange={async (event) => {
 					const active = (event.target as any).checked;
 

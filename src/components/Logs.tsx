@@ -27,7 +27,7 @@ const Logs: React.FC = () => {
 					return (
 						<div className="logs__message" key={id}>
 							<span className="logs__message-timestamp me-2">
-								[{timestamp.toLocaleString()}]<span className="logs_message-prefix ms-1">{prefix}</span>:
+								[{timestamp}]<span className="logs_message-prefix ms-1">{prefix}</span>:
 							</span>
 							<span className="logs__message-text">{text}</span>
 						</div>

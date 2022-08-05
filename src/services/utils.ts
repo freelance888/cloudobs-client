@@ -1,4 +1,4 @@
-import { HostAddress } from "../store/slices/app";
+import { HostAddress } from "../store/slices/environment";
 import store from "../store/store";
 
 export const buildUrl = (hostAddress: HostAddress, urlPath?: string, params?: string) => {
@@ -18,7 +18,7 @@ const setUpTimeout = (timeoutMs: number = 8000): { signal: AbortSignal; clearTim
 };
 
 export const sendGetRequest: (url: string, timeoutMs?: number) => Promise<Response> = async (url, timeoutMs) => {
-	const hostAddress = store.getState().app.hostAddress;
+	const hostAddress = store.getState().environment.hostAddress;
 	const { signal, clearTimeout } = setUpTimeout(timeoutMs);
 
 	console.debug("-> GET", url, hostAddress);
@@ -32,7 +32,7 @@ export const sendPostRequest: (
 	data?: Record<string, unknown>,
 	timeoutMs?: number
 ) => Promise<Response> = async (url, data, timeoutMs) => {
-	const hostAddress = store.getState().app.hostAddress;
+	const hostAddress = store.getState().environment.hostAddress;
 	const { signal, clearTimeout } = setUpTimeout(timeoutMs);
 
 	console.debug("-> POST", url, data, hostAddress);

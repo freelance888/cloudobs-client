@@ -1,8 +1,9 @@
 import produce from "immer";
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { LanguageSettings } from "../services/types";
 import { setStreamSettings } from "../store/slices/app";
+import { logMessage } from "../store/slices/logs";
 
 type Props = {
 	language: string;
@@ -51,7 +52,7 @@ const EditableStreamDestinationSettings = ({ language, languageSettings }: Props
 							placeholder="Server URL"
 							autoFocus={true}
 							value={updatedDestinationSettings.server}
-							onClickCapture={(event) => {
+							onClick={(event) => {
 								event.stopPropagation();
 							}}
 							onChange={(event) => {
@@ -74,7 +75,7 @@ const EditableStreamDestinationSettings = ({ language, languageSettings }: Props
 							className="form-control"
 							placeholder="Stream Key"
 							value={updatedDestinationSettings.key}
-							onClickCapture={(event) => {
+							onClick={(event) => {
 								event.stopPropagation();
 							}}
 							onChange={(event) => {
@@ -92,13 +93,13 @@ const EditableStreamDestinationSettings = ({ language, languageSettings }: Props
 								}
 							}}
 						/>
-						<button className="btn btn-outline-primary" type="button" onClickCapture={saveDestinationSettings}>
+						<button className="btn btn-outline-primary" type="button" onClick={saveDestinationSettings}>
 							Save
 						</button>
 						<button
 							className="btn btn-outline-secondary"
 							type="button"
-							onClickCapture={() => setDestinationSettingsOpen(false)}
+							onClick={() => setDestinationSettingsOpen(false)}
 						>
 							Cancel
 						</button>
@@ -106,14 +107,40 @@ const EditableStreamDestinationSettings = ({ language, languageSettings }: Props
 				</div>
 			) : (
 				<div className="language-stream-settings-readonly">
-					{!streamUrlEmpty && <div className="language-stream-url me-2">{streamUrl}</div>}
+					{!streamUrlEmpty && (
+						<Fragment>
+							<i className="bi bi-arrow-right"></i>
+							<div className="language-stream-url me-2">{streamUrl}</div>
+						</Fragment>
+					)}
 					{!languageSettings.streamParameters.streamActive && (
-						<button
-							className={"btn btn-sm language-stream-url-edit" + (streamUrlEmpty ? " btn-outline-info" : "")}
-							onClickCapture={() => setDestinationSettingsOpen(true)}
-						>
-							{streamUrlEmpty ? "Set destination" : "Edit"}
-						</button>
+						<Fragment>
+							{!streamUrlEmpty && (
+								<button
+									className={"btn btn-sm language-stream-url-edit" + (streamUrlEmpty ? " btn-outline-info" : "")}
+									onClick={async () => {
+										try {
+											await navigator.clipboard.writeText(streamUrl);
+											dispatch(
+												logMessage({ text: `RTMP URL '${streamUrl}' copied to clipboard`, severity: "success" })
+											);
+										} catch (error) {
+											dispatch(
+												logMessage({ text: `RTMP URL '${streamUrl}' copying to clipboard failed`, severity: "error" })
+											);
+										}
+									}}
+								>
+									Copy
+								</button>
+							)}
+							<button
+								className={"btn btn-sm language-stream-url-edit" + (streamUrlEmpty ? " btn-outline-info" : "")}
+								onClick={() => setDestinationSettingsOpen(true)}
+							>
+								{streamUrlEmpty ? "Set destination" : "Edit"}
+							</button>
+						</Fragment>
 					)}
 				</div>
 			)}

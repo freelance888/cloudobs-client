@@ -7,7 +7,7 @@ type LogMessageSeverity = "success" | "error" | "warn" | "log";
 type LogMessage = {
 	id: string;
 	text: string;
-	timestamp: Date;
+	timestamp: string;
 	severity: LogMessageSeverity;
 };
 
@@ -21,7 +21,7 @@ const buildMessage = (text: string, severity?: LogMessageSeverity): LogMessage =
 	return {
 		id: generateId(),
 		text,
-		timestamp: new Date(),
+		timestamp: new Date().toLocaleString(),
 		severity: severity || "log",
 	};
 };
