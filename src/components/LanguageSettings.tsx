@@ -24,13 +24,13 @@ const LanguageSettings = () => {
 		<ContentPanel
 			mainActions={
 				languagesCount > 0 && (
-					<Fragment>
+					<>
 						<button className="btn btn-primary me-2" onClick={() => dispatch(fetchLanguagesSettings() as any)}>
 							<i className="bi bi-arrow-clockwise" />
 							<span>Refresh</span>
 						</button>
 						<StartStopStreamingButton />
-					</Fragment>
+					</>
 				)
 			}
 			endActions={

@@ -1,7 +1,6 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-	DEFAULT_HOST_ADDRESS,
 	removeVMixTriggerer,
 	selectHostAddress,
 	selectVMixTriggerers,
@@ -16,33 +15,48 @@ export const EnvironmentSettings: React.FC = () => {
 	const vMixTriggerers = useSelector(selectVMixTriggerers);
 
 	return (
-		<Fragment>
+		<>
 			<ContentPanel
 				mainActions={
-					<Fragment>
-						<button className="btn btn-sm btn-primary" onClick={() => dispatch(updateHostAddress(editedHostAddress))}>
-							<span>Save</span>
-						</button>
+					<>
 						<button
-							className="btn btn-sm btn-outline-danger ms-2"
-							type="button"
+							className="btn btn-sm btn-primary"
 							onClick={() => {
-								setEditedHostAddress(DEFAULT_HOST_ADDRESS);
+								dispatch(updateHostAddress(editedHostAddress));
 							}}
 						>
-							Reset to default
+							<span>Save</span>
 						</button>
-					</Fragment>
+					</>
 				}
 			>
 				<label htmlFor="server-ip" className="form-label">
 					Host server address
 				</label>
+				<div className="form-check mb-3">
+					<input
+						id="use-localhost"
+						className="form-check-input"
+						type="checkbox"
+						checked={editedHostAddress.useLocalhost}
+						onChange={() =>
+							setEditedHostAddress({
+								...editedHostAddress,
+								useLocalhost: !editedHostAddress.useLocalhost,
+							})
+						}
+					/>
+					<label htmlFor="use-localhost" className="form-check-label">
+						Use localhost
+					</label>
+				</div>
+
 				<div className="input-group mb-3">
 					<input
 						type="text"
 						className="form-control"
 						style={{ maxWidth: "80px" }}
+						disabled={editedHostAddress.useLocalhost}
 						placeholder="http"
 						aria-label="Protocol"
 						value={editedHostAddress.protocol}
@@ -58,6 +72,7 @@ export const EnvironmentSettings: React.FC = () => {
 						type="text"
 						className="form-control"
 						style={{ maxWidth: "160px" }}
+						disabled={editedHostAddress.useLocalhost}
 						placeholder="IP address"
 						aria-label="IP address"
 						value={editedHostAddress.ipAddress}
@@ -73,6 +88,7 @@ export const EnvironmentSettings: React.FC = () => {
 						type="text"
 						className="form-control"
 						style={{ maxWidth: "80px" }}
+						disabled={editedHostAddress.useLocalhost}
 						placeholder="Port"
 						aria-label="Port"
 						value={editedHostAddress.port}
@@ -117,7 +133,7 @@ export const EnvironmentSettings: React.FC = () => {
 					);
 				})}
 			</ContentPanel>
-		</Fragment>
+		</>
 	);
 };
 

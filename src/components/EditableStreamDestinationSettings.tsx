@@ -1,9 +1,9 @@
 import produce from "immer";
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import useLogger from "../hooks/useLogger";
 import { LanguageSettings } from "../services/types";
 import { setStreamSettings } from "../store/slices/app";
-import { logMessage } from "../store/slices/logs";
 
 type Props = {
 	language: string;
@@ -12,6 +12,7 @@ type Props = {
 
 const EditableStreamDestinationSettings = ({ language, languageSettings }: Props) => {
 	const dispatch = useDispatch();
+	const { logSuccess, logError } = useLogger();
 
 	const [destinationSettingsOpen, setDestinationSettingsOpen] = useState(false);
 	const [updatedDestinationSettings, setUpdatedDestinationSettings] = useState(languageSettings.streamDestination);
@@ -108,26 +109,22 @@ const EditableStreamDestinationSettings = ({ language, languageSettings }: Props
 			) : (
 				<div className="language-stream-settings-readonly">
 					{!streamUrlEmpty && (
-						<Fragment>
+						<>
 							<i className="bi bi-arrow-right"></i>
 							<div className="language-stream-url me-2">{streamUrl}</div>
-						</Fragment>
+						</>
 					)}
 					{!languageSettings.streamParameters.streamActive && (
-						<Fragment>
+						<>
 							{!streamUrlEmpty && (
 								<button
 									className={"btn btn-sm language-stream-url-edit" + (streamUrlEmpty ? " btn-outline-info" : "")}
 									onClick={async () => {
 										try {
 											await navigator.clipboard.writeText(streamUrl);
-											dispatch(
-												logMessage({ text: `RTMP URL '${streamUrl}' copied to clipboard`, severity: "success" })
-											);
+											logSuccess(`RTMP URL '${streamUrl}' copied to clipboard`);
 										} catch (error) {
-											dispatch(
-												logMessage({ text: `RTMP URL '${streamUrl}' copying to clipboard failed`, severity: "error" })
-											);
+											logError(`RTMP URL '${streamUrl}' copying to clipboard failed`);
 										}
 									}}
 								>
@@ -140,7 +137,7 @@ const EditableStreamDestinationSettings = ({ language, languageSettings }: Props
 							>
 								{streamUrlEmpty ? "Set destination" : "Edit"}
 							</button>
-						</Fragment>
+						</>
 					)}
 				</div>
 			)}

@@ -2,8 +2,12 @@ import { HostAddress } from "../store/slices/environment";
 import store from "../store/store";
 
 export const buildUrl = (hostAddress: HostAddress, urlPath?: string, params?: string) => {
-	const { protocol, ipAddress, port } = hostAddress;
-	return `${protocol}://${ipAddress}:${port}${urlPath || ""}${params || ""}`;
+	const { protocol, ipAddress, port, useLocalhost } = hostAddress;
+
+	let hostname = useLocalhost ? window.location.hostname : ipAddress;
+	const host = `${protocol}://${hostname}:${port}`;
+
+	return `${host}${urlPath || ""}${params || ""}`;
 };
 
 const setUpTimeout = (timeoutMs: number = 8000): { signal: AbortSignal; clearTimeout: () => void } => {

@@ -5,6 +5,7 @@ export type HostAddress = {
 	protocol: string;
 	ipAddress: string;
 	port: string;
+	useLocalhost: boolean;
 };
 
 export type VMixTriggerer = {
@@ -22,8 +23,9 @@ export const LS_KEY_HOST_ADDRESS = "cloudobs__host_address";
 
 export const DEFAULT_HOST_ADDRESS: HostAddress = {
 	protocol: "http",
-	ipAddress: "localhost",
+	ipAddress: "0.0.0.0",
 	port: "5000",
+	useLocalhost: true,
 };
 
 const loadHostAddress = () => {
