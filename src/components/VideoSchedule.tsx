@@ -168,8 +168,9 @@ export const VideoSchedule = () => {
 						<button
 							className="btn btn-outline-primary"
 							type="button"
+							disabled={!videoName.length}
 							onClick={() => {
-								if (!editedVideoSchedule.find((video) => video.name === videoName)) {
+								if (videoName && !editedVideoSchedule.find((video) => video.name === videoName)) {
 									setEditedVideoSchedule([
 										...editedVideoSchedule,
 										{
@@ -200,7 +201,6 @@ export const VideoSchedule = () => {
 							className="btn btn-primary"
 							onClick={async () => {
 								dispatch(setVideoSchedule(editedVideoSchedule) as any);
-								// await dispatch(initialize(updatedLanguagesSettings) as any);
 								// onClose();
 							}}
 						>

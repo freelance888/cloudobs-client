@@ -7,7 +7,9 @@ import {
 	GDriveSettings,
 	GlobalSettings,
 	InitialSettings,
+	LanguagesSettings,
 	MediaPlaySettings,
+	SheetInitialSettings,
 	SidechainSettings,
 	SourceVolumeSettings,
 	StreamDestinationSettings,
@@ -39,12 +41,15 @@ export type ApiResult<T extends {} = {}> = {
 	data?: T;
 };
 
+type ApiCall<T extends Record<string, unknown> | unknown[], U = T> = (param: T) => Promise<ApiResult<U>>;
+
 const processResponse = async <T extends {} = {}>(
 	responsePromise: Promise<Response>,
 	messages: {
 		success: string;
 		error: string;
-	}
+	},
+	dataToReturn?: T
 ): Promise<ApiResult<T>> => {
 	let data: T = {} as T;
 	const { success } = messages;
@@ -62,7 +67,7 @@ const processResponse = async <T extends {} = {}>(
 			try {
 				data = await response.json();
 			} catch (error) {}
-			return { status: "success", message: success, data };
+			return { status: "success", message: success, data: dataToReturn ?? data };
 		}
 		// Error response
 		else {
@@ -76,31 +81,10 @@ const processResponse = async <T extends {} = {}>(
 
 /**
  * POST /init
- * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-init
- */
-export const postInit = (initialSettings: All<InitialSettings>): Promise<ApiResult> => {
-	const data = {
-		server_langs: initialSettings,
-	};
-
-	return processResponse(sendPostRequest(API_URL_INIT, data, 3000), {
-		success: "Init successful",
-		error: "Init failed",
-	});
-};
-
-/**
- * POST /init
  * Use Google Spreadsheet data source
  * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-init
  */
-export const postInitV2 = ({
-	sheetUrl,
-	worksheetName,
-}: {
-	sheetUrl: string;
-	worksheetName: string;
-}): Promise<ApiResult> => {
+export const postInit: ApiCall<SheetInitialSettings, LanguagesSettings> = ({ sheetUrl, worksheetName }) => {
 	const data = {
 		sheet_url: sheetUrl,
 		worksheet_name: worksheetName,
@@ -166,138 +150,133 @@ export const postMediaPlay = (mediaPlaySettings: All<MediaPlaySettings>): Promis
  * POST /stream/settings
  * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-streamsettings
  */
-export const postStreamSettings = (streamSettings: All<StreamDestinationSettings>): Promise<ApiResult> => {
+export const postStreamSettings: ApiCall<All<StreamDestinationSettings>> = (streamSettings) => {
 	const data = {
 		stream_settings: streamSettings,
 	};
 
-	return processResponse(sendPostRequest(API_URL_STREAM_SETTINGS, data), {
-		success: "Set stream settings successful",
-		error: "Set stream settings failed",
-	});
+	return processResponse(
+		sendPostRequest(API_URL_STREAM_SETTINGS, data),
+		{
+			success: "Set stream settings successful",
+			error: "Set stream settings failed",
+		},
+		streamSettings
+	);
 };
 
 /**
  * POST /stream/start
  * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-streamstart
  */
-export const postStreamStart = (languages: string[] = ["__all__"]): Promise<ApiResult> => {
+export const postStreamStart: ApiCall<string[]> = (languages = ["__all__"]) => {
 	const data = {
 		langs: languages,
 	};
 
-	return processResponse(sendPostRequest(API_URL_STREAM_START, data), {
-		success: "Streams started",
-		error: "Stream start failed",
-	});
+	return processResponse(
+		sendPostRequest(API_URL_STREAM_START, data),
+		{
+			success: "Streams started",
+			error: "Stream start failed",
+		},
+		languages
+	);
 };
 
 /**
  * POST /stream/stop
  * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-streamstop
  */
-export const postStreamStop = (languages: string[] = ["__all__"]): Promise<ApiResult> => {
+export const postStreamStop: ApiCall<string[]> = (languages = ["__all__"]) => {
 	const data = {
 		langs: languages,
 	};
 
-	return processResponse(sendPostRequest(API_URL_STREAM_STOP, data), {
-		success: "Streams stopped",
-		error: "Stream stop failed",
-	});
+	return processResponse(
+		sendPostRequest(API_URL_STREAM_STOP, data),
+		{
+			success: "Streams stopped",
+			error: "Stream stop failed",
+		},
+		languages
+	);
 };
 
 /**
  * POST /ts/offset
  * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-tsoffset
  */
-export const postTsOffset = (offsetSettings: All<TranslationOffsetSettings>): Promise<ApiResult> => {
+export const postTsOffset: ApiCall<All<TranslationOffsetSettings>> = (offsetSettings) => {
 	const data = {
 		offset_settings: offsetSettings,
 	};
 
-	return processResponse(sendPostRequest(API_URL_TS_OFFSET, data), {
-		success: `Translation offset set: ${Object.values(offsetSettings)?.[0]}`,
-		error: "Translation offset setting failed",
-	});
-};
-
-/**
- * GET /ts/offset
- * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#get-tsoffset
- */
-export const getTsOffset = (): Promise<ApiResult<All<TranslationOffsetSettings>>> => {
-	return processResponse(sendGetRequest(API_URL_TS_OFFSET), {
-		success: "Translation offsets fetched",
-		error: "Translation offsets fetching failed",
-	});
+	return processResponse(
+		sendPostRequest(API_URL_TS_OFFSET, data),
+		{
+			success: `Translation offset set: ${Object.values(offsetSettings)?.[0]}`,
+			error: "Translation offset setting failed",
+		},
+		offsetSettings
+	);
 };
 
 /**
  * POST /ts/volume
  * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-tsvolume
  */
-export const postTsVolume = (volumeSettings: All<TranslationVolumeSettings>): Promise<ApiResult> => {
+export const postTsVolume: ApiCall<All<TranslationVolumeSettings>> = (volumeSettings) => {
 	const data = {
 		volume_settings: volumeSettings,
 	};
 
-	return processResponse(sendPostRequest(API_URL_TS_VOLUME, data), {
-		success: `Translation volume set: ${Object.values(volumeSettings)?.[0]}`,
-		error: "Translation volume setting failed",
-	});
-};
-
-/**
- * GET /ts/volume
- * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#get-tsvolume
- */
-export const getTsVolume = (): Promise<ApiResult<All<TranslationVolumeSettings>>> => {
-	return processResponse(sendGetRequest(API_URL_TS_VOLUME), {
-		success: "Translation volumes fetched",
-		error: "Translation volumes fetching failed",
-	});
+	return processResponse(
+		sendPostRequest(API_URL_TS_VOLUME, data),
+		{
+			success: `Translation volume set: ${Object.values(volumeSettings)?.[0]}`,
+			error: "Translation volume setting failed",
+		},
+		volumeSettings
+	);
 };
 
 /**
  * POST /source/volume
  * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-sourcevolume
  */
-export const postSourceVolume = (volumeSettings: All<SourceVolumeSettings>): Promise<ApiResult> => {
+export const postSourceVolume: ApiCall<All<SourceVolumeSettings>> = (volumeSettings) => {
 	const data = {
 		volume_settings: volumeSettings,
 	};
 
-	return processResponse(sendPostRequest(API_URL_SOURCE_VOLUME, data), {
-		success: `Source volume set: ${Object.values(volumeSettings)?.[0]}`,
-		error: "Source volume setting failed",
-	});
-};
-
-/**
- * GET /source/volume
- * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#get-sourcevolume
- */
-export const getSourceVolume = (): Promise<ApiResult<All<SourceVolumeSettings>>> => {
-	return processResponse(sendGetRequest(API_URL_SOURCE_VOLUME), {
-		success: "Source volumes fetched",
-		error: "Source volumes fetching failed",
-	});
+	return processResponse(
+		sendPostRequest(API_URL_SOURCE_VOLUME, data),
+		{
+			success: `Source volume set: ${Object.values(volumeSettings)?.[0]}`,
+			error: "Source volume setting failed",
+		},
+		volumeSettings
+	);
 };
 
 /**
  * POST /filters/sidechain
  * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-filterssidechain
  */
-export const postUpdateFiltersSidechain = (sidechainSettings: All<Partial<SidechainSettings>>): Promise<ApiResult> => {
+export const postUpdateFiltersSidechain: ApiCall<All<Partial<SidechainSettings>>> = (sidechainSettings) => {
 	const data = {
 		sidechain_settings: sidechainSettings,
 	};
 
-	return processResponse(sendPostRequest(API_URL_FILTERS_SIDECHAIN, data), {
-		success: `Sidechain set: ${JSON.stringify(sidechainSettings)}`,
-		error: "Sidechain setting failed",
-	});
+	return processResponse(
+		sendPostRequest(API_URL_FILTERS_SIDECHAIN, data),
+		{
+			success: `Sidechain set: ${JSON.stringify(sidechainSettings)}`,
+			error: "Sidechain setting failed",
+		},
+		sidechainSettings
+	);
 };
 
 /**

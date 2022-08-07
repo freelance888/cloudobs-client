@@ -1,4 +1,4 @@
-import { PayloadAction } from "@reduxjs/toolkit";
+import { isRejectedWithValue, PayloadAction } from "@reduxjs/toolkit";
 import { buildUrl } from "../services/utils";
 import { HostAddress } from "./slices/environment";
 import { logMessage } from "./slices/logs";
@@ -7,8 +7,7 @@ import { AppMiddleware } from "./store";
 const isApiCallResultSuccessAction = (action: any) =>
 	action.type.startsWith("app/") && action?.meta?.requestStatus === "fulfilled";
 
-const isApiCallResultErrorAction = (action: any) =>
-	action.type.startsWith("app/") && action?.meta?.requestStatus === "rejected";
+const isApiCallResultErrorAction = (action: any) => action.type.startsWith("app/") && isRejectedWithValue(action);
 
 export const loggerMiddleware: AppMiddleware =
 	({ dispatch, getState }) =>

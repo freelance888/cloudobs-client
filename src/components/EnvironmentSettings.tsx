@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+	addVMixTriggerer,
 	removeVMixTriggerer,
 	selectHostAddress,
 	selectVMixTriggerers,
@@ -13,6 +14,7 @@ export const EnvironmentSettings: React.FC = () => {
 	const dispatch = useDispatch();
 	const [editedHostAddress, setEditedHostAddress] = useState(useSelector(selectHostAddress));
 	const vMixTriggerers = useSelector(selectVMixTriggerers);
+	const [newVMixTriggerer, setNewVMixTriggerer] = useState("");
 
 	return (
 		<>
@@ -132,6 +134,29 @@ export const EnvironmentSettings: React.FC = () => {
 						</div>
 					);
 				})}
+
+				<div className="input-group mb-3">
+					<input
+						type="text"
+						className="form-control"
+						style={{ maxWidth: "200px" }}
+						placeholder="IP address"
+						aria-label="IP address"
+						value={newVMixTriggerer}
+						onChange={(event) => setNewVMixTriggerer(event.target.value)}
+					/>
+					<button
+						className="btn btn-outline-primary"
+						type="button"
+						onClick={() => {
+							console.log("newVMixTriggerer", newVMixTriggerer);
+
+							dispatch(addVMixTriggerer(newVMixTriggerer));
+						}}
+					>
+						Add
+					</button>
+				</div>
 			</ContentPanel>
 		</>
 	);

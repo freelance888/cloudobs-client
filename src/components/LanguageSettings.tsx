@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
 	fetchLanguagesSettings,
 	selectInitialLanguagesSettingsLoaded,
+	selectInitialized,
 	selectLanguagesSettings,
 } from "../store/slices/app";
 import ContentPanel from "./ContentPanel";
@@ -14,6 +15,7 @@ const LanguageSettings = () => {
 	const dispatch = useDispatch();
 
 	const loaded = useSelector(selectInitialLanguagesSettingsLoaded);
+	const initialized = useSelector(selectInitialized);
 	const languagesSettings = useSelector(selectLanguagesSettings);
 
 	const languagesCount = useMemo(() => Object.keys(languagesSettings).length, [languagesSettings]);
@@ -29,11 +31,12 @@ const LanguageSettings = () => {
 							<i className="bi bi-arrow-clockwise" />
 							<span>Refresh</span>
 						</button>
-						<StartStopStreamingButton />
+						{initialized && <StartStopStreamingButton />}
 					</>
 				)
 			}
 			endActions={
+				initialized &&
 				languagesCount > 0 && (
 					<button
 						className="btn btn-outline-info"
@@ -53,22 +56,26 @@ const LanguageSettings = () => {
 			}
 			actionsOnTop
 		>
-			{!loaded
-				? "Loading..."
-				: Object.entries(languagesSettings).map(([language, settings]) => (
-						<Language
-							key={language}
-							language={language}
-							languageSettings={settings}
-							collapsed={collapsedStates[language]}
-							onCollapsedToggled={() => {
-								setCollapsedStates({
-									...collapsedStates,
-									[language]: !collapsedStates[language],
-								});
-							}}
-						/>
-				  ))}
+			{!initialized ? (
+				<div>Server is not initialized. Please, go to Stream Settings and initialize the server.</div>
+			) : !loaded ? (
+				"Loading..."
+			) : (
+				Object.entries(languagesSettings).map(([language, settings]) => (
+					<Language
+						key={language}
+						language={language}
+						languageSettings={settings}
+						collapsed={collapsedStates[language]}
+						onCollapsedToggled={() => {
+							setCollapsedStates({
+								...collapsedStates,
+								[language]: !collapsedStates[language],
+							});
+						}}
+					/>
+				))
+			)}
 		</ContentPanel>
 	);
 };
