@@ -106,3 +106,4 @@ dist
 .vscode
 
 build/
+docker-compose-*.yml
