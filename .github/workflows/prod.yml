@@ -14,7 +14,7 @@ on:
     types: PROD_DEPLOY
 
 env:
-    PROD_HOST: app@${{ secrets.PROD_HOST_IP }}
+    HOST: app@${{ secrets.PROD_HOST_IP }}
     PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
     ENVIRONMENT: prod
     BACKEND_PORT: 5000
