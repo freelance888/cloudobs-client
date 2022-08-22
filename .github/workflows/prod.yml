@@ -4,7 +4,8 @@ on:
   push:
     branches:
     - main
-    - feature/updating-pipeline
+  pull_request:
+    branches: main
 
 env:
     HOST: app@${{ secrets.PROD_HOST_IP }}
