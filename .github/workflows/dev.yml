@@ -7,7 +7,6 @@ on:
     - dev
     - feature/updating-pipeline
 
-
   repository_dispatch:
     types: DEV_DEPLOY
 
