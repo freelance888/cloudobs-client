@@ -1,13 +1,11 @@
-name: PROD | Build and Deploy
+name: DEV | Build and Deploy
 
 on:
   workflow_dispatch:
   push:
     branches:
-    - main
+    - dev
     - feature/updating-pipeline
-  pull_request:
-    branches: main
 
 
   repository_dispatch:
