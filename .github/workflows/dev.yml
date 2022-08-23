@@ -12,8 +12,8 @@ env:
     HOST: app@${{ secrets.DEV_HOST_IP }}
     PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
     ENVIRONMENT: dev
-    BACKEND_PORT: 5001
-    FRONTEND_PORT: 3001
+    BACKEND_PORT: 5010
+    FRONTEND_PORT: 3010
 
 jobs:
 
