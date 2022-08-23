@@ -41,6 +41,11 @@ export type InitialSettings = {
 	original_media_url: string;
 };
 
+export type SheetInitialSettings = {
+	sheetUrl: string;
+	worksheetName: string;
+};
+
 export type StreamParametersSettings = {
 	streamActive: boolean;
 	sourceVolume: number;

@@ -1,9 +1,32 @@
 import { HostAddress } from "../store/slices/environment";
 import store from "../store/store";
 
-export const buildUrl = (hostAddress: HostAddress, urlPath?: string, params?: string) => {
-	const { protocol, ipAddress, port } = hostAddress;
-	return `${protocol}://${ipAddress}:${port}${urlPath || ""}${params || ""}`;
+export const buildHostBaseAddress = (hostAddress: HostAddress): string => {
+	const { protocol, ipAddress, port, useLocalhost } = hostAddress;
+
+	const hostname = useLocalhost ? window.location.hostname : ipAddress;
+	return `${protocol}://${hostname}:${port}`;
+};
+
+export const buildUrl = (hostAddress: HostAddress, urlPath?: string, params?: Record<string, unknown>) => {
+	const baseAddress: string = buildHostBaseAddress(hostAddress);
+
+	if (urlPath) {
+		let queryString = "";
+
+		if (params) {
+			const queryParamsData: Record<string, string> = Object.keys(params).reduce((obj, key) => {
+				obj[key] = JSON.stringify(params[key]);
+				return obj;
+			}, {});
+
+			queryString = "?" + new URLSearchParams(queryParamsData).toString();
+		}
+
+		return new URL(`${urlPath}${queryString}`, baseAddress).toString();
+	}
+
+	return baseAddress;
 };
 
 const setUpTimeout = (timeoutMs: number = 8000): { signal: AbortSignal; clearTimeout: () => void } => {
@@ -37,13 +60,7 @@ export const sendPostRequest: (
 
 	console.debug("-> POST", url, data, hostAddress);
 
-	let params = "";
-	if (data) {
-		const key = Object.keys(data)?.[0];
-		params = `?${key}=${JSON.stringify(data[key])}`;
-	}
-
-	const response = await fetch(`${buildUrl(hostAddress, url, params)}`, {
+	const response = await fetch(`${buildUrl(hostAddress, url, data)}`, {
 		method: "POST",
 		signal,
 	});

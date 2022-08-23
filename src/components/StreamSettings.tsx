@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { cleanup, initializeV2, selectActiveRequest } from "../store/slices/app";
+import { cleanup, initialize, selectActiveRequest } from "../store/slices/app";
 import ContentPanel from "./ContentPanel";
 
 export const StreamSettings: React.FC = () => {
@@ -20,7 +20,7 @@ export const StreamSettings: React.FC = () => {
 				<button
 					className="btn btn-primary"
 					disabled={activeRequest === "postInit"}
-					onClick={() => dispatch(initializeV2({ sheetUrl, worksheetName }) as any)}
+					onClick={() => dispatch(initialize({ sheetUrl, worksheetName }) as any)}
 				>
 					<i className={activeRequest === "postInit" ? "bi bi-arrow-clockwise spin" : "bi  bi-cloud-arrow-up"} />
 					<span>Init</span>

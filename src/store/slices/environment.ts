@@ -1,10 +1,12 @@
 import { createSelector, createSlice, PayloadAction, Selector } from "@reduxjs/toolkit";
+import { generateId } from "../../utils/generateId";
 import { RootState } from "../store";
 
 export type HostAddress = {
 	protocol: string;
 	ipAddress: string;
 	port: string;
+	useLocalhost: boolean;
 };
 
 export type VMixTriggerer = {
@@ -22,8 +24,9 @@ export const LS_KEY_HOST_ADDRESS = "cloudobs__host_address";
 
 export const DEFAULT_HOST_ADDRESS: HostAddress = {
 	protocol: "http",
-	ipAddress: "localhost",
+	ipAddress: window.location.hostname,
 	port: "5000",
+	useLocalhost: true,
 };
 
 const loadHostAddress = () => {
@@ -34,18 +37,7 @@ const loadHostAddress = () => {
 
 const initialState: AppState = {
 	hostAddress: loadHostAddress(),
-	vMixTriggerers: [
-		{
-			id: "1",
-			ipAddress: "0.0.1.0",
-			active: false,
-		},
-		{
-			id: "2",
-			ipAddress: "0.0.2.0",
-			active: false,
-		},
-	],
+	vMixTriggerers: [],
 };
 
 const { actions, reducer } = createSlice({
@@ -56,11 +48,21 @@ const { actions, reducer } = createSlice({
 			localStorage.setItem(LS_KEY_HOST_ADDRESS, JSON.stringify(payload));
 			state.hostAddress = payload;
 		},
-		addVMixTriggerer(state, { payload }) {
-			state.vMixTriggerers.push(payload);
+		addVMixTriggerer(state, { payload }: PayloadAction<string>) {
+			const vMixTriggerer: VMixTriggerer = {
+				id: generateId(),
+				ipAddress: payload,
+				active: false,
+			};
+			state.vMixTriggerers.push(vMixTriggerer);
 		},
 		removeVMixTriggerer(state, { payload }: PayloadAction<string>) {
 			state.vMixTriggerers = state.vMixTriggerers.filter((triggerer) => triggerer.id !== payload);
+			if (state.vMixTriggerers.every((vMixTriggerer) => vMixTriggerer.active === false)) {
+				if (state.vMixTriggerers.length > 0) {
+					state.vMixTriggerers[0].active = true;
+				}
+			}
 		},
 		setActiveVMixTriggerer(state, { payload }: PayloadAction<string>) {
 			for (let i = 0; i < state.vMixTriggerers.length; i++) {
