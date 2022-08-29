@@ -17,6 +17,7 @@ import {
 	TranslationOffsetSettings,
 	TranslationVolumeSettings,
 	VideoSchedule,
+	VMixPlayers,
 } from "./types";
 import { sendGetRequest, sendPostRequest } from "./utils";
 
@@ -34,6 +35,8 @@ const API_URL_SOURCE_VOLUME = "/source/volume";
 const API_URL_FILTERS_SIDECHAIN = "/filters/sidechain";
 const API_URL_TRANSITION = "/transition";
 const API_URL_GDRIVE_SYNC = "/gdrive/sync";
+const API_URL_VMIX_PLAYERS = "/vmix/players";
+const API_URL_VMIX_PLAYERS_ACTIVE = "/vmix/players/active";
 
 export type ApiResult<T extends {} = {}> = {
 	status: "success" | "error";
@@ -318,4 +321,48 @@ export const postMediaSchedule = (videoSchedule: VideoSchedule): Promise<ApiResu
 		success: "Media schedule set",
 		error: "Media schedule setting failed",
 	});
+};
+
+export const getVMixPlayers = (): Promise<ApiResult<VMixPlayers>> => {
+	return processResponse(sendGetRequest(API_URL_VMIX_PLAYERS), {
+		success: "vMix players fetched",
+		error: "vMix players fetching failed",
+	});
+};
+
+export const postVMixPlayers = (vMixPlayers: string[]): Promise<ApiResult<string[]>> => {
+	const data = {
+		ip_list: vMixPlayers,
+	};
+
+	return processResponse(
+		sendPostRequest(API_URL_VMIX_PLAYERS, data),
+		{
+			success: "vMix players set",
+			error: "vMix players setting failed",
+		},
+		vMixPlayers
+	);
+};
+
+export const getVMixPlayersActive = (): Promise<ApiResult<string | "*">> => {
+	return processResponse(sendGetRequest(API_URL_VMIX_PLAYERS_ACTIVE), {
+		success: "Active vMix player fetched",
+		error: "Active vMix player fetching failed",
+	});
+};
+
+export const postVMixPlayersActive = (vMixPlayer: string | "*"): Promise<ApiResult<string | "*">> => {
+	const data = {
+		ip: vMixPlayer,
+	};
+
+	return processResponse(
+		sendPostRequest(API_URL_VMIX_PLAYERS_ACTIVE, data, undefined, true),
+		{
+			success: "vMix players set",
+			error: "vMix players setting failed",
+		},
+		vMixPlayer
+	);
 };

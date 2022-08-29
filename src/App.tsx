@@ -11,6 +11,7 @@ import { Route, Routes } from "react-router-dom";
 import NavigationBar from "./components/NavigationBar";
 import EnvironmentSettings from "./components/EnvironmentSettings";
 import AppLogs from "./components/Logs";
+import { fetchVMixPlayers } from "./store/slices/environment";
 
 export const MIN_TS_OFFSET = 0;
 export const MAX_TS_OFFSET = 20000;
@@ -29,6 +30,7 @@ const App: React.FC = () => {
 
 	useEffect(() => {
 		dispatch(fetchLanguagesSettings() as any);
+		dispatch(fetchVMixPlayers() as any);
 	}, [dispatch]);
 
 	if (!loaded) {

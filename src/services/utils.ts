@@ -8,7 +8,12 @@ export const buildHostBaseAddress = (hostAddress: HostAddress): string => {
 	return `${protocol}://${hostname}:${port}`;
 };
 
-export const buildUrl = (hostAddress: HostAddress, urlPath?: string, params?: Record<string, unknown>) => {
+export const buildUrl = (
+	hostAddress: HostAddress,
+	urlPath?: string,
+	params?: Record<string, unknown>,
+	dontJsonEncode?: boolean
+) => {
 	const baseAddress: string = buildHostBaseAddress(hostAddress);
 
 	if (urlPath) {
@@ -16,7 +21,11 @@ export const buildUrl = (hostAddress: HostAddress, urlPath?: string, params?: Re
 
 		if (params) {
 			const queryParamsData: Record<string, string> = Object.keys(params).reduce((obj, key) => {
-				obj[key] = JSON.stringify(params[key]);
+				if (dontJsonEncode) {
+					obj[key] = params[key];
+				} else {
+					obj[key] = JSON.stringify(params[key]);
+				}
 				return obj;
 			}, {});
 
@@ -53,14 +62,15 @@ export const sendGetRequest: (url: string, timeoutMs?: number) => Promise<Respon
 export const sendPostRequest: (
 	url: string,
 	data?: Record<string, unknown>,
-	timeoutMs?: number
-) => Promise<Response> = async (url, data, timeoutMs) => {
+	timeoutMs?: number,
+	dontJsonEncode?: boolean
+) => Promise<Response> = async (url, data, timeoutMs, dontJsonEncode) => {
 	const hostAddress = store.getState().environment.hostAddress;
 	const { signal, clearTimeout } = setUpTimeout(timeoutMs);
 
 	console.debug("-> POST", url, data, hostAddress);
 
-	const response = await fetch(`${buildUrl(hostAddress, url, data)}`, {
+	const response = await fetch(`${buildUrl(hostAddress, url, data, dontJsonEncode)}`, {
 		method: "POST",
 		signal,
 	});

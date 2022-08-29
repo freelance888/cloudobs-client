@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-	addVMixTriggerer,
-	removeVMixTriggerer,
+	initializeVMixPlayers,
 	selectHostAddress,
-	selectVMixTriggerers,
-	setActiveVMixTriggerer,
+	selectVMixPlayers,
+	setVMixPlayerActive,
 	updateHostAddress,
 } from "../store/slices/environment";
 import ContentPanel from "./ContentPanel";
@@ -13,8 +12,10 @@ import ContentPanel from "./ContentPanel";
 export const EnvironmentSettings: React.FC = () => {
 	const dispatch = useDispatch();
 	const [editedHostAddress, setEditedHostAddress] = useState(useSelector(selectHostAddress));
-	const vMixTriggerers = useSelector(selectVMixTriggerers);
-	const [newVMixTriggerer, setNewVMixTriggerer] = useState("");
+	const vMixPlayers = useSelector(selectVMixPlayers);
+	const [newVMixPlayer, setNewVMixPlayer] = useState("");
+
+	const allActive = Object.keys(vMixPlayers).every((ip) => !!vMixPlayers[ip]);
 
 	return (
 		<>
@@ -105,32 +106,39 @@ export const EnvironmentSettings: React.FC = () => {
 			</ContentPanel>
 			<ContentPanel>
 				<label htmlFor="vmix-triggerers" className="form-label">
-					vMix triggerers
+					vMix players
 				</label>
-				{vMixTriggerers.map((vMixTriggerer) => {
+
+				<div className="input-group mb-1">
+					<div className="input-group-text">
+						<input
+							className="form-check-input mt-0"
+							type="radio"
+							checked={allActive}
+							onChange={() => dispatch(setVMixPlayerActive("*") as any)}
+							aria-label="Radio button for following text input"
+						/>
+					</div>
+					<div className="form-control" style={{ maxWidth: "160px" }}>
+						All active
+					</div>
+				</div>
+
+				{Object.keys(vMixPlayers).map((ip) => {
 					return (
-						<div className="input-group mb-3" key={vMixTriggerer.id}>
+						<div className="input-group mb-1" key={ip}>
 							<div className="input-group-text">
 								<input
 									className="form-check-input mt-0"
 									type="radio"
-									checked={vMixTriggerer.active}
-									onChange={() => dispatch(setActiveVMixTriggerer(vMixTriggerer.id))}
+									checked={vMixPlayers[ip] && !allActive}
+									onChange={() => dispatch(setVMixPlayerActive(ip) as any)}
 									aria-label="Radio button for following text input"
 								/>
 							</div>
 							<div className="form-control" style={{ maxWidth: "160px" }}>
-								{vMixTriggerer.ipAddress}
+								{ip}
 							</div>
-							<button
-								className="btn btn-outline-danger"
-								type="button"
-								onClick={() => {
-									dispatch(removeVMixTriggerer(vMixTriggerer.id));
-								}}
-							>
-								<i className="bi bi-trash" />
-							</button>
 						</div>
 					);
 				})}
@@ -142,16 +150,16 @@ export const EnvironmentSettings: React.FC = () => {
 						style={{ maxWidth: "200px" }}
 						placeholder="IP address"
 						aria-label="IP address"
-						value={newVMixTriggerer}
-						onChange={(event) => setNewVMixTriggerer(event.target.value)}
+						value={newVMixPlayer}
+						onChange={(event) => setNewVMixPlayer(event.target.value)}
 					/>
 					<button
 						className="btn btn-outline-primary"
 						type="button"
 						onClick={() => {
-							console.log("newVMixTriggerer", newVMixTriggerer);
+							console.log("newVMixTriggerer", newVMixPlayer);
 
-							dispatch(addVMixTriggerer(newVMixTriggerer));
+							dispatch(initializeVMixPlayers([...Object.keys(vMixPlayers), newVMixPlayer]) as any);
 						}}
 					>
 						Add

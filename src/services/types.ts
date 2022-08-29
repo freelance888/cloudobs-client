@@ -101,6 +101,8 @@ export type VideoRecord = {
 
 export type VideoSchedule = VideoRecord[];
 
+export type VMixPlayers = Record<string, boolean>;
+
 const getAllSettings = <T extends AnySettings>(
 	languagesSettings: LanguagesSettings,
 	parameter: keyof LanguageSettings
