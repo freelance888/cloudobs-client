@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction, Selector } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { generateId } from "../../utils/generateId";
-import { RootState } from "../store";
+import { RootSelector } from "../store";
 
 type LogMessageSeverity = "success" | "error" | "warn" | "log";
 
@@ -54,6 +54,6 @@ const { actions, reducer } = createSlice({
 
 export const { logMessage } = actions;
 
-export const selectLogMessages: Selector<RootState, LogMessage[]> = ({ logs }) => logs.messages;
+export const selectLogMessages: RootSelector<LogMessage[]> = ({ logs }) => logs.messages;
 
 export default reducer;

@@ -8,7 +8,7 @@ import {
 	setMediaSchedule,
 	stopMedia,
 	updateMedia,
-} from "../../../store/slices/app";
+} from "../../../store/slices/media-schedule";
 import ContentPanel from "../../ContentPanel";
 
 export const MediaScheduleSettings = () => {

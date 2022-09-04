@@ -21,7 +21,7 @@ const getHostAddress = (): HostAddress => {
 };
 
 export const sendRequest: <T extends {} = {}>(options: RequestOptions<T>) => Promise<ApiResult<T>> = async ({
-	method,
+	method = "GET",
 	url,
 	messages,
 	data,

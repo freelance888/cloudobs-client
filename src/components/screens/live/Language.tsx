@@ -1,14 +1,5 @@
 import classNames from "classnames";
 import { useDispatch, useSelector } from "react-redux";
-import {
-	MIN_SOURCE_VOLUME,
-	MAX_SOURCE_VOLUME,
-	MIN_TS_VOLUME,
-	MAX_TS_VOLUME,
-	MIN_TS_OFFSET,
-	MAX_TS_OFFSET,
-	TS_OFFSET_STEP,
-} from "../../../App";
 import { LanguageSettings } from "../../../services/types";
 import {
 	selectSyncedParameters,
@@ -21,6 +12,16 @@ import {
 import EditableStreamDestinationSettings from "./EditableStreamDestinationSettings";
 import RangeInput from "./RangeInput";
 import StreamActiveToggle from "./StreamActiveToggle";
+
+const MIN_TS_OFFSET = 0;
+const MAX_TS_OFFSET = 20000;
+const TS_OFFSET_STEP = 500;
+
+const MIN_TS_VOLUME = -100;
+const MAX_TS_VOLUME = 0;
+
+const MIN_SOURCE_VOLUME = -100;
+const MAX_SOURCE_VOLUME = 0;
 
 export type LanguageProps = {
 	language: string;

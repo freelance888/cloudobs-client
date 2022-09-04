@@ -1,4 +1,4 @@
-import { AsyncThunk, createAsyncThunk, createSlice, PayloadAction, Selector } from "@reduxjs/toolkit";
+import { AsyncThunk, createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import * as ApiService from "../../services/api/index";
 import { ApiResult } from "../../services/api/types";
 import { EMPTY_LANGUAGE_SETTINGS } from "../../services/emptyData";
@@ -7,9 +7,7 @@ import {
 	getAllGDriveSettings,
 	GlobalSettings,
 	LanguagesSettings,
-	MediaPlaySettings,
 	MediaSchedule,
-	NewMediaSchedule,
 	SheetInitialSettings,
 	SidechainSettings,
 	SourceVolumeSettings,
@@ -18,9 +16,8 @@ import {
 	SyncableSettingsFlags,
 	TranslationOffsetSettings,
 	TranslationVolumeSettings,
-	UpdatedMediaScheduleItem,
 } from "../../services/types";
-import { RootState } from "../store";
+import { RootSelector, RootState } from "../store";
 
 export type HostAddress = {
 	protocol: string;
@@ -37,7 +34,6 @@ type AppState = {
 	activeRequest: ActiveRequest | null;
 	syncedParameters: SyncableSettingsFlags;
 	languagesSettings: LanguagesSettings;
-	mediaSchedule: MediaSchedule;
 };
 
 const initialState: AppState = {
@@ -55,7 +51,6 @@ const initialState: AppState = {
 		output_gain: false,
 	},
 	languagesSettings: {},
-	mediaSchedule: {},
 };
 
 const getAllLanguages: (state: RootState) => string[] = (state) => {
@@ -272,76 +267,6 @@ export const setSidechain: AsyncThunk<
 	}
 );
 
-export const setMediaSchedule: AsyncThunk<void, NewMediaSchedule, { state: RootState }> = createAsyncThunk<
-	void,
-	NewMediaSchedule,
-	{ state: RootState }
->("app/setMediaSchedule", async (videoSchedule, { dispatch, rejectWithValue }) => {
-	const result = await ApiService.postMediaSchedule(videoSchedule);
-
-	if (result.status === "error") {
-		return rejectWithValue(result.message);
-	}
-
-	dispatch(fetchMediaSchedule());
-});
-
-export const updateMedia: AsyncThunk<void, UpdatedMediaScheduleItem, { state: RootState }> = createAsyncThunk<
-	void,
-	UpdatedMediaScheduleItem,
-	{ state: RootState }
->("app/updateMedia", async (mediaScheduleItem, { dispatch, rejectWithValue }) => {
-	const result = await ApiService.putMediaSchedule(mediaScheduleItem);
-
-	if (result.status === "error") {
-		return rejectWithValue(result.message);
-	}
-
-	dispatch(fetchMediaSchedule());
-});
-
-export const resetMediaSchedule: AsyncThunk<void, never, { state: RootState }> = createAsyncThunk<
-	void,
-	never,
-	{ state: RootState }
->("app/resetMediaSchedule", async (ignored, { dispatch, rejectWithValue }) => {
-	const result = await ApiService.deleteMediaSchedule();
-
-	if (result.status === "error") {
-		return rejectWithValue(result.message);
-	}
-
-	dispatch(fetchMediaSchedule());
-});
-
-export const playMedia: AsyncThunk<string, string, { state: RootState }> = createAsyncThunk<
-	string,
-	string,
-	{ state: RootState }
->("app/playMedia", async (videoName, { rejectWithValue }) => {
-	const mediaPlaySettings: All<MediaPlaySettings> = { __all__: { name: videoName, search_by_num: 0 } };
-
-	const result = await ApiService.postMediaPlay(mediaPlaySettings);
-
-	if (result.status === "error") {
-		return rejectWithValue(result.message);
-	}
-
-	return videoName;
-});
-
-export const stopMedia: AsyncThunk<void, void, { state: RootState }> = createAsyncThunk<
-	void,
-	void,
-	{ state: RootState }
->("app/playMedia", async (ignored, { rejectWithValue }) => {
-	const result = await ApiService.deleteMediaPlay();
-
-	if (result.status === "error") {
-		return rejectWithValue(result.message);
-	}
-});
-
 export const syncGoogleDrive: AsyncThunk<void, void, { state: RootState }> = createAsyncThunk<
 	void,
 	void,
@@ -480,30 +405,20 @@ const { actions, reducer } = createSlice({
 						...updatedSidechainSettings,
 					};
 				}
-			})
-			.addCase(playMedia.fulfilled, (state, { payload }) => {
-				const videoIndex = Object.values(state.mediaSchedule).findIndex(({ name }) => name === payload);
-				state.mediaSchedule[videoIndex].is_played = true;
-			})
-			.addCase(fetchMediaSchedule.fulfilled, (state, { payload }) => {
-				const mediaSchedule = payload.data as MediaSchedule;
-				state.mediaSchedule = mediaSchedule;
 			}),
 });
 
 export const { updateActiveRequest, updateSyncedParameters } = actions;
 
-export const selectInitialized: Selector<RootState, boolean> = ({ app }) => app.initialized;
+export const selectInitialized: RootSelector<boolean> = ({ app }) => app.initialized;
 
-export const selectInitialLanguagesSettingsLoaded: Selector<RootState, boolean> = ({ app }) =>
+export const selectInitialLanguagesSettingsLoaded: RootSelector<boolean> = ({ app }) =>
 	app.initialLanguageSettingsLoaded;
 
-export const selectActiveRequest: Selector<RootState, ActiveRequest | null> = ({ app }) => app.activeRequest;
+export const selectActiveRequest: RootSelector<ActiveRequest | null> = ({ app }) => app.activeRequest;
 
-export const selectSyncedParameters: Selector<RootState, SyncableSettingsFlags> = ({ app }) => app.syncedParameters;
+export const selectSyncedParameters: RootSelector<SyncableSettingsFlags> = ({ app }) => app.syncedParameters;
 
-export const selectLanguagesSettings: Selector<RootState, LanguagesSettings> = ({ app }) => app.languagesSettings;
-
-export const selectMediaSchedule: Selector<RootState, MediaSchedule> = ({ app }) => app.mediaSchedule;
+export const selectLanguagesSettings: RootSelector<LanguagesSettings> = ({ app }) => app.languagesSettings;
 
 export default reducer;
