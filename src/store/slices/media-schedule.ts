@@ -1,14 +1,17 @@
 import { AsyncThunk, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import * as ApiService from "../../services/api/index";
+import { ApiResult } from "../../services/api/types";
+import { createApiResult } from "../../services/api/utils";
 import {
 	All,
 	MediaPlaySettings,
 	MediaSchedule,
+	MediaScheduleItem,
 	NewMediaSchedule,
 	UpdatedMediaScheduleItem,
 } from "../../services/types";
+import { generateId } from "../../utils/generateId";
 import { RootSelector, RootState } from "../store";
-import { fetchMediaSchedule } from "./app";
 
 type MediaScheduleState = {
 	mediaSchedule: MediaSchedule;
@@ -17,6 +20,44 @@ type MediaScheduleState = {
 const initialState: MediaScheduleState = {
 	mediaSchedule: {},
 };
+
+export const fetchMediaSchedule: AsyncThunk<ApiResult<MediaSchedule>, void, { state: RootState }> = createAsyncThunk<
+	ApiResult<MediaSchedule>,
+	void,
+	{ state: RootState }
+>("app/fetchMediaSchedule", async (_, { rejectWithValue }) => {
+	const result = await ApiService.getMediaSchedule();
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
+
+	if (result.data && Object.keys(result.data).length === 0) {
+		const gdriveFilesResult = await ApiService.getGDriveFiles(0);
+
+		console.log("# gdriveFilesResult.data?.__all__", gdriveFilesResult.data?.__all__);
+
+		const newMediaSchedule: MediaSchedule = {};
+
+		gdriveFilesResult.data?.__all__.forEach((gdriveFile) => {
+			const [name] = gdriveFile;
+
+			const id = generateId();
+			console.log("# gdriveFile", id, name);
+
+			newMediaSchedule[generateId()] = {
+				name,
+				timestamp: String(0),
+				is_enabled: true,
+				is_played: false,
+			};
+		});
+
+		return createApiResult(newMediaSchedule);
+	}
+
+	return result;
+});
 
 export const setMediaSchedule: AsyncThunk<void, NewMediaSchedule, { state: RootState }> = createAsyncThunk<
 	void,
@@ -60,27 +101,27 @@ export const resetMediaSchedule: AsyncThunk<void, never, { state: RootState }> =
 	dispatch(fetchMediaSchedule());
 });
 
-export const playMedia: AsyncThunk<string, string, { state: RootState }> = createAsyncThunk<
-	string,
-	string,
+export const playMedia: AsyncThunk<void, MediaScheduleItem, { state: RootState }> = createAsyncThunk<
+	void,
+	MediaScheduleItem,
 	{ state: RootState }
->("app/playMedia", async (videoName, { rejectWithValue }) => {
-	const mediaPlaySettings: All<MediaPlaySettings> = { __all__: { name: videoName, search_by_num: 0 } };
+>("app/playMedia", async (mediaScheduleItem, { rejectWithValue }) => {
+	const mediaNamePrefix = mediaScheduleItem.name.split(/^([0-9]+)_.+/)[1];
+
+	const mediaPlaySettings: All<MediaPlaySettings> = { __all__: { name: mediaNamePrefix, search_by_num: 1 } };
 
 	const result = await ApiService.postMediaPlay(mediaPlaySettings);
 
 	if (result.status === "error") {
 		return rejectWithValue(result.message);
 	}
-
-	return videoName;
 });
 
 export const stopMedia: AsyncThunk<void, void, { state: RootState }> = createAsyncThunk<
 	void,
 	void,
 	{ state: RootState }
->("app/playMedia", async (ignored, { rejectWithValue }) => {
+>("app/stopMedia", async (ignored, { rejectWithValue }) => {
 	const result = await ApiService.deleteMediaPlay();
 
 	if (result.status === "error") {
@@ -93,15 +134,14 @@ const { reducer } = createSlice({
 	initialState,
 	reducers: {},
 	extraReducers: (builder) =>
-		builder
-			.addCase(playMedia.fulfilled, (state, { payload }) => {
-				const videoIndex = Object.values(state.mediaSchedule).findIndex(({ name }) => name === payload);
-				state.mediaSchedule[videoIndex].is_played = true;
-			})
-			.addCase(fetchMediaSchedule.fulfilled, (state, { payload }) => {
-				const mediaSchedule = payload.data as MediaSchedule;
-				state.mediaSchedule = mediaSchedule;
-			}),
+		builder.addCase(fetchMediaSchedule.fulfilled, (state, { payload }) => {
+			const mediaSchedule = payload.data as MediaSchedule;
+			state.mediaSchedule = mediaSchedule;
+		}),
+	// .addCase(playMedia.fulfilled, (state, { payload }) => {
+	// 	const videoIndex = Object.values(state.mediaSchedule).findIndex(({ name }) => name === payload);
+	// 	state.mediaSchedule[videoIndex].is_played = true;
+	// }),
 });
 
 export const selectMediaSchedule: RootSelector<MediaSchedule> = ({ mediaSchedule }) => mediaSchedule.mediaSchedule;

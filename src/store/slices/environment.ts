@@ -11,7 +11,7 @@ export type HostAddress = {
 	useLocalhost: boolean;
 };
 
-type AppState = {
+type EnvironmentState = {
 	hostAddress: HostAddress;
 	vMixPlayers: VMixPlayer[];
 };
@@ -91,7 +91,7 @@ export const setVMixPlayerActive: AsyncThunk<ApiResult, string, { state: RootSta
 	return result;
 });
 
-const initialState: AppState = {
+const initialState: EnvironmentState = {
 	hostAddress: loadHostAddress(),
 	vMixPlayers: [],
 };

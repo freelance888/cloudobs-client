@@ -107,7 +107,7 @@ export const MediaScheduleSettings = () => {
 												type="button"
 												title="Play now"
 												onClick={() => {
-													dispatch(playMedia(name) as any);
+													dispatch(playMedia(item) as any);
 												}}
 											>
 												<i className="bi bi-play-fill me-1" />
