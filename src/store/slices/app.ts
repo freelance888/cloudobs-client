@@ -1,6 +1,6 @@
 import { AsyncThunk, createAsyncThunk, createSlice, PayloadAction, Selector } from "@reduxjs/toolkit";
-import * as ApiService from "../../services/api";
-import { ApiResult } from "../../services/api";
+import * as ApiService from "../../services/api/index";
+import { ApiResult } from "../../services/api/types";
 import { EMPTY_LANGUAGE_SETTINGS } from "../../services/emptyData";
 import {
 	All,
@@ -8,6 +8,8 @@ import {
 	GlobalSettings,
 	LanguagesSettings,
 	MediaPlaySettings,
+	MediaSchedule,
+	NewMediaSchedule,
 	SheetInitialSettings,
 	SidechainSettings,
 	SourceVolumeSettings,
@@ -16,7 +18,7 @@ import {
 	SyncableSettingsFlags,
 	TranslationOffsetSettings,
 	TranslationVolumeSettings,
-	VideoSchedule,
+	UpdatedMediaScheduleItem,
 } from "../../services/types";
 import { RootState } from "../store";
 
@@ -35,7 +37,7 @@ type AppState = {
 	activeRequest: ActiveRequest | null;
 	syncedParameters: SyncableSettingsFlags;
 	languagesSettings: LanguagesSettings;
-	videoSchedule: VideoSchedule;
+	mediaSchedule: MediaSchedule;
 };
 
 const initialState: AppState = {
@@ -53,7 +55,7 @@ const initialState: AppState = {
 		output_gain: false,
 	},
 	languagesSettings: {},
-	videoSchedule: [],
+	mediaSchedule: {},
 };
 
 const getAllLanguages: (state: RootState) => string[] = (state) => {
@@ -270,18 +272,46 @@ export const setSidechain: AsyncThunk<
 	}
 );
 
-export const setVideoSchedule: AsyncThunk<VideoSchedule, VideoSchedule, { state: RootState }> = createAsyncThunk<
-	VideoSchedule,
-	VideoSchedule,
+export const setMediaSchedule: AsyncThunk<void, NewMediaSchedule, { state: RootState }> = createAsyncThunk<
+	void,
+	NewMediaSchedule,
 	{ state: RootState }
->("app/setVideoSchedule", async (videoSchedule, { rejectWithValue }) => {
+>("app/setMediaSchedule", async (videoSchedule, { dispatch, rejectWithValue }) => {
 	const result = await ApiService.postMediaSchedule(videoSchedule);
 
 	if (result.status === "error") {
 		return rejectWithValue(result.message);
 	}
 
-	return videoSchedule;
+	dispatch(fetchMediaSchedule());
+});
+
+export const updateMedia: AsyncThunk<void, UpdatedMediaScheduleItem, { state: RootState }> = createAsyncThunk<
+	void,
+	UpdatedMediaScheduleItem,
+	{ state: RootState }
+>("app/updateMedia", async (mediaScheduleItem, { dispatch, rejectWithValue }) => {
+	const result = await ApiService.putMediaSchedule(mediaScheduleItem);
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
+
+	dispatch(fetchMediaSchedule());
+});
+
+export const resetMediaSchedule: AsyncThunk<void, never, { state: RootState }> = createAsyncThunk<
+	void,
+	never,
+	{ state: RootState }
+>("app/resetMediaSchedule", async (ignored, { dispatch, rejectWithValue }) => {
+	const result = await ApiService.deleteMediaSchedule();
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
+
+	dispatch(fetchMediaSchedule());
 });
 
 export const playMedia: AsyncThunk<string, string, { state: RootState }> = createAsyncThunk<
@@ -300,6 +330,18 @@ export const playMedia: AsyncThunk<string, string, { state: RootState }> = creat
 	return videoName;
 });
 
+export const stopMedia: AsyncThunk<void, void, { state: RootState }> = createAsyncThunk<
+	void,
+	void,
+	{ state: RootState }
+>("app/playMedia", async (ignored, { rejectWithValue }) => {
+	const result = await ApiService.deleteMediaPlay();
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
+});
+
 export const syncGoogleDrive: AsyncThunk<void, void, { state: RootState }> = createAsyncThunk<
 	void,
 	void,
@@ -313,6 +355,20 @@ export const syncGoogleDrive: AsyncThunk<void, void, { state: RootState }> = cre
 	if (result.status === "error") {
 		return rejectWithValue(result.message);
 	}
+});
+
+export const fetchMediaSchedule: AsyncThunk<ApiResult<MediaSchedule>, void, { state: RootState }> = createAsyncThunk<
+	ApiResult<MediaSchedule>,
+	void,
+	{ state: RootState }
+>("app/fetchMediaSchedule", async (_, { rejectWithValue }) => {
+	const result = await ApiService.getMediaSchedule();
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
+
+	return result;
 });
 
 const { actions, reducer } = createSlice({
@@ -371,9 +427,6 @@ const { actions, reducer } = createSlice({
 				}
 				state.initialLanguageSettingsLoaded = true;
 			})
-			.addCase(fetchLanguagesSettings.rejected, (state, action) => {
-				// console.log("# Rejectect:", action.payload);
-			})
 			.addCase(cleanup.pending, (state) => {
 				state.activeRequest = "postCleanup";
 			})
@@ -429,12 +482,13 @@ const { actions, reducer } = createSlice({
 					};
 				}
 			})
-			.addCase(setVideoSchedule.fulfilled, (state, { payload }) => {
-				state.videoSchedule = payload;
-			})
 			.addCase(playMedia.fulfilled, (state, { payload }) => {
-				const videoIndex = state.videoSchedule.findIndex((videoRecord) => videoRecord.name === payload);
-				state.videoSchedule[videoIndex].alreadyPlayed = true;
+				const videoIndex = Object.values(state.mediaSchedule).findIndex(({ name }) => name === payload);
+				state.mediaSchedule[videoIndex].is_played = true;
+			})
+			.addCase(fetchMediaSchedule.fulfilled, (state, { payload }) => {
+				const mediaSchedule = payload.data as MediaSchedule;
+				state.mediaSchedule = mediaSchedule;
 			}),
 });
 
@@ -451,6 +505,6 @@ export const selectSyncedParameters: Selector<RootState, SyncableSettingsFlags> 
 
 export const selectLanguagesSettings: Selector<RootState, LanguagesSettings> = ({ app }) => app.languagesSettings;
 
-export const selectVideoSchedule: Selector<RootState, VideoSchedule> = ({ app }) => app.videoSchedule;
+export const selectMediaSchedule: Selector<RootState, MediaSchedule> = ({ app }) => app.mediaSchedule;
 
 export default reducer;

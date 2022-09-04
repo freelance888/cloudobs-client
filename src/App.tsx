@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import LanguageSettings from "./components/LanguageSettings";
 import StatusBar from "./components/StatusBar";
-import StreamSettings from "./components/StreamSettings";
+import InitializationSettings from "./components/InitializationSettings";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchLanguagesSettings, selectInitialLanguagesSettingsLoaded } from "./store/slices/app";
+import { fetchLanguagesSettings, fetchMediaSchedule, selectInitialLanguagesSettingsLoaded } from "./store/slices/app";
 import VideoSchedule from "./components/VideoSchedule";
 
 import "./App.css";
@@ -30,6 +30,7 @@ const App: React.FC = () => {
 
 	useEffect(() => {
 		dispatch(fetchLanguagesSettings() as any);
+		dispatch(fetchMediaSchedule() as any);
 		dispatch(fetchVMixPlayers() as any);
 	}, [dispatch]);
 
@@ -43,7 +44,7 @@ const App: React.FC = () => {
 
 			<Routes>
 				<Route path="/" element={<LanguageSettings />} />
-				<Route path="/settings" element={<StreamSettings />} />
+				<Route path="/settings" element={<InitializationSettings />} />
 				<Route path="/videos" element={<VideoSchedule />} />
 				<Route path="/environment" element={<EnvironmentSettings />} />
 				<Route path="/logs" element={<AppLogs />} />

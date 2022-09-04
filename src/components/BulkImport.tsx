@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { VideoSchedule } from "../services/types";
+import { MediaSchedule } from "../services/types";
+// import { MediaSchedule } from "../services/types";
 
 type Props = {
-	onImport: (videoSchedule: VideoSchedule) => void;
+	onImport: (videoSchedule: MediaSchedule) => void;
 	onGoBackClicked: () => void;
 };
 
-const BulkImport: React.FC<Props> = ({ onImport, onGoBackClicked }: Props) => {
+const BulkImport: React.FC<Props> = ({ onGoBackClicked }: Props) => {
 	const [textareaText, setTextareaText] = useState("");
 
 	return (
@@ -26,23 +27,20 @@ const BulkImport: React.FC<Props> = ({ onImport, onGoBackClicked }: Props) => {
 					className="btn btn-primary"
 					disabled={textareaText.trim().length === 0}
 					onClick={async () => {
-						if (textareaText.length === 0) {
-							return;
-						}
-
-						const lines = textareaText.split("\n");
-
-						const videoSchedule: VideoSchedule = lines.map((line) => {
-							const [name, secondsFromStart] = line.trim().split("\t");
-							return {
-								name,
-								secondsFromStart: Number(secondsFromStart),
-								alreadyPlayed: false,
-							};
-						});
-
-						onImport(videoSchedule);
-						onGoBackClicked();
+						// if (textareaText.length === 0) {
+						// 	return;
+						// }
+						// const lines = textareaText.split("\n");
+						// const mediaSchedule: MediaSchedule = lines.map((line) => {
+						// 	const [name, secondsFromStart] = line.trim().split("\t");
+						// 	return {
+						// 		name,
+						// 		secondsFromStart: Number(secondsFromStart),
+						// 		alreadyPlayed: false,
+						// 	};
+						// });
+						// onImport(mediaSchedule);
+						// onGoBackClicked();
 					}}
 				>
 					<i className={"bi bi-cloud-arrow-up"} />

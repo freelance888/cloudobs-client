@@ -1,10 +1,23 @@
 export type All<T> = Record<string, T>;
 
+export type MediaScheduleItem = {
+	name: string;
+	timestamp: string;
+	is_enabled: boolean;
+	is_played: boolean;
+};
+
+export type UpdatedMediaScheduleItem = { id: string } & Partial<Omit<MediaScheduleItem, "is_played">>;
+
+export type MediaSchedule = Record<string, MediaScheduleItem>; // id: { name: "...", ... }
+
+export type NewMediaScheduleItem = [string, string];
+export type NewMediaSchedule = NewMediaScheduleItem[];
+
 export type GlobalSettings = {
 	server_langs: InitialSettings;
 	stream_settings: StreamDestinationSettings;
 	stream_on: { value: boolean };
-	media_schedule: {}; // TODO will be updated
 	ts_offset: { value: number };
 	ts_volume: { value: number };
 	source_volume: { value: number };
@@ -93,15 +106,26 @@ export type LanguageSettings = {
 
 export type LanguagesSettings = All<LanguageSettings>;
 
-export type VideoRecord = {
-	name: string;
-	secondsFromStart: number;
-	alreadyPlayed: boolean;
+// export type VideoRecord = {
+// 	name: string;
+// 	secondsFromStart: number;
+// 	alreadyPlayed: boolean;
+// };
+
+// export type VideoSchedule = VideoRecord[];
+
+export type VMixPlayer = {
+	ip: string;
+	label: string;
+	active: boolean;
 };
 
-export type VideoSchedule = VideoRecord[];
+export type NewVMixPlayer = Omit<VMixPlayer, "active">;
 
-export type VMixPlayers = Record<string, boolean>;
+export type GDriveFile = [
+	string, // filename
+	boolean // loaded
+];
 
 const getAllSettings = <T extends AnySettings>(
 	languagesSettings: LanguagesSettings,

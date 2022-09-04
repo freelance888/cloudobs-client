@@ -15,8 +15,10 @@ export const loggerMiddleware: AppMiddleware =
 	(next) =>
 	(action) => {
 		if (isApiCallResultSuccessAction(action)) {
-			const { message } = action.payload;
-			dispatch(logMessage({ text: message, severity: "success" }));
+			if (action?.payload?.message) {
+				const { message } = action.payload;
+				dispatch(logMessage({ text: message, severity: "success" }));
+			}
 		}
 
 		if (isApiCallResultErrorAction(action)) {

@@ -30,7 +30,7 @@ const NavigationBar: React.FC = () => {
 						<li className="nav-item">
 							<NavLink className="nav-link" to="/settings">
 								<i className="bi bi-gear-fill" />
-								<span className="ml-2">Stream Settings</span>
+								<span className="ml-2">Initialization</span>
 							</NavLink>
 						</li>
 						<li className="nav-item">

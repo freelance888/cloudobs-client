@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { NewVMixPlayer } from "../services/types";
 import {
 	initializeVMixPlayers,
 	selectHostAddress,
@@ -9,13 +10,15 @@ import {
 } from "../store/slices/environment";
 import ContentPanel from "./ContentPanel";
 
+const INITIAL_NEW_VMIX_PLAYER: NewVMixPlayer = { ip: "", label: "" };
+
 export const EnvironmentSettings: React.FC = () => {
 	const dispatch = useDispatch();
 	const [editedHostAddress, setEditedHostAddress] = useState(useSelector(selectHostAddress));
 	const vMixPlayers = useSelector(selectVMixPlayers);
-	const [newVMixPlayer, setNewVMixPlayer] = useState("");
+	const [newVMixPlayer, setNewVMixPlayer] = useState<NewVMixPlayer>(INITIAL_NEW_VMIX_PLAYER);
 
-	const allActive = Object.keys(vMixPlayers).every((ip) => !!vMixPlayers[ip]);
+	const allActive = Object.values(vMixPlayers).every(({ active }) => !!active);
 
 	return (
 		<>
@@ -116,7 +119,6 @@ export const EnvironmentSettings: React.FC = () => {
 							type="radio"
 							checked={allActive}
 							onChange={() => dispatch(setVMixPlayerActive("*") as any)}
-							aria-label="Radio button for following text input"
 						/>
 					</div>
 					<div className="form-control" style={{ maxWidth: "160px" }}>
@@ -124,20 +126,24 @@ export const EnvironmentSettings: React.FC = () => {
 					</div>
 				</div>
 
-				{Object.keys(vMixPlayers).map((ip) => {
+				{vMixPlayers.map((vMixPlayer) => {
+					const { ip, label, active } = vMixPlayer;
+
 					return (
-						<div className="input-group mb-1" key={ip}>
+						<div className="input-group mb-1" key={`${ip}-${label}`}>
 							<div className="input-group-text">
 								<input
 									className="form-check-input mt-0"
 									type="radio"
-									checked={vMixPlayers[ip] && !allActive}
+									checked={active && !allActive}
 									onChange={() => dispatch(setVMixPlayerActive(ip) as any)}
-									aria-label="Radio button for following text input"
 								/>
 							</div>
 							<div className="form-control" style={{ maxWidth: "160px" }}>
 								{ip}
+							</div>
+							<div className="form-control" style={{ maxWidth: "160px" }}>
+								{label}
 							</div>
 						</div>
 					);
@@ -150,16 +156,40 @@ export const EnvironmentSettings: React.FC = () => {
 						style={{ maxWidth: "200px" }}
 						placeholder="IP address"
 						aria-label="IP address"
-						value={newVMixPlayer}
-						onChange={(event) => setNewVMixPlayer(event.target.value)}
+						value={newVMixPlayer.ip}
+						onChange={(event) =>
+							setNewVMixPlayer({
+								...newVMixPlayer,
+								ip: event.target.value,
+							})
+						}
+					/>
+					<input
+						type="text"
+						className="form-control"
+						style={{ maxWidth: "200px" }}
+						placeholder="Label"
+						aria-label="Label"
+						value={newVMixPlayer.label}
+						onChange={(event) =>
+							setNewVMixPlayer({
+								...newVMixPlayer,
+								label: event.target.value,
+							})
+						}
 					/>
 					<button
 						className="btn btn-outline-primary"
 						type="button"
 						onClick={() => {
-							console.log("newVMixTriggerer", newVMixPlayer);
+							const newVMixPlayers: NewVMixPlayer[] = [
+								...vMixPlayers.map(({ ip, label }) => ({ ip, label })),
+								newVMixPlayer,
+							];
 
-							dispatch(initializeVMixPlayers([...Object.keys(vMixPlayers), newVMixPlayer]) as any);
+							dispatch(initializeVMixPlayers(newVMixPlayers) as any);
+
+							setNewVMixPlayer(INITIAL_NEW_VMIX_PLAYER);
 						}}
 					>
 						Add

@@ -1,8 +1,8 @@
 import { AsyncThunk, createAsyncThunk, createSlice, PayloadAction, Selector } from "@reduxjs/toolkit";
-import { ApiResult } from "../../services/api";
-import * as ApiService from "../../services/api";
+import * as ApiService from "../../services/api/index";
 import { RootState } from "../store";
-import { VMixPlayers } from "../../services/types";
+import { NewVMixPlayer, VMixPlayer } from "../../services/types";
+import { ApiResult } from "../../services/api/types";
 
 export type HostAddress = {
 	protocol: string;
@@ -13,7 +13,7 @@ export type HostAddress = {
 
 type AppState = {
 	hostAddress: HostAddress;
-	vMixPlayers: VMixPlayers;
+	vMixPlayers: VMixPlayer[];
 };
 
 export const LS_KEY_HOST_ADDRESS = "cloudobs__host_address";
@@ -31,8 +31,8 @@ const loadHostAddress = () => {
 	return hostAddress;
 };
 
-export const fetchVMixPlayers: AsyncThunk<ApiResult<VMixPlayers>, void, { state: RootState }> = createAsyncThunk<
-	ApiResult<VMixPlayers>,
+export const fetchVMixPlayers: AsyncThunk<ApiResult<VMixPlayer[]>, void, { state: RootState }> = createAsyncThunk<
+	ApiResult<VMixPlayer[]>,
 	void,
 	{ state: RootState }
 >("environment/fetchVMixPlayers", async (_, { rejectWithValue }) => {
@@ -45,9 +45,9 @@ export const fetchVMixPlayers: AsyncThunk<ApiResult<VMixPlayers>, void, { state:
 	return result;
 });
 
-export const initializeVMixPlayers: AsyncThunk<ApiResult, string[], { state: RootState }> = createAsyncThunk<
+export const initializeVMixPlayers: AsyncThunk<ApiResult, NewVMixPlayer[], { state: RootState }> = createAsyncThunk<
 	ApiResult,
-	string[],
+	NewVMixPlayer[],
 	{ state: RootState }
 >("environment/initializeVMixPlayers", async (vMixPlayers, { dispatch, rejectWithValue }) => {
 	const result = await ApiService.postVMixPlayers(vMixPlayers);
@@ -93,7 +93,7 @@ export const setVMixPlayerActive: AsyncThunk<ApiResult, string, { state: RootSta
 
 const initialState: AppState = {
 	hostAddress: loadHostAddress(),
-	vMixPlayers: {},
+	vMixPlayers: [],
 };
 
 const { actions, reducer } = createSlice({
@@ -107,7 +107,7 @@ const { actions, reducer } = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder.addCase(fetchVMixPlayers.fulfilled, (state, { payload }) => {
-			const fetchedVMixPlayers = payload.data as VMixPlayers;
+			const fetchedVMixPlayers = payload.data as VMixPlayer[];
 			state.vMixPlayers = fetchedVMixPlayers;
 		});
 	},
@@ -117,6 +117,6 @@ export const { updateHostAddress } = actions;
 
 export const selectHostAddress: Selector<RootState, HostAddress> = ({ environment }) => environment.hostAddress;
 
-export const selectVMixPlayers: Selector<RootState, VMixPlayers> = ({ environment }) => environment.vMixPlayers;
+export const selectVMixPlayers: Selector<RootState, VMixPlayer[]> = ({ environment }) => environment.vMixPlayers;
 
 export default reducer;
