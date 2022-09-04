@@ -1,6 +1,6 @@
 import { All, StreamDestinationSettings } from "../types";
 import { ApiCall } from "./types";
-import { processResponse, sendRequest } from "./utils";
+import { sendRequest } from "./utils";
 
 const API_URL_STREAM_SETTINGS = "/stream/settings";
 const API_URL_STREAM_START = "/stream/start";
@@ -15,14 +15,16 @@ export const postStreamSettings: ApiCall<All<StreamDestinationSettings>> = (stre
 		stream_settings: streamSettings,
 	};
 
-	return processResponse(
-		sendRequest("POST", API_URL_STREAM_SETTINGS, data),
-		{
+	return sendRequest({
+		method: "POST",
+		url: API_URL_STREAM_SETTINGS,
+		data,
+		messages: {
 			success: "Set stream settings successful",
 			error: "Set stream settings failed",
 		},
-		streamSettings
-	);
+		dataToReturn: streamSettings,
+	});
 };
 
 /**
@@ -34,14 +36,16 @@ export const postStreamStart: ApiCall<string[]> = (languages = ["__all__"]) => {
 		langs: languages,
 	};
 
-	return processResponse(
-		sendRequest("POST", API_URL_STREAM_START, data),
-		{
+	return sendRequest({
+		method: "POST",
+		url: API_URL_STREAM_START,
+		data,
+		messages: {
 			success: "Streams started",
 			error: "Stream start failed",
 		},
-		languages
-	);
+		dataToReturn: languages,
+	});
 };
 
 /**
@@ -53,12 +57,14 @@ export const postStreamStop: ApiCall<string[]> = (languages = ["__all__"]) => {
 		langs: languages,
 	};
 
-	return processResponse(
-		sendRequest("POST", API_URL_STREAM_STOP, data),
-		{
+	return sendRequest({
+		method: "POST",
+		url: API_URL_STREAM_STOP,
+		data,
+		messages: {
 			success: "Streams stopped",
 			error: "Stream stop failed",
 		},
-		languages
-	);
+		dataToReturn: languages,
+	});
 };

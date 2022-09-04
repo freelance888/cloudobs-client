@@ -1,6 +1,6 @@
 import { NewVMixPlayer, VMixPlayer } from "../types";
 import { ApiCall } from "./types";
-import { processResponse, sendRequest } from "./utils";
+import { sendRequest } from "./utils";
 
 const API_URL_VMIX_PLAYERS = "/vmix/players";
 const API_URL_VMIX_PLAYERS_ACTIVE = "/vmix/players/active";
@@ -10,9 +10,12 @@ const API_URL_VMIX_PLAYERS_ACTIVE = "/vmix/players/active";
  * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#get-vmixplayers
  */
 export const getVMixPlayers: ApiCall<void, VMixPlayer[]> = () => {
-	return processResponse(sendRequest("GET", API_URL_VMIX_PLAYERS), {
-		success: "vMix players fetched",
-		error: "vMix players fetching failed",
+	return sendRequest({
+		url: API_URL_VMIX_PLAYERS,
+		messages: {
+			success: "vMix players fetched",
+			error: "vMix players fetching failed",
+		},
 	});
 };
 
@@ -25,14 +28,16 @@ export const postVMixPlayers: ApiCall<NewVMixPlayer[]> = (vMixPlayers) => {
 		ip_list: vMixPlayers,
 	};
 
-	return processResponse(
-		sendRequest("POST", API_URL_VMIX_PLAYERS, data),
-		{
+	return sendRequest({
+		method: "POST",
+		url: API_URL_VMIX_PLAYERS,
+		data,
+		messages: {
 			success: "vMix players set",
 			error: "vMix players setting failed",
 		},
-		vMixPlayers
-	);
+		dataToReturn: vMixPlayers,
+	});
 };
 
 /**
@@ -40,9 +45,12 @@ export const postVMixPlayers: ApiCall<NewVMixPlayer[]> = (vMixPlayers) => {
  * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#get-vmixplayersactive
  */
 export const getVMixPlayersActive: ApiCall<void, string | "*"> = () => {
-	return processResponse(sendRequest("GET", API_URL_VMIX_PLAYERS_ACTIVE), {
-		success: "Active vMix player fetched",
-		error: "Active vMix player fetching failed",
+	return sendRequest({
+		url: API_URL_VMIX_PLAYERS_ACTIVE,
+		messages: {
+			success: "Active vMix player fetched",
+			error: "Active vMix player fetching failed",
+		},
 	});
 };
 
@@ -55,12 +63,14 @@ export const postVMixPlayersActive: ApiCall<string | "*"> = (vMixPlayer) => {
 		ip: vMixPlayer,
 	};
 
-	return processResponse(
-		sendRequest("POST", API_URL_VMIX_PLAYERS_ACTIVE, data),
-		{
+	return sendRequest({
+		method: "POST",
+		url: API_URL_VMIX_PLAYERS_ACTIVE,
+		data,
+		messages: {
 			success: "vMix players set",
 			error: "vMix players setting failed",
 		},
-		vMixPlayer
-	);
+		dataToReturn: vMixPlayer,
+	});
 };

@@ -1,6 +1,6 @@
 import { All, TransitionSettings } from "../types";
 import { ApiCall } from "./types";
-import { processResponse, sendRequest } from "./utils";
+import { sendRequest } from "./utils";
 
 const API_URL_TRANSITION = "/transition";
 
@@ -13,8 +13,13 @@ export const postTransition: ApiCall<All<TransitionSettings>, never> = (transiti
 		transition_settings: transitionSettings,
 	};
 
-	return processResponse(sendRequest("POST", API_URL_TRANSITION, data), {
-		success: "Transition complete",
-		error: "Transition failed",
+	return sendRequest({
+		method: "POST",
+		url: API_URL_TRANSITION,
+		data,
+		messages: {
+			success: "Transition complete",
+			error: "Transition failed",
+		},
 	});
 };

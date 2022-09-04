@@ -5,24 +5,39 @@ import { ApiResult } from "./types";
 
 type RequestMethod = "GET" | "POST" | "PUT" | "DELETE";
 
+type RequestOptions<T> = {
+	method?: RequestMethod;
+	url: string;
+	messages: {
+		success: string;
+		error: string;
+	};
+	data?: Record<string, unknown>;
+	dataToReturn?: T;
+};
+
 const getHostAddress = (): HostAddress => {
 	return store.getState().environment.hostAddress;
 };
 
-export const sendRequest: (
-	method: RequestMethod,
-	url: string,
-	data?: Record<string, unknown>
-) => Promise<Response> = async (method, url, data) => {
+export const sendRequest: <T extends {} = {}>(options: RequestOptions<T>) => Promise<ApiResult<T>> = async ({
+	method,
+	url,
+	messages,
+	data,
+	dataToReturn,
+}) => {
 	const hostAddress = getHostAddress();
 
 	console.debug(`-> ${method}`, url, hostAddress);
 
-	return await fetch(`${buildUrl(hostAddress, url, data)}`, { method });
+	const response = await fetch(`${buildUrl(hostAddress, url, data)}`, { method });
+
+	return processResponse(response, messages, dataToReturn);
 };
 
-export const processResponse = async <T extends {} = {}>(
-	responsePromise: Promise<Response>,
+const processResponse = async <T extends {} = {}>(
+	response: Response,
 	messages: {
 		success: string;
 		error: string;
@@ -33,8 +48,6 @@ export const processResponse = async <T extends {} = {}>(
 	const { success } = messages;
 
 	try {
-		const response = await responsePromise;
-
 		// Failed request
 		if (!response.status) {
 			const message = (response as any).message;

@@ -403,7 +403,6 @@ const { actions, reducer } = createSlice({
 						state.initialized = true;
 						const languageSettings = payload.data?.[lang] as GlobalSettings | "#";
 
-						// TODO handle "#" situation
 						if (languageSettings === "#") {
 							state.languagesSettings[lang] = EMPTY_LANGUAGE_SETTINGS;
 							state.initialized = false;

@@ -8,8 +8,8 @@ import {
 	MIN_TS_OFFSET,
 	MAX_TS_OFFSET,
 	TS_OFFSET_STEP,
-} from "../App";
-import { LanguageSettings } from "../services/types";
+} from "../../../App";
+import { LanguageSettings } from "../../../services/types";
 import {
 	selectSyncedParameters,
 	setSidechain,
@@ -17,7 +17,7 @@ import {
 	setTranslationOffset,
 	setTranslationVolume,
 	updateSyncedParameters,
-} from "../store/slices/app";
+} from "../../../store/slices/app";
 import EditableStreamDestinationSettings from "./EditableStreamDestinationSettings";
 import RangeInput from "./RangeInput";
 import StreamActiveToggle from "./StreamActiveToggle";
@@ -36,7 +36,6 @@ const Language: React.FC<LanguageProps> = ({
 	onCollapsedToggled,
 }: LanguageProps) => {
 	const dispatch = useDispatch();
-	// const [collapsed, setCollapsed] = useState(false);
 
 	const syncedParameters = useSelector(selectSyncedParameters);
 

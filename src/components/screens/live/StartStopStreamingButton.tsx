@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { LanguageSettings } from "../services/types";
-import { stopStreaming, startStreaming, selectLanguagesSettings, selectActiveRequest } from "../store/slices/app";
+import { LanguageSettings } from "../../../services/types";
+import { stopStreaming, startStreaming, selectLanguagesSettings, selectActiveRequest } from "../../../store/slices/app";
 
 const StartStopStreamingButton = () => {
 	const dispatch = useDispatch();

@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
-import { LanguageSettings } from "../services/types";
-import { startStreaming, stopStreaming } from "../store/slices/app";
+import { LanguageSettings } from "../../../services/types";
+import { startStreaming, stopStreaming } from "../../../store/slices/app";
 
 export type Props = {
 	language: string;

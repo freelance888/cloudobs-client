@@ -1,13 +1,12 @@
-// import { useEffect } from "react";
-import { Fragment, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
 	fetchLanguagesSettings,
 	selectInitialLanguagesSettingsLoaded,
 	selectInitialized,
 	selectLanguagesSettings,
-} from "../store/slices/app";
-import ContentPanel from "./ContentPanel";
+} from "../../../store/slices/app";
+import ContentPanel from "../../ContentPanel";
 import Language from "./Language";
 import StartStopStreamingButton from "./StartStopStreamingButton";
 

@@ -1,6 +1,6 @@
 import { All, GlobalSettings, LanguagesSettings, SheetInitialSettings } from "../types";
 import { ApiCall } from "./types";
-import { processResponse, sendRequest } from "./utils";
+import { sendRequest } from "./utils";
 
 const API_URL_INIT = "/init";
 const API_URL_INFO = "/info";
@@ -17,9 +17,14 @@ export const postInit: ApiCall<SheetInitialSettings, LanguagesSettings> = ({ she
 		worksheet_name: worksheetName,
 	};
 
-	return processResponse(sendRequest("POST", API_URL_INIT, data), {
-		success: "Init successful",
-		error: "Init failed",
+	return sendRequest({
+		method: "POST",
+		url: API_URL_INIT,
+		data,
+		messages: {
+			success: "Init successful",
+			error: "Init failed",
+		},
 	});
 };
 
@@ -29,9 +34,12 @@ export const postInit: ApiCall<SheetInitialSettings, LanguagesSettings> = ({ she
  */
 
 export const getInfo: ApiCall<void, All<GlobalSettings>> = () => {
-	return processResponse(sendRequest("GET", API_URL_INFO), {
-		success: "Initial data fetched",
-		error: "Initial data fetching failed",
+	return sendRequest({
+		url: API_URL_INFO,
+		messages: {
+			success: "Initial data fetched",
+			error: "Initial data fetching failed",
+		},
 	});
 };
 
@@ -40,8 +48,12 @@ export const getInfo: ApiCall<void, All<GlobalSettings>> = () => {
  * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-cleanup
  */
 export const postCleanup: ApiCall<void, never> = () => {
-	return processResponse(sendRequest("POST", API_URL_CLEANUP), {
-		success: "Cleanup successful",
-		error: "Cleanup failed",
+	return sendRequest({
+		method: "POST",
+		url: API_URL_CLEANUP,
+		messages: {
+			success: "Cleanup successful",
+			error: "Cleanup failed",
+		},
 	});
 };

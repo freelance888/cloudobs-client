@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { NewVMixPlayer } from "../services/types";
+import { NewVMixPlayer } from "../../../services/types";
 import {
 	initializeVMixPlayers,
 	selectHostAddress,
 	selectVMixPlayers,
 	setVMixPlayerActive,
 	updateHostAddress,
-} from "../store/slices/environment";
-import ContentPanel from "./ContentPanel";
+} from "../../../store/slices/environment";
+import ContentPanel from "../../ContentPanel";
 
 const INITIAL_NEW_VMIX_PLAYER: NewVMixPlayer = { ip: "", label: "" };
 
@@ -24,16 +24,14 @@ export const EnvironmentSettings: React.FC = () => {
 		<>
 			<ContentPanel
 				mainActions={
-					<>
-						<button
-							className="btn btn-sm btn-primary"
-							onClick={() => {
-								dispatch(updateHostAddress(editedHostAddress));
-							}}
-						>
-							<span>Save</span>
-						</button>
-					</>
+					<button
+						className="btn btn-sm btn-primary"
+						onClick={() => {
+							dispatch(updateHostAddress(editedHostAddress));
+						}}
+					>
+						<span>Save</span>
+					</button>
 				}
 			>
 				<label htmlFor="server-ip" className="form-label">

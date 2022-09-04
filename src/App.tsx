@@ -1,16 +1,16 @@
 import React, { useEffect } from "react";
-import LanguageSettings from "./components/LanguageSettings";
+import LanguageSettings from "./components/screens/live/LanguageSettings";
 import StatusBar from "./components/StatusBar";
-import InitializationSettings from "./components/InitializationSettings";
+import InitializationSettings from "./components/screens/initialization/InitializationSettings";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchLanguagesSettings, fetchMediaSchedule, selectInitialLanguagesSettingsLoaded } from "./store/slices/app";
-import VideoSchedule from "./components/VideoSchedule";
+import MediaScheduleSettings from "./components/screens/media-schedule/MediaScheduleSettings";
 
 import "./App.css";
 import { Route, Routes } from "react-router-dom";
 import NavigationBar from "./components/NavigationBar";
-import EnvironmentSettings from "./components/EnvironmentSettings";
-import AppLogs from "./components/Logs";
+import EnvironmentSettings from "./components/screens/environment/EnvironmentSettings";
+import AppLogs from "./components/screens/logs/AppLogs";
 import { fetchVMixPlayers } from "./store/slices/environment";
 
 export const MIN_TS_OFFSET = 0;
@@ -45,7 +45,7 @@ const App: React.FC = () => {
 			<Routes>
 				<Route path="/" element={<LanguageSettings />} />
 				<Route path="/settings" element={<InitializationSettings />} />
-				<Route path="/videos" element={<VideoSchedule />} />
+				<Route path="/videos" element={<MediaScheduleSettings />} />
 				<Route path="/environment" element={<EnvironmentSettings />} />
 				<Route path="/logs" element={<AppLogs />} />
 			</Routes>
