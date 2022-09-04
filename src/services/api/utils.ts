@@ -69,3 +69,11 @@ const processResponse = async <T extends {} = {}>(
 		return { status: "error", message: String(error) };
 	}
 };
+
+export const createApiResult: <T>(data: T) => ApiResult<T> = (data) => {
+	return {
+		message: "",
+		status: "success",
+		data,
+	};
+};

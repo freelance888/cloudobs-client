@@ -7,7 +7,6 @@ import {
 	getAllGDriveSettings,
 	GlobalSettings,
 	LanguagesSettings,
-	MediaSchedule,
 	SheetInitialSettings,
 	SidechainSettings,
 	SourceVolumeSettings,
@@ -280,20 +279,6 @@ export const syncGoogleDrive: AsyncThunk<void, void, { state: RootState }> = cre
 	if (result.status === "error") {
 		return rejectWithValue(result.message);
 	}
-});
-
-export const fetchMediaSchedule: AsyncThunk<ApiResult<MediaSchedule>, void, { state: RootState }> = createAsyncThunk<
-	ApiResult<MediaSchedule>,
-	void,
-	{ state: RootState }
->("app/fetchMediaSchedule", async (_, { rejectWithValue }) => {
-	const result = await ApiService.getMediaSchedule();
-
-	if (result.status === "error") {
-		return rejectWithValue(result.message);
-	}
-
-	return result;
 });
 
 const { actions, reducer } = createSlice({
