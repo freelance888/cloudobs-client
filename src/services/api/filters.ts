@@ -1,6 +1,6 @@
 import { All, SidechainSettings } from "../types";
 import { ApiCall } from "./types";
-import { processResponse, sendRequest } from "./utils";
+import { sendRequest } from "./utils";
 
 const API_URL_FILTERS_SIDECHAIN = "/filters/sidechain";
 
@@ -13,12 +13,14 @@ export const postUpdateFiltersSidechain: ApiCall<All<Partial<SidechainSettings>>
 		sidechain_settings: sidechainSettings,
 	};
 
-	return processResponse(
-		sendRequest("POST", API_URL_FILTERS_SIDECHAIN, data),
-		{
+	return sendRequest({
+		method: "POST",
+		url: API_URL_FILTERS_SIDECHAIN,
+		messages: {
 			success: `Sidechain set: ${JSON.stringify(sidechainSettings)}`,
 			error: "Sidechain setting failed",
 		},
-		sidechainSettings
-	);
+		data,
+		dataToReturn: sidechainSettings,
+	});
 };

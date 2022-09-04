@@ -106,14 +106,6 @@ export type LanguageSettings = {
 
 export type LanguagesSettings = All<LanguageSettings>;
 
-// export type VideoRecord = {
-// 	name: string;
-// 	secondsFromStart: number;
-// 	alreadyPlayed: boolean;
-// };
-
-// export type VideoSchedule = VideoRecord[];
-
 export type VMixPlayer = {
 	ip: string;
 	label: string;

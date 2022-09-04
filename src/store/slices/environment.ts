@@ -1,6 +1,6 @@
-import { AsyncThunk, createAsyncThunk, createSlice, PayloadAction, Selector } from "@reduxjs/toolkit";
+import { AsyncThunk, createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import * as ApiService from "../../services/api/index";
-import { RootState } from "../store";
+import { RootSelector, RootState } from "../store";
 import { NewVMixPlayer, VMixPlayer } from "../../services/types";
 import { ApiResult } from "../../services/api/types";
 
@@ -115,8 +115,8 @@ const { actions, reducer } = createSlice({
 
 export const { updateHostAddress } = actions;
 
-export const selectHostAddress: Selector<RootState, HostAddress> = ({ environment }) => environment.hostAddress;
+export const selectHostAddress: RootSelector<HostAddress> = ({ environment }) => environment.hostAddress;
 
-export const selectVMixPlayers: Selector<RootState, VMixPlayer[]> = ({ environment }) => environment.vMixPlayers;
+export const selectVMixPlayers: RootSelector<VMixPlayer[]> = ({ environment }) => environment.vMixPlayers;
 
 export default reducer;

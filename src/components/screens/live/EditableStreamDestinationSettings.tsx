@@ -1,9 +1,9 @@
 import produce from "immer";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import useLogger from "../hooks/useLogger";
-import { LanguageSettings } from "../services/types";
-import { setStreamSettings } from "../store/slices/app";
+import useLogger from "../../../hooks/useLogger";
+import { LanguageSettings } from "../../../services/types";
+import { setStreamSettings } from "../../../store/slices/app";
 
 type Props = {
 	language: string;

@@ -1,6 +1,6 @@
 import { All, TranslationOffsetSettings, TranslationVolumeSettings } from "../types";
 import { ApiCall } from "./types";
-import { processResponse, sendRequest } from "./utils";
+import { sendRequest } from "./utils";
 
 const API_URL_TS_OFFSET = "/ts/offset";
 const API_URL_TS_VOLUME = "/ts/volume";
@@ -14,14 +14,16 @@ export const postTsOffset: ApiCall<All<TranslationOffsetSettings>> = (offsetSett
 		offset_settings: offsetSettings,
 	};
 
-	return processResponse(
-		sendRequest("POST", API_URL_TS_OFFSET, data),
-		{
+	return sendRequest({
+		method: "POST",
+		url: API_URL_TS_OFFSET,
+		data,
+		messages: {
 			success: `Translation offset set: ${Object.values(offsetSettings)?.[0]}`,
 			error: "Translation offset setting failed",
 		},
-		offsetSettings
-	);
+		dataToReturn: offsetSettings,
+	});
 };
 
 /**
@@ -33,12 +35,14 @@ export const postTsVolume: ApiCall<All<TranslationVolumeSettings>> = (volumeSett
 		volume_settings: volumeSettings,
 	};
 
-	return processResponse(
-		sendRequest("POST", API_URL_TS_VOLUME, data),
-		{
+	return sendRequest({
+		method: "POST",
+		url: API_URL_TS_VOLUME,
+		data,
+		messages: {
 			success: `Translation volume set: ${Object.values(volumeSettings)?.[0]}`,
 			error: "Translation volume setting failed",
 		},
-		volumeSettings
-	);
+		dataToReturn: volumeSettings,
+	});
 };

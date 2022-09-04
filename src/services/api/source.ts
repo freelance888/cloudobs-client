@@ -1,6 +1,6 @@
 import { All, SourceVolumeSettings } from "../types";
 import { ApiCall } from "./types";
-import { processResponse, sendRequest } from "./utils";
+import { sendRequest } from "./utils";
 
 const API_URL_SOURCE_VOLUME = "/source/volume";
 
@@ -13,12 +13,14 @@ export const postSourceVolume: ApiCall<All<SourceVolumeSettings>> = (volumeSetti
 		volume_settings: volumeSettings,
 	};
 
-	return processResponse(
-		sendRequest("POST", API_URL_SOURCE_VOLUME, data),
-		{
+	return sendRequest({
+		method: "POST",
+		url: API_URL_SOURCE_VOLUME,
+		data,
+		messages: {
 			success: `Source volume set: ${Object.values(volumeSettings)?.[0]}`,
 			error: "Source volume setting failed",
 		},
-		volumeSettings
-	);
+		dataToReturn: volumeSettings,
+	});
 };

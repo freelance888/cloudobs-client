@@ -1,6 +1,6 @@
 import { All, GDriveFile, GDriveSettings } from "../types";
 import { ApiCall } from "./types";
-import { processResponse, sendRequest } from "./utils";
+import { sendRequest } from "./utils";
 
 const API_URL_GDRIVE_SYNC = "/gdrive/sync";
 const API_URL_GDRIVE_FILES = "/gdrive/files";
@@ -14,9 +14,14 @@ export const postGDriveSync: ApiCall<All<GDriveSettings>, never> = (gDriveSettin
 		gdrive_settings: gDriveSettings,
 	};
 
-	return processResponse(sendRequest("POST", API_URL_GDRIVE_SYNC, data), {
-		success: "Google Drive synced",
-		error: "Google Drive sync failed",
+	return sendRequest({
+		method: "POST",
+		url: API_URL_GDRIVE_SYNC,
+		data,
+		messages: {
+			success: "Google Drive synced",
+			error: "Google Drive sync failed",
+		},
 	});
 };
 
@@ -29,8 +34,12 @@ export const getGDriveFiles: ApiCall<1 | 0, Record<"__all__", GDriveFile[]>> = (
 		return_details: returnDetails,
 	};
 
-	return processResponse(sendRequest("GET", API_URL_GDRIVE_FILES, data), {
-		success: "Google Drive files fetched",
-		error: "Google Drive files fetching failed",
+	return sendRequest({
+		url: API_URL_GDRIVE_FILES,
+		data,
+		messages: {
+			success: "Google Drive files fetched",
+			error: "Google Drive files fetching failed",
+		},
 	});
 };

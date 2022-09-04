@@ -1,6 +1,6 @@
 import { All, MediaPlaySettings, MediaSchedule, NewMediaSchedule, UpdatedMediaScheduleItem } from "../types";
 import { ApiCall } from "./types";
-import { processResponse, sendRequest } from "./utils";
+import { sendRequest } from "./utils";
 
 const API_URL_MEDIA_PLAY = "/media/play";
 const API_URL_MEDIA_SCHEDULE = "/media/schedule";
@@ -14,9 +14,14 @@ export const postMediaPlay: ApiCall<All<MediaPlaySettings>, never> = (mediaPlayS
 		params: mediaPlaySettings,
 	};
 
-	return processResponse(sendRequest("POST", API_URL_MEDIA_PLAY, data), {
-		success: "Video successfully played",
-		error: "Video play failed",
+	return sendRequest({
+		method: "POST",
+		url: API_URL_MEDIA_PLAY,
+		data,
+		messages: {
+			success: "Video successfully played",
+			error: "Video play failed",
+		},
 	});
 };
 
@@ -25,9 +30,13 @@ export const postMediaPlay: ApiCall<All<MediaPlaySettings>, never> = (mediaPlayS
  * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#delete-mediaplay
  */
 export const deleteMediaPlay: ApiCall<void, never> = () => {
-	return processResponse(sendRequest("DELETE", API_URL_MEDIA_PLAY), {
-		success: "Video successfully played",
-		error: "Video play failed",
+	return sendRequest({
+		method: "DELETE",
+		url: API_URL_MEDIA_PLAY,
+		messages: {
+			success: "Video successfully played",
+			error: "Video play failed",
+		},
 	});
 };
 
@@ -36,9 +45,12 @@ export const deleteMediaPlay: ApiCall<void, never> = () => {
  * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#get-mediaschedule
  */
 export const getMediaSchedule: ApiCall<void, MediaSchedule> = () => {
-	return processResponse(sendRequest("GET", API_URL_MEDIA_SCHEDULE), {
-		success: "Schedule fetched",
-		error: "Schedule fetching failed",
+	return sendRequest({
+		url: API_URL_MEDIA_SCHEDULE,
+		messages: {
+			success: "Schedule fetched",
+			error: "Schedule fetching failed",
+		},
 	});
 };
 
@@ -51,9 +63,14 @@ export const postMediaSchedule: ApiCall<NewMediaSchedule, never> = (videoSchedul
 		schedule: videoSchedule,
 	};
 
-	return processResponse(sendRequest("POST", API_URL_MEDIA_SCHEDULE, data), {
-		success: "Media schedule set",
-		error: "Media schedule setting failed",
+	return sendRequest({
+		method: "POST",
+		url: API_URL_MEDIA_SCHEDULE,
+		data,
+		messages: {
+			success: "Media schedule set",
+			error: "Media schedule setting failed",
+		},
 	});
 };
 
@@ -62,9 +79,14 @@ export const postMediaSchedule: ApiCall<NewMediaSchedule, never> = (videoSchedul
  * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#put-mediaschedule
  */
 export const putMediaSchedule: ApiCall<UpdatedMediaScheduleItem> = (data) => {
-	return processResponse(sendRequest("PUT", API_URL_MEDIA_SCHEDULE, data), {
-		success: "Media updated",
-		error: "Media updating failed",
+	return sendRequest({
+		method: "PUT",
+		url: API_URL_MEDIA_SCHEDULE,
+		data,
+		messages: {
+			success: "Media updated",
+			error: "Media updating failed",
+		},
 	});
 };
 
@@ -73,8 +95,12 @@ export const putMediaSchedule: ApiCall<UpdatedMediaScheduleItem> = (data) => {
  * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#delete-mediaschedule
  */
 export const deleteMediaSchedule: ApiCall<void, never> = () => {
-	return processResponse(sendRequest("DELETE", API_URL_MEDIA_SCHEDULE), {
-		success: "Media schedule deleted",
-		error: "Media schedule deleting failed",
+	return sendRequest({
+		method: "DELETE",
+		url: API_URL_MEDIA_SCHEDULE,
+		messages: {
+			success: "Media schedule deleted",
+			error: "Media schedule deleting failed",
+		},
 	});
 };
