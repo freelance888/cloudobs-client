@@ -9,7 +9,7 @@ import { fetchMediaSchedule } from "./store/slices/media-schedule";
 import MediaScheduleSettings from "./components/screens/media-schedule/MediaScheduleSettings";
 import NavigationBar from "./components/NavigationBar";
 import EnvironmentSettings from "./components/screens/environment/EnvironmentSettings";
-import AppLogs from "./components/screens/logs/AppLogs";
+import AppLogs from "./components/screens/app-logs/AppLogs";
 import { fetchVMixPlayers } from "./store/slices/environment";
 
 import "./App.css";
