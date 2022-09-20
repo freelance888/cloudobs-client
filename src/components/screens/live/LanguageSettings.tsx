@@ -5,6 +5,7 @@ import {
 	selectInitialLanguagesSettingsLoaded,
 	selectInitialized,
 	selectLanguagesSettings,
+	refreshServers,
 } from "../../../store/slices/app";
 import ContentPanel from "../../ContentPanel";
 import Language from "./Language";
@@ -37,20 +38,30 @@ const LanguageSettings = () => {
 			endActions={
 				initialized &&
 				languagesCount > 0 && (
-					<button
-						className="btn btn-outline-info"
-						onClick={() => {
-							const updated = Object.keys(languagesSettings).reduce((obj, lang) => {
-								obj[lang] = true;
-								return obj;
-							}, {});
+					<>
+						<button
+							className="btn btn-outline-success me-2"
+							onClick={() => {
+								dispatch(refreshServers() as any);
+							}}
+						>
+							Refresh servers from tables
+						</button>
+						<button
+							className="btn btn-outline-info"
+							onClick={() => {
+								const updated = Object.keys(languagesSettings).reduce((obj, lang) => {
+									obj[lang] = true;
+									return obj;
+								}, {});
 
-							setCollapsedStates(updated);
-						}}
-					>
-						<i className="bi bi-chevron-expand"></i>
-						<span>Collapse all</span>
-					</button>
+								setCollapsedStates(updated);
+							}}
+						>
+							<i className="bi bi-chevron-expand"></i>
+							<span>Collapse all</span>
+						</button>
+					</>
 				)
 			}
 			actionsOnTop

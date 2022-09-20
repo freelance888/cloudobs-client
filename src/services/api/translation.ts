@@ -7,7 +7,7 @@ const API_URL_TS_VOLUME = "/ts/volume";
 
 /**
  * POST /ts/offset
- * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-tsoffset
+ * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#post-tsoffset
  */
 export const postTsOffset: ApiCall<All<TranslationOffsetSettings>> = (offsetSettings) => {
 	const data = {
@@ -28,7 +28,7 @@ export const postTsOffset: ApiCall<All<TranslationOffsetSettings>> = (offsetSett
 
 /**
  * POST /ts/volume
- * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-tsvolume
+ * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#post-tsvolume
  */
 export const postTsVolume: ApiCall<All<TranslationVolumeSettings>> = (volumeSettings) => {
 	const data = {

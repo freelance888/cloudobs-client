@@ -101,6 +101,18 @@ export const cleanup: AsyncThunk<void, void, { state: RootState }> = createAsync
 	}
 );
 
+export const refreshServers: AsyncThunk<void, void, { state: RootState }> = createAsyncThunk<
+	void,
+	void,
+	{ state: RootState }
+>("app/refreshServers", async (_, { rejectWithValue }) => {
+	const result = await ApiService.postSheetsPull();
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
+});
+
 export const setStreamSettings: AsyncThunk<
 	ApiResult<All<StreamDestinationSettings>>,
 	All<StreamDestinationSettings>,

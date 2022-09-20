@@ -8,7 +8,7 @@ const API_URL_STREAM_STOP = "/stream/stop";
 
 /**
  * POST /stream/settings
- * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-streamsettings
+ * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#post-streamsettings
  */
 export const postStreamSettings: ApiCall<All<StreamDestinationSettings>> = (streamSettings) => {
 	const data = {
@@ -29,7 +29,7 @@ export const postStreamSettings: ApiCall<All<StreamDestinationSettings>> = (stre
 
 /**
  * POST /stream/start
- * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-streamstart
+ * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#post-streamstart
  */
 export const postStreamStart: ApiCall<string[]> = (languages = ["__all__"]) => {
 	const data = {
@@ -50,7 +50,7 @@ export const postStreamStart: ApiCall<string[]> = (languages = ["__all__"]) => {
 
 /**
  * POST /stream/stop
- * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-streamstop
+ * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#post-streamstop
  */
 export const postStreamStop: ApiCall<string[]> = (languages = ["__all__"]) => {
 	const data = {

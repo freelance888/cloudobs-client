@@ -9,7 +9,7 @@ const API_URL_CLEANUP = "/cleanup";
 /**
  * POST /init
  * Use Google Spreadsheet data source
- * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-init
+ * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#post-init
  */
 export const postInit: ApiCall<SheetInitialSettings, LanguagesSettings> = ({ sheetUrl, worksheetName }) => {
 	const data = {
@@ -30,7 +30,7 @@ export const postInit: ApiCall<SheetInitialSettings, LanguagesSettings> = ({ she
 
 /**
  * GET /info
- * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#get-info
+ * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#get-info
  */
 
 export const getInfo: ApiCall<void, All<GlobalSettings>> = () => {
@@ -45,7 +45,7 @@ export const getInfo: ApiCall<void, All<GlobalSettings>> = () => {
 
 /**
  * POST /cleanup
- * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-cleanup
+ * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#post-cleanup
  */
 export const postCleanup: ApiCall<void, never> = () => {
 	return sendRequest({

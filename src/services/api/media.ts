@@ -7,7 +7,7 @@ const API_URL_MEDIA_SCHEDULE = "/media/schedule";
 
 /**
  * POST /media/play
- * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-mediaplay
+ * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#post-mediaplay
  */
 export const postMediaPlay: ApiCall<All<MediaPlaySettings>, never> = (mediaPlaySettings) => {
 	const data = {

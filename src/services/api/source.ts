@@ -6,7 +6,7 @@ const API_URL_SOURCE_VOLUME = "/source/volume";
 
 /**
  * POST /source/volume
- * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-sourcevolume
+ * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#post-sourcevolume
  */
 export const postSourceVolume: ApiCall<All<SourceVolumeSettings>> = (volumeSettings) => {
 	const data = {

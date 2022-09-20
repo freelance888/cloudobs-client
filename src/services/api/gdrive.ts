@@ -7,7 +7,7 @@ const API_URL_GDRIVE_FILES = "/gdrive/files";
 
 /**
  * POST /gdrive/sync
- * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-gdrivesync
+ * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#post-gdrivesync
  */
 export const postGDriveSync: ApiCall<All<GDriveSettings>, never> = (gDriveSettings) => {
 	const data = {

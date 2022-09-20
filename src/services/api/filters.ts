@@ -6,7 +6,7 @@ const API_URL_FILTERS_SIDECHAIN = "/filters/sidechain";
 
 /**
  * POST /filters/sidechain
- * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-filterssidechain
+ * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#post-filterssidechain
  */
 export const postUpdateFiltersSidechain: ApiCall<All<Partial<SidechainSettings>>> = (sidechainSettings) => {
 	const data = {

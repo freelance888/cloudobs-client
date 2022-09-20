@@ -6,7 +6,7 @@ import {
 	resetMediaSchedule,
 	selectMediaSchedule,
 	setMediaSchedule,
-	stopMedia,
+	// stopMedia,
 	updateMedia,
 } from "../../../store/slices/media-schedule";
 import ContentPanel from "../../ContentPanel";
@@ -113,7 +113,8 @@ export const MediaScheduleSettings = () => {
 												<i className="bi bi-play-fill me-1" />
 												Play
 											</button>
-											<button
+											{/* TODO wait until backend is fixed, stop now throws 500 error */}
+											{/* <button
 												className="btn btn-sm btn-primary ms-2"
 												type="button"
 												title="Stop"
@@ -123,7 +124,7 @@ export const MediaScheduleSettings = () => {
 											>
 												<i className="bi bi-stop-fill me-1" />
 												Stop
-											</button>
+											</button> */}
 										</div>
 									</div>
 								</div>

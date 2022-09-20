@@ -16,7 +16,7 @@ type RequestOptions<T> = {
 	dataToReturn?: T;
 };
 
-const getHostAddress = (): HostAddress => {
+export const getHostAddress = (): HostAddress => {
 	return store.getState().environment.hostAddress;
 };
 

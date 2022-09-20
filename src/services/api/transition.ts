@@ -6,7 +6,7 @@ const API_URL_TRANSITION = "/transition";
 
 /**
  * POST /transition
- * https://github.com/ALLATRA-IT/cloudobs/blob/master/api_docs.md#post-transition
+ * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#post-transition
  */
 export const postTransition: ApiCall<All<TransitionSettings>, never> = (transitionSettings) => {
 	const data = {

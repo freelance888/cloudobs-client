@@ -1,4 +1,5 @@
 export { getInfo, postInit, postCleanup } from "./initial";
+export { postSheetsPull } from "./sheets";
 export { postUpdateFiltersSidechain } from "./filters";
 export { getGDriveFiles, postGDriveSync } from "./gdrive";
 export {
