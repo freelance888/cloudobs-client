@@ -9,6 +9,8 @@ export {
 	deleteMediaSchedule,
 	postMediaPlay,
 	deleteMediaPlay,
+	postMediaScheduleSetup,
+	postMediaSchedulePull,
 } from "./media";
 export { postSourceVolume } from "./source";
 export { postStreamSettings, postStreamStart, postStreamStop } from "./stream";

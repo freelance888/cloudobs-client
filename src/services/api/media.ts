@@ -1,9 +1,18 @@
-import { All, MediaPlaySettings, MediaSchedule, NewMediaSchedule, UpdatedMediaScheduleItem } from "../types";
+import {
+	All,
+	MediaPlaySettings,
+	MediaSchedule,
+	NewMediaSchedule,
+	SheetInitialSettings,
+	UpdatedMediaScheduleItem,
+} from "../types";
 import { ApiCall } from "./types";
 import { sendRequest } from "./utils";
 
 const API_URL_MEDIA_PLAY = "/media/play";
 const API_URL_MEDIA_SCHEDULE = "/media/schedule";
+const API_URL_MEDIA_SCHEDULE_SETUP = "/media/schedule/setup";
+const API_URL_MEDIA_SCHEDULE_PULL = "/media/schedule/pull";
 
 /**
  * POST /media/play
@@ -101,6 +110,42 @@ export const deleteMediaSchedule: ApiCall<void, never> = () => {
 		messages: {
 			success: "Media schedule deleted",
 			error: "Media schedule deleting failed",
+		},
+	});
+};
+
+/**
+ * POST /media/schedule/setup
+ * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#post-mediaschedulesetup
+ */
+export const postMediaScheduleSetup: ApiCall<SheetInitialSettings, never> = ({ sheetUrl, worksheetName }) => {
+	const data = {
+		sheet_url: sheetUrl,
+		sheet_name: worksheetName,
+	};
+
+	return sendRequest({
+		method: "POST",
+		url: API_URL_MEDIA_SCHEDULE_SETUP,
+		data,
+		messages: {
+			success: "Setup done",
+			error: "Setup error",
+		},
+	});
+};
+
+/**
+ * POST /media/schedule/pull
+ * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#post-mediaschedulepull
+ */
+export const postMediaSchedulePull: ApiCall<void, never> = () => {
+	return sendRequest({
+		method: "POST",
+		url: API_URL_MEDIA_SCHEDULE_PULL,
+		messages: {
+			success: "Pull done",
+			error: "Pull error",
 		},
 	});
 };

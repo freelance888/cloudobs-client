@@ -377,26 +377,26 @@ const { actions, reducer } = createSlice({
 				});
 			})
 			.addCase(setSourceVolume.fulfilled, (state, { payload: volumeSettings }) => {
-				for (const language in volumeSettings) {
-					const sourceVolume = volumeSettings[language];
+				for (const language in volumeSettings.data) {
+					const sourceVolume = volumeSettings.data[language];
 					state.languagesSettings[language].streamParameters.sourceVolume = sourceVolume;
 				}
 			})
 			.addCase(setTranslationVolume.fulfilled, (state, { payload: volumeSettings }) => {
-				for (const language in volumeSettings) {
-					const translationVolume = volumeSettings[language];
+				for (const language in volumeSettings.data) {
+					const translationVolume = volumeSettings.data[language];
 					state.languagesSettings[language].streamParameters.translationVolume = translationVolume;
 				}
 			})
 			.addCase(setTranslationOffset.fulfilled, (state, { payload: offsetSettings }) => {
-				for (const language in offsetSettings) {
-					const translationOffset = offsetSettings[language];
+				for (const language in offsetSettings.data) {
+					const translationOffset = offsetSettings.data[language] as number;
 					state.languagesSettings[language].streamParameters.translationOffset = translationOffset;
 				}
 			})
 			.addCase(setSidechain.fulfilled, (state, { payload: sidechainSettings }) => {
-				for (const language in sidechainSettings) {
-					const updatedSidechainSettings = sidechainSettings[language];
+				for (const language in sidechainSettings.data) {
+					const updatedSidechainSettings = sidechainSettings.data[language];
 					state.languagesSettings[language].sidechain = {
 						...state.languagesSettings[language].sidechain,
 						...updatedSidechainSettings,

@@ -40,12 +40,13 @@ const LanguageSettings = () => {
 				languagesCount > 0 && (
 					<>
 						<button
-							className="btn btn-outline-success me-2"
+							className="btn btn-secondary me-2"
+							title="Refresh servers data from spreadsheet table"
 							onClick={() => {
 								dispatch(refreshServers() as any);
 							}}
 						>
-							Refresh servers from tables
+							Pull sheet to server
 						</button>
 						<button
 							className="btn btn-outline-info"

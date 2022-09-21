@@ -1,18 +1,25 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MediaSchedule } from "../../../services/types";
+import * as ApiService from "../../../services/api/index";
 import {
+	fetchMediaSchedule,
 	playMedia,
+	pullMediaSchedule,
 	resetMediaSchedule,
 	selectMediaSchedule,
-	setMediaSchedule,
+	// setMediaSchedule,
 	// stopMedia,
 	updateMedia,
 } from "../../../store/slices/media-schedule";
 import ContentPanel from "../../ContentPanel";
+import MediaScheduleTableInitSettings from "../initialization/MediaScheduleTableInitSettings";
+
+type DisplayMode = "BLANK" | "NOT_INITIALIZED" | "NOT_PULLED" | "READY";
 
 export const MediaScheduleSettings = () => {
 	const dispatch = useDispatch();
+	const [displayMode, setDisplayMode] = useState<DisplayMode>("BLANK");
 
 	const mediaSchedule = useSelector(selectMediaSchedule);
 
@@ -22,13 +29,62 @@ export const MediaScheduleSettings = () => {
 		setEditedMediaSchedule(mediaSchedule);
 	}, [mediaSchedule]);
 
+	useEffect(() => {
+		const fn = async () => {
+			const res = await ApiService.getMediaSchedule();
+
+			if (res.status === "error") {
+				if (res.message === "Please complete Timing Google Sheets initialization first") {
+					setDisplayMode("NOT_INITIALIZED");
+				} else if (res.message === "Please pull Timing Google Sheets first") {
+					setDisplayMode("NOT_PULLED");
+				}
+			} else {
+				setDisplayMode("READY");
+			}
+		};
+
+		fn();
+	}, []);
+
+	useEffect(() => {
+		if (displayMode === "READY") {
+			dispatch(fetchMediaSchedule() as any);
+		}
+	}, [dispatch, displayMode]);
+
+	if (displayMode === "BLANK") {
+		return <ContentPanel>Loading...</ContentPanel>;
+	}
+
+	if (displayMode === "NOT_INITIALIZED") {
+		return (
+			<ContentPanel>
+				<MediaScheduleTableInitSettings />
+			</ContentPanel>
+		);
+	} else if (displayMode === "NOT_PULLED") {
+		return (
+			<ContentPanel>
+				<button
+					className="btn btn-sm btn-primary"
+					onClick={() => {
+						dispatch(pullMediaSchedule() as any);
+					}}
+				>
+					Pull media schedule
+				</button>
+			</ContentPanel>
+		);
+	}
+
 	return (
 		<ContentPanel
 			mainActions={
 				<>
-					<button
+					{/* <button
 						className="btn btn-primary"
-						onClick={async () => {
+						onClick={() => {
 							dispatch(
 								setMediaSchedule(
 									Object.values(editedMediaSchedule).map(({ name, timestamp }) => [name, timestamp])
@@ -37,20 +93,39 @@ export const MediaScheduleSettings = () => {
 						}}
 					>
 						<span>Save</span>
-					</button>
-
+					</button> */}
 					<button
-						className="btn btn-secondary ms-2"
-						onClick={async () => {
-							dispatch(resetMediaSchedule() as any);
+						className="btn btn-primary"
+						title="Fetch current spreadsheet state to app UI"
+						onClick={() => {
+							dispatch(fetchMediaSchedule() as any);
 						}}
 					>
-						<span>Reset</span>
+						Refresh
+					</button>
+					<button
+						className="btn btn-secondary ms-2"
+						title="Update server data and fetch current spreadsheet state to app UI"
+						onClick={() => {
+							dispatch(pullMediaSchedule() as any);
+						}}
+					>
+						Pull & refresh
 					</button>
 				</>
 			}
+			endActions={
+				<button
+					className="btn btn-secondary ms-2"
+					onClick={() => {
+						dispatch(resetMediaSchedule() as any);
+					}}
+				>
+					<span>Reset</span>
+				</button>
+			}
 		>
-			<div className="video-schedule-list col-10 mb-3">
+			<div className="video-schedule-list col-12 mb-3">
 				<div className="container">
 					<div className="stream-settings-video-list-head row mb-1">
 						<div className="col-1">Enabled</div>
@@ -84,7 +159,7 @@ export const MediaScheduleSettings = () => {
 									</div>
 									<div className="col-2">
 										<div key={`edited-${mediaId}-seconds`}>
-											<input
+											{/* <input
 												type="number"
 												className="form-control stream-settings-video-list-item-input"
 												value={timestamp}
@@ -97,7 +172,8 @@ export const MediaScheduleSettings = () => {
 														},
 													});
 												}}
-											/>
+											/> */}
+											{timestamp}
 										</div>
 									</div>
 									<div className="col-4 d-flex justify-content-end">
