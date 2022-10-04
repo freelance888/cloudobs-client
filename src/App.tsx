@@ -38,16 +38,16 @@ const App: React.FC = () => {
 		};
 	}, []);
 
-	if (!loaded || serverSleeping === null) {
-		<div className="App">Loading...</div>;
-	}
-
 	useEffect(() => {
 		if (serverSleeping === false) {
 			dispatch(fetchLanguagesSettings() as any);
 			dispatch(fetchVMixPlayers() as any);
 		}
 	}, [dispatch, serverSleeping]);
+
+	if (!loaded || serverSleeping === null) {
+		return <div className="App">Loading...</div>;
+	}
 
 	return <div className="App">{serverSleeping ? <VideoTableInitSettings /> : <AppContentScreen />}</div>;
 };
