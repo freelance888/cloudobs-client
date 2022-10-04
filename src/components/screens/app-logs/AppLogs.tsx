@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
-import { selectLogMessages } from "../store/slices/logs";
-import ContentPanel from "./ContentPanel";
+import { selectLogMessages } from "../../../store/slices/logs";
+import ContentPanel from "../../ContentPanel";
 
 const Logs: React.FC = () => {
 	const messages = useSelector(selectLogMessages);

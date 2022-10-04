@@ -7,15 +7,18 @@ import { AppMiddleware } from "./store";
 const isApiCallResultSuccessAction = (action: any) =>
 	action.type.startsWith("app/") && action?.meta?.requestStatus === "fulfilled";
 
-const isApiCallResultErrorAction = (action: any) => action.type.startsWith("app/") && isRejectedWithValue(action);
+const isApiCallResultErrorAction = (action: any) =>
+	(action.type.startsWith("app/") || action.type.startsWith("environment/")) && isRejectedWithValue(action);
 
 export const loggerMiddleware: AppMiddleware =
-	({ dispatch, getState }) =>
+	({ dispatch }) =>
 	(next) =>
 	(action) => {
 		if (isApiCallResultSuccessAction(action)) {
-			const { message } = action.payload;
-			dispatch(logMessage({ text: message, severity: "success" }));
+			if (action?.payload?.message) {
+				const { message } = action.payload;
+				dispatch(logMessage({ text: message, severity: "success" }));
+			}
 		}
 
 		if (isApiCallResultErrorAction(action)) {
@@ -34,19 +37,12 @@ export const loggerMiddleware: AppMiddleware =
 			}
 		}
 
-		if (action.type === "environment/setActiveVMixTriggerer") {
-			const triggerer = getState().environment.vMixTriggerers.find((triggerer) => triggerer.id === action.payload);
+		// if (action.type === "environment/setActiveVMixTriggerer") {
+		// 	const triggerer = getState().environment.vMixPlayers.find((triggerer) => triggerer.id === action.payload);
 
-			const message = `Setting active vMix triggerer to: ${triggerer?.ipAddress}`;
-			dispatch(logMessage({ text: message, severity: "success" }));
-		}
-
-		if (action.type === "environment/removeVMixTriggerer") {
-			const triggerer = getState().environment.vMixTriggerers.find((triggerer) => triggerer.id === action.payload);
-
-			const message = `vMix triggerer ${triggerer?.ipAddress} removed`;
-			dispatch(logMessage({ text: message, severity: "success" }));
-		}
+		// 	const message = `Setting active vMix triggerer to: ${triggerer?.ipAddress}`;
+		// 	dispatch(logMessage({ text: message, severity: "success" }));
+		// }
 
 		return next(action);
 	};

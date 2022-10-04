@@ -1,13 +1,12 @@
-import { AsyncThunk, createAsyncThunk, createSlice, PayloadAction, Selector } from "@reduxjs/toolkit";
-import * as ApiService from "../../services/api";
-import { ApiResult } from "../../services/api";
+import { AsyncThunk, createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import * as ApiService from "../../services/api/index";
+import { ApiResult } from "../../services/api/types";
 import { EMPTY_LANGUAGE_SETTINGS } from "../../services/emptyData";
 import {
 	All,
 	getAllGDriveSettings,
 	GlobalSettings,
 	LanguagesSettings,
-	MediaPlaySettings,
 	SheetInitialSettings,
 	SidechainSettings,
 	SourceVolumeSettings,
@@ -16,9 +15,8 @@ import {
 	SyncableSettingsFlags,
 	TranslationOffsetSettings,
 	TranslationVolumeSettings,
-	VideoSchedule,
 } from "../../services/types";
-import { RootState } from "../store";
+import { RootSelector, RootState } from "../store";
 
 export type HostAddress = {
 	protocol: string;
@@ -35,7 +33,6 @@ type AppState = {
 	activeRequest: ActiveRequest | null;
 	syncedParameters: SyncableSettingsFlags;
 	languagesSettings: LanguagesSettings;
-	videoSchedule: VideoSchedule;
 };
 
 const initialState: AppState = {
@@ -53,7 +50,6 @@ const initialState: AppState = {
 		output_gain: false,
 	},
 	languagesSettings: {},
-	videoSchedule: [],
 };
 
 const getAllLanguages: (state: RootState) => string[] = (state) => {
@@ -104,6 +100,18 @@ export const cleanup: AsyncThunk<void, void, { state: RootState }> = createAsync
 		}
 	}
 );
+
+export const refreshServers: AsyncThunk<void, void, { state: RootState }> = createAsyncThunk<
+	void,
+	void,
+	{ state: RootState }
+>("app/refreshServers", async (_, { rejectWithValue }) => {
+	const result = await ApiService.postSheetsPull();
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
+});
 
 export const setStreamSettings: AsyncThunk<
 	ApiResult<All<StreamDestinationSettings>>,
@@ -270,36 +278,6 @@ export const setSidechain: AsyncThunk<
 	}
 );
 
-export const setVideoSchedule: AsyncThunk<VideoSchedule, VideoSchedule, { state: RootState }> = createAsyncThunk<
-	VideoSchedule,
-	VideoSchedule,
-	{ state: RootState }
->("app/setVideoSchedule", async (videoSchedule, { rejectWithValue }) => {
-	const result = await ApiService.postMediaSchedule(videoSchedule);
-
-	if (result.status === "error") {
-		return rejectWithValue(result.message);
-	}
-
-	return videoSchedule;
-});
-
-export const playMedia: AsyncThunk<string, string, { state: RootState }> = createAsyncThunk<
-	string,
-	string,
-	{ state: RootState }
->("app/playMedia", async (videoName, { rejectWithValue }) => {
-	const mediaPlaySettings: All<MediaPlaySettings> = { __all__: { name: videoName, search_by_num: 0 } };
-
-	const result = await ApiService.postMediaPlay(mediaPlaySettings);
-
-	if (result.status === "error") {
-		return rejectWithValue(result.message);
-	}
-
-	return videoName;
-});
-
 export const syncGoogleDrive: AsyncThunk<void, void, { state: RootState }> = createAsyncThunk<
 	void,
 	void,
@@ -347,7 +325,6 @@ const { actions, reducer } = createSlice({
 						state.initialized = true;
 						const languageSettings = payload.data?.[lang] as GlobalSettings | "#";
 
-						// TODO handle "#" situation
 						if (languageSettings === "#") {
 							state.languagesSettings[lang] = EMPTY_LANGUAGE_SETTINGS;
 							state.initialized = false;
@@ -370,9 +347,6 @@ const { actions, reducer } = createSlice({
 					});
 				}
 				state.initialLanguageSettingsLoaded = true;
-			})
-			.addCase(fetchLanguagesSettings.rejected, (state, action) => {
-				// console.log("# Rejectect:", action.payload);
 			})
 			.addCase(cleanup.pending, (state) => {
 				state.activeRequest = "postCleanup";
@@ -403,54 +377,45 @@ const { actions, reducer } = createSlice({
 				});
 			})
 			.addCase(setSourceVolume.fulfilled, (state, { payload: volumeSettings }) => {
-				for (const language in volumeSettings) {
-					const sourceVolume = volumeSettings[language];
+				for (const language in volumeSettings.data) {
+					const sourceVolume = volumeSettings.data[language];
 					state.languagesSettings[language].streamParameters.sourceVolume = sourceVolume;
 				}
 			})
 			.addCase(setTranslationVolume.fulfilled, (state, { payload: volumeSettings }) => {
-				for (const language in volumeSettings) {
-					const translationVolume = volumeSettings[language];
+				for (const language in volumeSettings.data) {
+					const translationVolume = volumeSettings.data[language];
 					state.languagesSettings[language].streamParameters.translationVolume = translationVolume;
 				}
 			})
 			.addCase(setTranslationOffset.fulfilled, (state, { payload: offsetSettings }) => {
-				for (const language in offsetSettings) {
-					const translationOffset = offsetSettings[language];
+				for (const language in offsetSettings.data) {
+					const translationOffset = offsetSettings.data[language] as number;
 					state.languagesSettings[language].streamParameters.translationOffset = translationOffset;
 				}
 			})
 			.addCase(setSidechain.fulfilled, (state, { payload: sidechainSettings }) => {
-				for (const language in sidechainSettings) {
-					const updatedSidechainSettings = sidechainSettings[language];
+				for (const language in sidechainSettings.data) {
+					const updatedSidechainSettings = sidechainSettings.data[language];
 					state.languagesSettings[language].sidechain = {
 						...state.languagesSettings[language].sidechain,
 						...updatedSidechainSettings,
 					};
 				}
-			})
-			.addCase(setVideoSchedule.fulfilled, (state, { payload }) => {
-				state.videoSchedule = payload;
-			})
-			.addCase(playMedia.fulfilled, (state, { payload }) => {
-				const videoIndex = state.videoSchedule.findIndex((videoRecord) => videoRecord.name === payload);
-				state.videoSchedule[videoIndex].alreadyPlayed = true;
 			}),
 });
 
 export const { updateActiveRequest, updateSyncedParameters } = actions;
 
-export const selectInitialized: Selector<RootState, boolean> = ({ app }) => app.initialized;
+export const selectInitialized: RootSelector<boolean> = ({ app }) => app.initialized;
 
-export const selectInitialLanguagesSettingsLoaded: Selector<RootState, boolean> = ({ app }) =>
+export const selectInitialLanguagesSettingsLoaded: RootSelector<boolean> = ({ app }) =>
 	app.initialLanguageSettingsLoaded;
 
-export const selectActiveRequest: Selector<RootState, ActiveRequest | null> = ({ app }) => app.activeRequest;
+export const selectActiveRequest: RootSelector<ActiveRequest | null> = ({ app }) => app.activeRequest;
 
-export const selectSyncedParameters: Selector<RootState, SyncableSettingsFlags> = ({ app }) => app.syncedParameters;
+export const selectSyncedParameters: RootSelector<SyncableSettingsFlags> = ({ app }) => app.syncedParameters;
 
-export const selectLanguagesSettings: Selector<RootState, LanguagesSettings> = ({ app }) => app.languagesSettings;
-
-export const selectVideoSchedule: Selector<RootState, VideoSchedule> = ({ app }) => app.videoSchedule;
+export const selectLanguagesSettings: RootSelector<LanguagesSettings> = ({ app }) => app.languagesSettings;
 
 export default reducer;

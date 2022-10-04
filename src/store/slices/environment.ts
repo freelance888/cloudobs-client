@@ -1,6 +1,8 @@
-import { createSelector, createSlice, PayloadAction, Selector } from "@reduxjs/toolkit";
-import { generateId } from "../../utils/generateId";
-import { RootState } from "../store";
+import { AsyncThunk, createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import * as ApiService from "../../services/api/index";
+import { RootSelector, RootState } from "../store";
+import { NewVMixPlayer, VMixPlayer } from "../../services/types";
+import { ApiResult } from "../../services/api/types";
 
 export type HostAddress = {
 	protocol: string;
@@ -9,15 +11,9 @@ export type HostAddress = {
 	useLocalhost: boolean;
 };
 
-export type VMixTriggerer = {
-	id: string;
-	ipAddress: string;
-	active: boolean;
-};
-
-type AppState = {
+type EnvironmentState = {
 	hostAddress: HostAddress;
-	vMixTriggerers: VMixTriggerer[];
+	vMixPlayers: VMixPlayer[];
 };
 
 export const LS_KEY_HOST_ADDRESS = "cloudobs__host_address";
@@ -35,9 +31,69 @@ const loadHostAddress = () => {
 	return hostAddress;
 };
 
-const initialState: AppState = {
+export const fetchVMixPlayers: AsyncThunk<ApiResult<VMixPlayer[]>, void, { state: RootState }> = createAsyncThunk<
+	ApiResult<VMixPlayer[]>,
+	void,
+	{ state: RootState }
+>("environment/fetchVMixPlayers", async (_, { rejectWithValue }) => {
+	const result = await ApiService.getVMixPlayers();
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
+
+	return result;
+});
+
+export const initializeVMixPlayers: AsyncThunk<ApiResult, NewVMixPlayer[], { state: RootState }> = createAsyncThunk<
+	ApiResult,
+	NewVMixPlayer[],
+	{ state: RootState }
+>("environment/initializeVMixPlayers", async (vMixPlayers, { dispatch, rejectWithValue }) => {
+	const result = await ApiService.postVMixPlayers(vMixPlayers);
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
+
+	dispatch(fetchVMixPlayers());
+
+	return result;
+});
+
+export const fetchVMixPlayerActive: AsyncThunk<ApiResult<string>, void, { state: RootState }> = createAsyncThunk<
+	ApiResult<string>,
+	void,
+	{ state: RootState }
+>("environment/fetchVMixPlayerActive", async (_, { rejectWithValue }) => {
+	const result = await ApiService.getVMixPlayersActive();
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
+
+	return result;
+});
+
+export const setVMixPlayerActive: AsyncThunk<ApiResult, string, { state: RootState }> = createAsyncThunk<
+	ApiResult,
+	string,
+	{ state: RootState }
+>("environment/setVMixPlayerActive", async (vMixPlayer, { dispatch, rejectWithValue }) => {
+	const result = await ApiService.postVMixPlayersActive(vMixPlayer);
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
+
+	dispatch(fetchVMixPlayers());
+
+	return result;
+});
+
+const initialState: EnvironmentState = {
 	hostAddress: loadHostAddress(),
-	vMixTriggerers: [],
+	vMixPlayers: [],
 };
 
 const { actions, reducer } = createSlice({
@@ -48,45 +104,19 @@ const { actions, reducer } = createSlice({
 			localStorage.setItem(LS_KEY_HOST_ADDRESS, JSON.stringify(payload));
 			state.hostAddress = payload;
 		},
-		addVMixTriggerer(state, { payload }: PayloadAction<string>) {
-			const vMixTriggerer: VMixTriggerer = {
-				id: generateId(),
-				ipAddress: payload,
-				active: false,
-			};
-			state.vMixTriggerers.push(vMixTriggerer);
-		},
-		removeVMixTriggerer(state, { payload }: PayloadAction<string>) {
-			state.vMixTriggerers = state.vMixTriggerers.filter((triggerer) => triggerer.id !== payload);
-			if (state.vMixTriggerers.every((vMixTriggerer) => vMixTriggerer.active === false)) {
-				if (state.vMixTriggerers.length > 0) {
-					state.vMixTriggerers[0].active = true;
-				}
-			}
-		},
-		setActiveVMixTriggerer(state, { payload }: PayloadAction<string>) {
-			for (let i = 0; i < state.vMixTriggerers.length; i++) {
-				if (state.vMixTriggerers[i].id === payload) {
-					state.vMixTriggerers[i].active = true;
-				} else {
-					state.vMixTriggerers[i].active = false;
-				}
-			}
-		},
+	},
+	extraReducers: (builder) => {
+		builder.addCase(fetchVMixPlayers.fulfilled, (state, { payload }) => {
+			const fetchedVMixPlayers = payload.data as VMixPlayer[];
+			state.vMixPlayers = fetchedVMixPlayers;
+		});
 	},
 });
 
-export const { updateHostAddress, addVMixTriggerer, removeVMixTriggerer, setActiveVMixTriggerer } = actions;
+export const { updateHostAddress } = actions;
 
-export const selectHostAddress: Selector<RootState, HostAddress> = ({ environment }) => environment.hostAddress;
+export const selectHostAddress: RootSelector<HostAddress> = ({ environment }) => environment.hostAddress;
 
-export const selectVMixTriggerers: Selector<RootState, VMixTriggerer[]> = ({ environment }) =>
-	environment.vMixTriggerers;
-
-export const selectVMixTriggerer: (triggererId: string) => Selector<RootState, VMixTriggerer | null> = (triggererId) =>
-	createSelector(
-		(state: RootState) => state.environment.vMixTriggerers,
-		(vMixTriggerers) => vMixTriggerers.find((triggerer) => triggerer.id === triggererId) ?? null
-	);
+export const selectVMixPlayers: RootSelector<VMixPlayer[]> = ({ environment }) => environment.vMixPlayers;
 
 export default reducer;

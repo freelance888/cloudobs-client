@@ -25,7 +25,7 @@ body,
 .content-panel {
 	/* height: calc(100% - 60px); */
 	padding: 0.5rem;
-	max-width: 800px;
+	max-width: 870px;
 }
 
 .content-panel__actions {
@@ -194,6 +194,11 @@ i.bi:not(.bi-no-margin) {
 	display: flex;
 }
 
+.stream-settings-video-list-item-input {
+	border: unset;
+	border-radius: unset;
+}
+
 .buttons {
 	display: flex;
 	flex-direction: column;
@@ -288,6 +293,7 @@ i.bi:not(.bi-no-margin) {
 	border: 1px solid #ccc;
 	margin-top: -1px;
 	padding: 0.25rem 0;
+	align-items: center;
 }
 
 .sync-all-cursor-help {
@@ -308,4 +314,8 @@ i.bi:not(.bi-no-margin) {
 }
 .language-block-collapse-btn:focus {
 	box-shadow: none;
+}
+
+.stream-settings-video-list-head {
+	font-size: 0.8rem;
 }

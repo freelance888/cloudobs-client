@@ -1,13 +1,13 @@
-// import { useEffect } from "react";
-import { Fragment, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
 	fetchLanguagesSettings,
 	selectInitialLanguagesSettingsLoaded,
 	selectInitialized,
 	selectLanguagesSettings,
-} from "../store/slices/app";
-import ContentPanel from "./ContentPanel";
+	refreshServers,
+} from "../../../store/slices/app";
+import ContentPanel from "../../ContentPanel";
 import Language from "./Language";
 import StartStopStreamingButton from "./StartStopStreamingButton";
 
@@ -38,20 +38,31 @@ const LanguageSettings = () => {
 			endActions={
 				initialized &&
 				languagesCount > 0 && (
-					<button
-						className="btn btn-outline-info"
-						onClick={() => {
-							const updated = Object.keys(languagesSettings).reduce((obj, lang) => {
-								obj[lang] = true;
-								return obj;
-							}, {});
+					<>
+						<button
+							className="btn btn-secondary me-2"
+							title="Refresh servers data from spreadsheet table"
+							onClick={() => {
+								dispatch(refreshServers() as any);
+							}}
+						>
+							Pull sheet to server
+						</button>
+						<button
+							className="btn btn-outline-info"
+							onClick={() => {
+								const updated = Object.keys(languagesSettings).reduce((obj, lang) => {
+									obj[lang] = true;
+									return obj;
+								}, {});
 
-							setCollapsedStates(updated);
-						}}
-					>
-						<i className="bi bi-chevron-expand"></i>
-						<span>Collapse all</span>
-					</button>
+								setCollapsedStates(updated);
+							}}
+						>
+							<i className="bi bi-chevron-expand"></i>
+							<span>Collapse all</span>
+						</button>
+					</>
 				)
 			}
 			actionsOnTop

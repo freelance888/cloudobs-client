@@ -28,12 +28,6 @@ const NavigationBar: React.FC = () => {
 							</NavLink>
 						</li>
 						<li className="nav-item">
-							<NavLink className="nav-link" to="/settings">
-								<i className="bi bi-gear-fill" />
-								<span className="ml-2">Stream Settings</span>
-							</NavLink>
-						</li>
-						<li className="nav-item">
 							<NavLink className="nav-link" to="/videos">
 								<i className="bi bi-clock-fill" />
 								<span className="ml-2">Video schedule</span>

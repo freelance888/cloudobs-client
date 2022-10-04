@@ -1,5 +1,4 @@
 import { HostAddress } from "../store/slices/environment";
-import store from "../store/store";
 
 export const buildHostBaseAddress = (hostAddress: HostAddress): string => {
 	const { protocol, ipAddress, port, useLocalhost } = hostAddress;
@@ -16,7 +15,11 @@ export const buildUrl = (hostAddress: HostAddress, urlPath?: string, params?: Re
 
 		if (params) {
 			const queryParamsData: Record<string, string> = Object.keys(params).reduce((obj, key) => {
-				obj[key] = JSON.stringify(params[key]);
+				if (typeof params[key] === "object") {
+					obj[key] = JSON.stringify(params[key]);
+				} else {
+					obj[key] = params[key];
+				}
 				return obj;
 			}, {});
 
@@ -27,45 +30,4 @@ export const buildUrl = (hostAddress: HostAddress, urlPath?: string, params?: Re
 	}
 
 	return baseAddress;
-};
-
-const setUpTimeout = (timeoutMs: number = 8000): { signal: AbortSignal; clearTimeout: () => void } => {
-	const controller = new AbortController();
-
-	const id = setTimeout(() => controller.abort(), timeoutMs);
-
-	return {
-		signal: controller.signal,
-		clearTimeout: () => clearTimeout(id),
-	};
-};
-
-export const sendGetRequest: (url: string, timeoutMs?: number) => Promise<Response> = async (url, timeoutMs) => {
-	const hostAddress = store.getState().environment.hostAddress;
-	const { signal, clearTimeout } = setUpTimeout(timeoutMs);
-
-	console.debug("-> GET", url, hostAddress);
-
-	const response = await fetch(`${buildUrl(hostAddress, url)}`, { signal });
-	clearTimeout();
-	return response;
-};
-export const sendPostRequest: (
-	url: string,
-	data?: Record<string, unknown>,
-	timeoutMs?: number
-) => Promise<Response> = async (url, data, timeoutMs) => {
-	const hostAddress = store.getState().environment.hostAddress;
-	const { signal, clearTimeout } = setUpTimeout(timeoutMs);
-
-	console.debug("-> POST", url, data, hostAddress);
-
-	const response = await fetch(`${buildUrl(hostAddress, url, data)}`, {
-		method: "POST",
-		signal,
-	});
-
-	clearTimeout();
-
-	return response;
 };
