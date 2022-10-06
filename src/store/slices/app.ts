@@ -105,12 +105,14 @@ export const refreshServers: AsyncThunk<void, void, { state: RootState }> = crea
 	void,
 	void,
 	{ state: RootState }
->("app/refreshServers", async (_, { rejectWithValue }) => {
+>("app/refreshServers", async (_, { dispatch, rejectWithValue }) => {
 	const result = await ApiService.postSheetsPull();
 
 	if (result.status === "error") {
 		return rejectWithValue(result.message);
 	}
+
+	dispatch(fetchLanguagesSettings());
 });
 
 export const setStreamSettings: AsyncThunk<

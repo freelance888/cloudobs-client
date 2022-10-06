@@ -31,6 +31,16 @@ const LanguageSettings = () => {
 							<i className="bi bi-arrow-clockwise" />
 							<span>Refresh</span>
 						</button>
+						<button
+							className="btn btn-info me-2"
+							title="Refresh servers data from spreadsheet table"
+							onClick={() => {
+								dispatch(refreshServers() as any);
+							}}
+						>
+							<i className="bi bi-arrow-clockwise" />
+							<span>Refresh from sheet</span>
+						</button>
 						{initialized && <StartStopStreamingButton />}
 					</>
 				)
@@ -39,15 +49,6 @@ const LanguageSettings = () => {
 				initialized &&
 				languagesCount > 0 && (
 					<>
-						<button
-							className="btn btn-secondary me-2"
-							title="Refresh servers data from spreadsheet table"
-							onClick={() => {
-								dispatch(refreshServers() as any);
-							}}
-						>
-							Pull sheet to server
-						</button>
 						<button
 							className="btn btn-outline-info"
 							onClick={() => {

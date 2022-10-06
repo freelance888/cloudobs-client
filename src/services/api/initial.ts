@@ -15,6 +15,7 @@ export const postInit: ApiCall<SheetInitialSettings, LanguagesSettings> = ({ she
 	const data = {
 		sheet_url: sheetUrl,
 		worksheet_name: worksheetName,
+		force_deploy_minions: true,
 	};
 
 	return sendRequest({

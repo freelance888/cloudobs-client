@@ -12,6 +12,7 @@ export {
 	postMediaScheduleSetup,
 	postMediaSchedulePull,
 } from "./media";
+export { deleteMinionsDeleteVms as postMinionsDeleteVms } from "./minions";
 export { postSourceVolume } from "./source";
 export { postStreamSettings, postStreamStart, postStreamStop } from "./stream";
 export { postTsOffset, postTsVolume } from "./translation";
