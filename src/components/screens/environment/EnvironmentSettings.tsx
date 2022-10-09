@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { NewVMixPlayer } from "../../../services/types";
 import { cleanup } from "../../../store/slices/app";
 import {
+	deleteMinions,
 	initializeVMixPlayers,
 	selectHostAddress,
 	selectVMixPlayers,
@@ -27,10 +28,14 @@ export const EnvironmentSettings: React.FC = () => {
 				<label htmlFor="server-ip" className="form-label">
 					Clean up server data:
 				</label>
-				<div className="input-group mb-3">
+				<div>
 					<button className="btn btn-sm btn-info" onClick={() => dispatch(cleanup() as any)}>
 						<i className={"bi bi-trash-fill"} />
 						<span>Cleanup</span>
+					</button>
+					<button className="btn btn-sm btn-primary ms-2" onClick={() => dispatch(deleteMinions() as any)}>
+						<i className={"bi bi-trash-fill"} />
+						<span>Delete minions</span>
 					</button>
 				</div>
 			</ContentPanel>

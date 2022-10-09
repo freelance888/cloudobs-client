@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchLanguagesSettings, selectInitialLanguagesSettingsLoaded } from "./store/slices/app";
+import { useDispatch } from "react-redux";
+import { fetchLanguagesSettings } from "./store/slices/app";
 import { fetchVMixPlayers } from "./store/slices/environment";
 
 import "./App.css";
@@ -11,7 +11,7 @@ import VideoTableInitSettings from "./components/screens/initialization/VideoTab
 const App: React.FC = () => {
 	const dispatch = useDispatch();
 
-	const loaded = useSelector(selectInitialLanguagesSettingsLoaded);
+	// const loaded = useSelector(selectInitialLanguagesSettingsLoaded);
 	const [serverSleeping, setServerSleeping] = useState<boolean | null>(null);
 
 	useEffect(() => {
@@ -38,16 +38,16 @@ const App: React.FC = () => {
 		};
 	}, []);
 
-	if (!loaded || serverSleeping === null) {
-		<div className="App">Loading...</div>;
-	}
-
 	useEffect(() => {
 		if (serverSleeping === false) {
 			dispatch(fetchLanguagesSettings() as any);
 			dispatch(fetchVMixPlayers() as any);
 		}
 	}, [dispatch, serverSleeping]);
+
+	if (serverSleeping === null) {
+		return <div className="App">Loading...</div>;
+	}
 
 	return <div className="App">{serverSleeping ? <VideoTableInitSettings /> : <AppContentScreen />}</div>;
 };

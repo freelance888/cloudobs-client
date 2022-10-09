@@ -91,6 +91,20 @@ export const setVMixPlayerActive: AsyncThunk<ApiResult, string, { state: RootSta
 	return result;
 });
 
+export const deleteMinions: AsyncThunk<ApiResult, void, { state: RootState }> = createAsyncThunk<
+	ApiResult,
+	void,
+	{ state: RootState }
+>("environment/deleteMinions", async (_, { dispatch, rejectWithValue }) => {
+	const result = await ApiService.postMinionsDeleteVms();
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
+
+	return result;
+});
+
 const initialState: EnvironmentState = {
 	hostAddress: loadHostAddress(),
 	vMixPlayers: [],

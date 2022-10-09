@@ -28,7 +28,12 @@ export const VideoTableInitSettings: React.FC = () => {
 				Google spreadsheet URL
 			</label>
 			<div className="input-group mb-3">
-				<input className="form-control" value={sheetUrl} onChange={(event) => setSheetUrl(event.target.value)} />
+				<input
+					className="form-control"
+					value={sheetUrl}
+					name="sheet_url"
+					onChange={(event) => setSheetUrl(event.target.value)}
+				/>
 			</div>
 
 			<label htmlFor="language" className="form-label">
@@ -38,6 +43,7 @@ export const VideoTableInitSettings: React.FC = () => {
 				<input
 					className="form-control"
 					value={worksheetName}
+					name="worksheet_name"
 					onChange={(event) => setWorkSheetName(event.target.value)}
 				/>
 			</div>
