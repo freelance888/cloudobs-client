@@ -228,8 +228,12 @@ i.bi:not(.bi-no-margin) {
 	transition: all 0.6s;
 }
 
-.language-name {
+.language-name-short {
 	font-weight: bold;
+}
+
+.language-name-ip {
+	cursor: pointer;
 }
 
 .language-body {
