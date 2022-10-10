@@ -6,6 +6,8 @@ import App from "./App";
 
 import "./index.css";
 
+console.log(process.env);
+
 const container = document.getElementById("root");
 const root = createRoot(container as Element);
 
