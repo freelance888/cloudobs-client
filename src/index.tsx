@@ -6,9 +6,6 @@ import App from "./App";
 
 import "./index.css";
 
-console.log("BACKEND_PORT", process.env.REACT_APP_BACKEND_PORT);
-console.log("FRONTEND_PORT", process.env.REACT_APP_FRONTEND_PORT);
-
 const container = document.getElementById("root");
 const root = createRoot(container as Element);
 
