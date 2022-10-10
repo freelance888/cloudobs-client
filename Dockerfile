@@ -17,4 +17,4 @@ EXPOSE 3000
 
 # HEALTHCHECK --interval=30s --timeout=30s --start-period=30s --retries=3 CMD curl -f http://localhost:3000/healthcheck
 
-CMD REACT_APP_BACKEND_PORT=${BACKEND_PORT} REACT_APP_FRONTEND_PORT={FRONTEND_PORT} npm run build
+CMD REACT_APP_BACKEND_PORT=${BACKEND_PORT} REACT_APP_FRONTEND_PORT={FRONTEND_PORT} npm start
