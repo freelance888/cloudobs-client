@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import { useDispatch, useSelector } from "react-redux";
+import useLogger from "../../../hooks/useLogger";
 import { LanguageSettings } from "../../../services/types";
 import {
 	selectSyncedParameters,
@@ -37,8 +38,11 @@ const Language: React.FC<LanguageProps> = ({
 	onCollapsedToggled,
 }: LanguageProps) => {
 	const dispatch = useDispatch();
+	const { logSuccess } = useLogger();
 
 	const syncedParameters = useSelector(selectSyncedParameters);
+
+	const serverIp: string = languageSettings.initial.host_url.match(/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/)?.[0] || "";
 
 	const { sourceVolume, translationVolume, translationOffset } = languageSettings.streamParameters;
 	const { ratio, release_time, threshold, output_gain } = languageSettings.sidechain;
@@ -52,7 +56,23 @@ const Language: React.FC<LanguageProps> = ({
 		>
 			<div className="language-header">
 				<StreamActiveToggle language={language} languageSettings={languageSettings} />
-				<div className="language-name">{language}</div>
+				<div className="language-name">
+					<span className="language-name-short">{language}</span>
+					<span
+						className="language-name-ip ms-2"
+						title="Click to copy"
+						onClick={async () => {
+							try {
+								await navigator.clipboard.writeText(serverIp);
+								logSuccess(`Server IP '${serverIp}' copied to clipboard`);
+							} catch (error) {
+								// pass
+							}
+						}}
+					>
+						({serverIp})
+					</span>
+				</div>
 				<EditableStreamDestinationSettings language={language} languageSettings={languageSettings} />
 
 				<button className="language-block-collapse-btn btn btn-sm ms-auto" type="button" onClick={onCollapsedToggled}>
