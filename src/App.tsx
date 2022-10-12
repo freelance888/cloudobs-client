@@ -1,55 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { fetchLanguagesSettings } from "./store/slices/app";
-import { fetchVMixPlayers } from "./store/slices/environment";
-
-import "./App.css";
-import { isServerSleeping } from "./services/api/sleeping";
+import React from "react";
+import useServerStatePoller from "./hooks/useServerStatePoller";
+import useInitialization from "./hooks/useInitialization";
 import AppContentScreen from "./components/screens/AppContentScreen";
 import VideoTableInitSettings from "./components/screens/initialization/VideoTableInitSettings";
+import "./App.css";
 
 const App: React.FC = () => {
-	const dispatch = useDispatch();
+	const ready = useServerStatePoller();
 
-	// const loaded = useSelector(selectInitialLanguagesSettingsLoaded);
-	const [serverSleeping, setServerSleeping] = useState<boolean | null>(null);
+	useInitialization(ready);
 
-	useEffect(() => {
-		let interval: ReturnType<typeof setInterval> | null = null;
-
-		const checkSleeping = async () => {
-			const serverSleeping = await isServerSleeping();
-
-			if (!serverSleeping) {
-				interval && clearInterval(interval);
-			}
-
-			setServerSleeping(serverSleeping);
-		};
-
-		interval = setInterval(() => {
-			checkSleeping();
-		}, 5000);
-
-		checkSleeping();
-
-		return () => {
-			interval && clearInterval(interval);
-		};
-	}, []);
-
-	useEffect(() => {
-		if (serverSleeping === false) {
-			dispatch(fetchLanguagesSettings() as any);
-			dispatch(fetchVMixPlayers() as any);
-		}
-	}, [dispatch, serverSleeping]);
-
-	if (serverSleeping === null) {
-		return <div className="App">Loading...</div>;
-	}
-
-	return <div className="App">{serverSleeping ? <VideoTableInitSettings /> : <AppContentScreen />}</div>;
+	return <div className="App">{ready ? <AppContentScreen /> : <VideoTableInitSettings />}</div>;
 };
 
 export default App;
