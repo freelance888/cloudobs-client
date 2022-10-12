@@ -18,16 +18,23 @@ type EnvironmentState = {
 
 export const LS_KEY_HOST_ADDRESS = "cloudobs__host_address";
 
-export const DEFAULT_HOST_ADDRESS: HostAddress = {
-	protocol: "http",
-	ipAddress: window.location.hostname,
-	port: window.location.port === "3010" ? "5010" : "5000",
-	useLocalhost: true,
+const getDefaultHostAddress: () => HostAddress = () => {
+	const DEFAULT_SERVER_IP = "65.109.13.24";
+
+	const { hostname, port } = window.location;
+	const SERVER_PORT = hostname === "localhost" || port === "3010" ? "5010" : "5000";
+
+	return {
+		protocol: "http",
+		ipAddress: DEFAULT_SERVER_IP,
+		port: SERVER_PORT,
+		useLocalhost: false,
+	};
 };
 
 const loadHostAddress = () => {
 	const hostAddrSerialized = localStorage.getItem(LS_KEY_HOST_ADDRESS);
-	const hostAddress: HostAddress = hostAddrSerialized ? JSON.parse(hostAddrSerialized) : DEFAULT_HOST_ADDRESS;
+	const hostAddress: HostAddress = hostAddrSerialized ? JSON.parse(hostAddrSerialized) : getDefaultHostAddress();
 	return hostAddress;
 };
 
@@ -95,7 +102,7 @@ export const deleteMinions: AsyncThunk<ApiResult, void, { state: RootState }> = 
 	ApiResult,
 	void,
 	{ state: RootState }
->("environment/deleteMinions", async (_, { dispatch, rejectWithValue }) => {
+>("environment/deleteMinions", async (_, { rejectWithValue }) => {
 	const result = await ApiService.postMinionsDeleteVms();
 
 	if (result.status === "error") {
