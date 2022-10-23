@@ -4,13 +4,23 @@ import useInitialization from "./hooks/useInitialization";
 import AppContentScreen from "./components/screens/AppContentScreen";
 import VideoTableInitSettings from "./components/screens/initialization/VideoTableInitSettings";
 import "./App.css";
+import { ServerState } from "./services/api/state";
 
 const App: React.FC = () => {
-	const ready = useServerStatePoller();
+	const serverState = useServerStatePoller();
 
-	useInitialization(ready);
+	useInitialization(serverState === ServerState.RUNNING);
 
-	return <div className="App">{ready ? <AppContentScreen /> : <VideoTableInitSettings />}</div>;
+	switch (serverState) {
+		case ServerState.INITIALIZING:
+			return <div>Initializing... Please wait 🙂</div>;
+		case ServerState.RUNNING:
+			return <AppContentScreen />;
+		case ServerState.DISPOSING:
+			return <div>Server is being disposed...</div>;
+		default:
+			return <VideoTableInitSettings />;
+	}
 };
 
 export default App;

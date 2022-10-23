@@ -300,6 +300,10 @@ i.bi:not(.bi-no-margin) {
 	align-items: center;
 }
 
+.video-schedule-list .stream-settings-video-list-item.played {
+	background-color: #e8e8e8;
+}
+
 .sync-all-cursor-help {
 	cursor: help;
 }

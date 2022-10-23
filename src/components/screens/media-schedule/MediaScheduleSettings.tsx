@@ -125,6 +125,13 @@ export const MediaScheduleSettings = () => {
 				</button>
 			}
 		>
+			{/* TODO */}
+			{/* <div className="video-schedule-list-now col-12 mb-3">
+				Current timestamp:{" "}
+				<span className="video-schedule-list-now-timestamp" id="current-timestamp">
+					0
+				</span>
+			</div> */}
 			<div className="video-schedule-list col-12 mb-3">
 				<div className="container">
 					<div className="stream-settings-video-list-head row mb-1">
@@ -135,10 +142,10 @@ export const MediaScheduleSettings = () => {
 					{Object.entries(editedMediaSchedule)
 						.sort(([, a], [, b]) => Number(a.timestamp) - Number(b.timestamp))
 						.map(([mediaId, item]) => {
-							const { name, timestamp, is_enabled } = item;
+							const { name, timestamp, is_enabled, is_played } = item;
 
 							return (
-								<div className="stream-settings-video-list-item row" key={mediaId}>
+								<div className={`stream-settings-video-list-item row ${is_played ? "played" : ""}`} key={mediaId}>
 									<div className="col-1 d-flex align-items-center">
 										<input
 											className="form-check-input mt-0"

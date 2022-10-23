@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { getServerState, ServerState } from "../services/api/state";
 
+const POLL_INTERVAL_MS = 5000;
+
 const useServerStatePoller = () => {
-	const [serverReady, setServerReady] = useState<boolean>(false);
+	const [serverState, setServerState] = useState<ServerState | null>(null);
 
 	useEffect(() => {
 		let interval: ReturnType<typeof setInterval> | null = null;
@@ -13,25 +15,19 @@ const useServerStatePoller = () => {
 
 		const checkState = async () => {
 			const serverState = await getServerState();
-			const ready = serverState === ServerState.RUNNING;
-
-			if (ready) {
-				clearPolling();
-			}
-
-			setServerReady(ready);
+			setServerState(serverState);
 		};
 
 		checkState();
 
 		interval = setInterval(() => {
 			checkState();
-		}, 5000);
+		}, POLL_INTERVAL_MS);
 
 		return clearPolling;
 	}, []);
 
-	return serverReady;
+	return serverState;
 };
 
 export default useServerStatePoller;
