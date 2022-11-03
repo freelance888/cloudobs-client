@@ -224,8 +224,8 @@ const Language: React.FC<LanguageProps> = ({
 									<input
 										type="radio"
 										className="btn-check"
-										name="btnradio"
-										id="btnradio1"
+										name={`btnradio-${language}`}
+										id={`btnradio1-${language}`}
 										checked={editedTransitionSettings.transition_name === "Cut"}
 										onChange={() => {
 											setEditedTransitionSettings((previousTransitionSettings) => ({
@@ -236,7 +236,7 @@ const Language: React.FC<LanguageProps> = ({
 									/>
 									<label
 										className={`btn btn-${editedTransitionSettings.transition_name === "Cut" ? "" : "outline-"}primary`}
-										htmlFor="btnradio1"
+										htmlFor={`btnradio1-${language}`}
 									>
 										Cut
 									</label>
@@ -244,8 +244,8 @@ const Language: React.FC<LanguageProps> = ({
 									<input
 										type="radio"
 										className="btn-check"
-										name="btnradio"
-										id="btnradio2"
+										name={`btnradio-${language}`}
+										id={`btnradio2-${language}`}
 										checked={editedTransitionSettings.transition_name === "Stinger"}
 										onChange={() => {
 											setEditedTransitionSettings((previousTransitionSettings) => ({
@@ -258,7 +258,7 @@ const Language: React.FC<LanguageProps> = ({
 										className={`btn btn-${
 											editedTransitionSettings.transition_name === "Stinger" ? "" : "outline-"
 										}primary`}
-										htmlFor="btnradio2"
+										htmlFor={`btnradio2-${language}`}
 									>
 										Stinger
 									</label>
