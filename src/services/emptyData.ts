@@ -5,6 +5,7 @@ import {
 	SidechainSettings,
 	LanguageSettings,
 	GDriveSettings,
+	TransitionSettings,
 } from "./types";
 
 const EMPTY_INITIAL_SETTINGS: InitialSettings = {
@@ -33,6 +34,12 @@ const EMPTY_SIDECHAIN_SETTINGS: SidechainSettings = {
 	output_gain: 0,
 };
 
+const EMPTY_TRANSITION_SETTINGS: TransitionSettings = {
+	transition_name: "Cut",
+	transition_point: 3500,
+	path: "",
+};
+
 const EMPTY_GDRIVE_SETTINGS: GDriveSettings = {
 	drive_id: "",
 	media_dir: "/home/stream/content",
@@ -47,5 +54,6 @@ export const EMPTY_LANGUAGE_SETTINGS: LanguageSettings = {
 	streamParameters: EMPTY_STREAM_PARAMETERS_SETTINGS,
 	streamDestination: EMPTY_STREAM_DESTINATION_SETTINGS,
 	sidechain: EMPTY_SIDECHAIN_SETTINGS,
+	transition: EMPTY_TRANSITION_SETTINGS,
 	gDrive: EMPTY_GDRIVE_SETTINGS,
 };

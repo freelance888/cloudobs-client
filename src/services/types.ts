@@ -101,6 +101,7 @@ export type LanguageSettings = {
 	streamParameters: StreamParametersSettings;
 	streamDestination: StreamDestinationSettings;
 	sidechain: SidechainSettings;
+	transition: TransitionSettings;
 	gDrive: GDriveSettings;
 };
 

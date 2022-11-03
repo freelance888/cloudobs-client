@@ -1,11 +1,14 @@
 import classNames from "classnames";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useLogger from "../../../hooks/useLogger";
-import { LanguageSettings } from "../../../services/types";
+import { EMPTY_LANGUAGE_SETTINGS } from "../../../services/emptyData";
+import { LanguageSettings, TransitionSettings } from "../../../services/types";
 import {
 	selectSyncedParameters,
 	setSidechain,
 	setSourceVolume,
+	setTransition,
 	setTranslationOffset,
 	setTranslationVolume,
 	updateSyncedParameters,
@@ -24,6 +27,10 @@ const MAX_TS_VOLUME = 0;
 const MIN_SOURCE_VOLUME = -100;
 const MAX_SOURCE_VOLUME = 0;
 
+const MIN_TRANSITION_POINT = 0;
+const MAX_TRANSITION_POINT = 10000;
+const TRANSITION_POINT_STEP = 100;
+
 export type LanguageProps = {
 	language: string;
 	languageSettings: LanguageSettings;
@@ -39,6 +46,9 @@ const Language: React.FC<LanguageProps> = ({
 }: LanguageProps) => {
 	const dispatch = useDispatch();
 	const { logSuccess } = useLogger();
+	const [editedTransitionSettings, setEditedTransitionSettings] = useState<TransitionSettings>(
+		languageSettings.transition || EMPTY_LANGUAGE_SETTINGS.transition
+	);
 
 	const syncedParameters = useSelector(selectSyncedParameters);
 
@@ -83,7 +93,7 @@ const Language: React.FC<LanguageProps> = ({
 			<div className="language-body">
 				<div className="mt-2">
 					<div className="language-settings-block mt-2">
-						<div className="language-settings">
+						<div className="language-settings pe-3">
 							<h6>Volume</h6>
 							<RangeInput
 								label="Source volume"
@@ -135,7 +145,7 @@ const Language: React.FC<LanguageProps> = ({
 							/>
 						</div>
 
-						<div className="language-extra-settings ms-5">
+						<div className="language-sidechain-settings px-3">
 							<h6>Sidechain</h6>
 							<RangeInput
 								label="Ratio"
@@ -188,6 +198,103 @@ const Language: React.FC<LanguageProps> = ({
 								}
 								// onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ output_gain: updatedSyncAll }))}
 							/>
+						</div>
+
+						<div className="language-transition-settings px-3">
+							<h6>Transition</h6>
+							<label htmlFor="transition-type">
+								Type
+								<div
+									id="transition-type"
+									className="btn-group btn-group-sm my-2 d-flex"
+									role="group"
+									aria-label="Transition type"
+								>
+									<input
+										type="radio"
+										className="btn-check"
+										name="btnradio"
+										id="btnradio1"
+										checked={editedTransitionSettings.transition_name === "Cut"}
+										onChange={() => {
+											setEditedTransitionSettings((previousTransitionSettings) => ({
+												...previousTransitionSettings,
+												transition_name: "Cut",
+											}));
+										}}
+									/>
+									<label
+										className={`btn btn-${editedTransitionSettings.transition_name === "Cut" ? "" : "outline-"}primary`}
+										htmlFor="btnradio1"
+									>
+										Cut
+									</label>
+
+									<input
+										type="radio"
+										className="btn-check"
+										name="btnradio"
+										id="btnradio2"
+										checked={editedTransitionSettings.transition_name === "Stinger"}
+										onChange={() => {
+											setEditedTransitionSettings((previousTransitionSettings) => ({
+												...previousTransitionSettings,
+												transition_name: "Stinger",
+											}));
+										}}
+									/>
+									<label
+										className={`btn btn-${
+											editedTransitionSettings.transition_name === "Stinger" ? "" : "outline-"
+										}primary`}
+										htmlFor="btnradio2"
+									>
+										Stinger
+									</label>
+								</div>
+							</label>
+
+							<label htmlFor="stinger-filename" className="mb-2">
+								Stinger filename
+								<input
+									type="text"
+									value={editedTransitionSettings.path}
+									disabled={editedTransitionSettings.transition_name !== "Stinger"}
+									onChange={(event) => {
+										setEditedTransitionSettings((previousTransitionSettings) => ({
+											...previousTransitionSettings,
+											path: event.target.value,
+										}));
+									}}
+								/>
+							</label>
+
+							<RangeInput
+								label="Transition point"
+								minValue={MIN_TRANSITION_POINT}
+								maxValue={MAX_TRANSITION_POINT}
+								step={TRANSITION_POINT_STEP}
+								value={editedTransitionSettings.transition_point}
+								// syncAll={syncedParameters.transition}
+								units={"ms"}
+								onValueChanged={(updatedTransitionPoint) => {
+									// dispatch(setTransition({ [language]: { transition_point: updatedTransitionPoint } }) as any)
+									setEditedTransitionSettings((previousTransitionSettings) => ({
+										...previousTransitionSettings,
+										transition_point: updatedTransitionPoint,
+									}));
+								}}
+								// onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ threshold: updatedSyncAll }))}
+							/>
+
+							<button
+								className="btn btn-sm btn-primary mt-2"
+								onClick={() => {
+									dispatch(setTransition({ [language]: editedTransitionSettings }) as any);
+								}}
+							>
+								Save
+							</button>
 						</div>
 					</div>
 				</div>

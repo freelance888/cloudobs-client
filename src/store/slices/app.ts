@@ -13,6 +13,7 @@ import {
 	StreamDestinationSettings,
 	StreamParametersSettings,
 	SyncableSettingsFlags,
+	TransitionSettings,
 	TranslationOffsetSettings,
 	TranslationVolumeSettings,
 } from "../../services/types";
@@ -280,6 +281,24 @@ export const setSidechain: AsyncThunk<
 	}
 );
 
+export const setTransition: AsyncThunk<
+	ApiResult<All<Partial<TransitionSettings>>>,
+	All<Partial<TransitionSettings>>,
+	{ state: RootState }
+> = createAsyncThunk<
+	ApiResult<All<Partial<TransitionSettings>>>,
+	All<Partial<TransitionSettings>>,
+	{ state: RootState }
+>("app/setTransition", async (transitionSettings, { rejectWithValue }) => {
+	const result = await ApiService.postTransition(transitionSettings);
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
+
+	return result;
+});
+
 export const syncGoogleDrive: AsyncThunk<void, void, { state: RootState }> = createAsyncThunk<
 	void,
 	void,
@@ -343,6 +362,7 @@ const { actions, reducer } = createSlice({
 								sidechain: languageSettings.sidechain,
 								gDrive: languageSettings.gdrive_settings,
 								streamDestination: languageSettings.stream_settings,
+								transition: languageSettings.transition,
 								streamParameters,
 							};
 						}
@@ -402,6 +422,15 @@ const { actions, reducer } = createSlice({
 					state.languagesSettings[language].sidechain = {
 						...state.languagesSettings[language].sidechain,
 						...updatedSidechainSettings,
+					};
+				}
+			})
+			.addCase(setTransition.fulfilled, (state, { payload: transitionSettings }) => {
+				for (const language in transitionSettings.data) {
+					const updatedTransitionSettings = transitionSettings.data[language];
+					state.languagesSettings[language].transition = {
+						...state.languagesSettings[language].transition,
+						...updatedTransitionSettings,
 					};
 				}
 			}),

@@ -20,6 +20,7 @@ type DisplayMode = "BLANK" | "NOT_INITIALIZED" | "NOT_PULLED" | "READY";
 export const MediaScheduleSettings = () => {
 	const dispatch = useDispatch();
 	const [displayMode, setDisplayMode] = useState<DisplayMode>("BLANK");
+	const [currentTimestamp, setCurrentTimestamp] = useState(0);
 
 	const mediaSchedule = useSelector(selectMediaSchedule);
 
@@ -30,8 +31,9 @@ export const MediaScheduleSettings = () => {
 	}, [mediaSchedule]);
 
 	useEffect(() => {
-		const fn = async () => {
+		(async () => {
 			const res = await ApiService.getMediaSchedule();
+			let interval: ReturnType<typeof setInterval> | null = null;
 
 			if (res.status === "error") {
 				if (res.message === "Please complete Timing Google Sheets initialization first") {
@@ -41,17 +43,21 @@ export const MediaScheduleSettings = () => {
 				}
 			} else {
 				setDisplayMode("READY");
+				await dispatch(fetchMediaSchedule() as any);
+				setCurrentTimestamp(0);
+				interval = setInterval(() => {
+					setCurrentTimestamp((previousTimestamp) => previousTimestamp + 1);
+				}, 1000);
 			}
-		};
-
-		fn();
+		})();
 	}, []);
 
-	useEffect(() => {
-		if (displayMode === "READY") {
-			dispatch(fetchMediaSchedule() as any);
-		}
-	}, [dispatch, displayMode]);
+	// useEffect(() => {
+	// 	if (displayMode === "READY") {
+	// 		dispatch(fetchMediaSchedule() as any);
+	// 		setCurrentTimestamp(0);
+	// 	}
+	// }, [dispatch, displayMode]);
 
 	if (displayMode === "BLANK") {
 		return <ContentPanel>Loading...</ContentPanel>;
@@ -125,13 +131,7 @@ export const MediaScheduleSettings = () => {
 				</button>
 			}
 		>
-			{/* TODO */}
-			{/* <div className="video-schedule-list-now col-12 mb-3">
-				Current timestamp:{" "}
-				<span className="video-schedule-list-now-timestamp" id="current-timestamp">
-					0
-				</span>
-			</div> */}
+			<div className="video-schedule-list-now col-12 mb-3">Current timestamp: {currentTimestamp}</div>
 			<div className="video-schedule-list col-12 mb-3">
 				<div className="container">
 					<div className="stream-settings-video-list-head row mb-1">
