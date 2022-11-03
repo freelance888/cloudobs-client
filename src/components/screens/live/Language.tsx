@@ -5,6 +5,7 @@ import useLogger from "../../../hooks/useLogger";
 import { EMPTY_LANGUAGE_SETTINGS } from "../../../services/emptyData";
 import { LanguageSettings, TransitionSettings } from "../../../services/types";
 import {
+	refreshSource,
 	selectSyncedParameters,
 	setSidechain,
 	setSourceVolume,
@@ -85,7 +86,17 @@ const Language: React.FC<LanguageProps> = ({
 				</div>
 				<EditableStreamDestinationSettings language={language} languageSettings={languageSettings} />
 
-				<button className="language-block-collapse-btn btn btn-sm ms-auto" type="button" onClick={onCollapsedToggled}>
+				<button
+					className="btn btn-sm btn-dark ms-auto"
+					onClick={() => {
+						dispatch(refreshSource([language]) as any);
+					}}
+				>
+					<i className={"bi bi-eye"} />
+					Refresh source
+				</button>
+
+				<button className="language-block-collapse-btn btn btn-sm ms-5" type="button" onClick={onCollapsedToggled}>
 					<i className={classNames("bi bi-no-margin", collapsed ? "bi-chevron-down" : "bi-chevron-up")} />
 				</button>
 			</div>

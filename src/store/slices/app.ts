@@ -314,6 +314,26 @@ export const syncGoogleDrive: AsyncThunk<void, void, { state: RootState }> = cre
 	}
 });
 
+export const refreshSource: AsyncThunk<
+	ApiResult<string[]>,
+	string[] | undefined,
+	{ state: RootState }
+> = createAsyncThunk<ApiResult<string[]>, string[] | undefined, { state: RootState }>(
+	"app/refreshSource",
+	async (languages, { getState, rejectWithValue }) => {
+		const languagesSet = Array.isArray(languages);
+		const affectedLanguages = languagesSet ? languages : getAllLanguages(getState());
+
+		const result = await ApiService.putSourceRefresh(affectedLanguages);
+
+		if (result.status === "error") {
+			return rejectWithValue(result.message);
+		}
+
+		return result;
+	}
+);
+
 const { actions, reducer } = createSlice({
 	name: "app",
 	initialState,
