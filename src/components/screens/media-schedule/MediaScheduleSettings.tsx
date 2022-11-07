@@ -33,7 +33,7 @@ export const MediaScheduleSettings = () => {
 	useEffect(() => {
 		(async () => {
 			const res = await ApiService.getMediaSchedule();
-			let interval: ReturnType<typeof setInterval> | null = null;
+			// let interval: ReturnType<typeof setInterval> | null = null;
 
 			if (res.status === "error") {
 				if (res.message === "Please complete Timing Google Sheets initialization first") {
@@ -45,9 +45,9 @@ export const MediaScheduleSettings = () => {
 				setDisplayMode("READY");
 				await dispatch(fetchMediaSchedule() as any);
 				setCurrentTimestamp(0);
-				interval = setInterval(() => {
-					setCurrentTimestamp((previousTimestamp) => previousTimestamp + 1);
-				}, 1000);
+				// interval = setInterval(() => {
+				// 	setCurrentTimestamp((previousTimestamp) => previousTimestamp + 1);
+				// }, 1000);
 			}
 		})();
 	}, []);
@@ -131,7 +131,7 @@ export const MediaScheduleSettings = () => {
 				</button>
 			}
 		>
-			<div className="video-schedule-list-now col-12 mb-3">Current timestamp: {currentTimestamp}</div>
+			{/* <div className="video-schedule-list-now col-12 mb-3">Current timestamp: {currentTimestamp}</div> */}
 			<div className="video-schedule-list col-12 mb-3">
 				<div className="container">
 					<div className="stream-settings-video-list-head row mb-1">
