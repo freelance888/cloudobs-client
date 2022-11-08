@@ -13,6 +13,7 @@ import {
 	StreamDestinationSettings,
 	StreamParametersSettings,
 	SyncableSettingsFlags,
+	TransitionSettings,
 	TranslationOffsetSettings,
 	TranslationVolumeSettings,
 } from "../../services/types";
@@ -280,6 +281,24 @@ export const setSidechain: AsyncThunk<
 	}
 );
 
+export const setTransition: AsyncThunk<
+	ApiResult<All<Partial<TransitionSettings>>>,
+	All<Partial<TransitionSettings>>,
+	{ state: RootState }
+> = createAsyncThunk<
+	ApiResult<All<Partial<TransitionSettings>>>,
+	All<Partial<TransitionSettings>>,
+	{ state: RootState }
+>("app/setTransition", async (transitionSettings, { rejectWithValue }) => {
+	const result = await ApiService.postTransition(transitionSettings);
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
+
+	return result;
+});
+
 export const syncGoogleDrive: AsyncThunk<void, void, { state: RootState }> = createAsyncThunk<
 	void,
 	void,
@@ -294,6 +313,26 @@ export const syncGoogleDrive: AsyncThunk<void, void, { state: RootState }> = cre
 		return rejectWithValue(result.message);
 	}
 });
+
+export const refreshSource: AsyncThunk<
+	ApiResult<string[]>,
+	string[] | undefined,
+	{ state: RootState }
+> = createAsyncThunk<ApiResult<string[]>, string[] | undefined, { state: RootState }>(
+	"app/refreshSource",
+	async (languages, { getState, rejectWithValue }) => {
+		const languagesSet = Array.isArray(languages);
+		const affectedLanguages = languagesSet ? languages : getAllLanguages(getState());
+
+		const result = await ApiService.putSourceRefresh(affectedLanguages);
+
+		if (result.status === "error") {
+			return rejectWithValue(result.message);
+		}
+
+		return result;
+	}
+);
 
 const { actions, reducer } = createSlice({
 	name: "app",
@@ -343,6 +382,7 @@ const { actions, reducer } = createSlice({
 								sidechain: languageSettings.sidechain,
 								gDrive: languageSettings.gdrive_settings,
 								streamDestination: languageSettings.stream_settings,
+								transition: languageSettings.transition,
 								streamParameters,
 							};
 						}
@@ -402,6 +442,15 @@ const { actions, reducer } = createSlice({
 					state.languagesSettings[language].sidechain = {
 						...state.languagesSettings[language].sidechain,
 						...updatedSidechainSettings,
+					};
+				}
+			})
+			.addCase(setTransition.fulfilled, (state, { payload: transitionSettings }) => {
+				for (const language in transitionSettings.data) {
+					const updatedTransitionSettings = transitionSettings.data[language];
+					state.languagesSettings[language].transition = {
+						...state.languagesSettings[language].transition,
+						...updatedTransitionSettings,
 					};
 				}
 			}),

@@ -6,6 +6,7 @@ import {
 	selectInitialized,
 	selectLanguagesSettings,
 	refreshServers,
+	refreshSource,
 } from "../../../store/slices/app";
 import ContentPanel from "../../ContentPanel";
 import Language from "./Language";
@@ -42,6 +43,15 @@ const LanguageSettings = () => {
 							<span>Refresh from sheet</span>
 						</button>
 						{initialized && <StartStopStreamingButton />}
+						<button
+							className="btn btn-dark ms-2"
+							onClick={() => {
+								dispatch(refreshSource(["__all__"]) as any);
+							}}
+						>
+							<i className={"bi bi-eye"} />
+							Refresh all sources
+						</button>
 					</>
 				)
 			}

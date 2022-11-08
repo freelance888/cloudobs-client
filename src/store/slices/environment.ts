@@ -21,8 +21,8 @@ export const LS_KEY_HOST_ADDRESS = "cloudobs__host_address";
 const getDefaultHostAddress: () => HostAddress = () => {
 	const DEFAULT_SERVER_IP = "65.109.13.24";
 
-	const { hostname, port } = window.location;
-	const SERVER_PORT = hostname === "localhost" || port === "3010" ? "5010" : "5000";
+	const { port } = window.location;
+	const SERVER_PORT = port === "3010" ? "5010" : "5000";
 
 	return {
 		protocol: "http",

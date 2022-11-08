@@ -6,7 +6,9 @@ const SERVER_STATE_ENDPOINT = "/state";
 export enum ServerState {
 	SLEEPING = "sleeping",
 	NOT_INITIALIZED = "not initialized",
+	INITIALIZING = "initializing",
 	RUNNING = "running",
+	DISPOSING = "disposing",
 }
 
 export const getServerState: () => Promise<ServerState> = async () => {
