@@ -93,7 +93,9 @@ export type OptionsFlags<Type> = {
 	[Property in keyof Type]: boolean;
 };
 
-export type SyncableSettings = Omit<StreamParametersSettings, "streamActive"> & SidechainSettings;
+export type SyncableSettings = Omit<StreamParametersSettings, "streamActive"> &
+	SidechainSettings &
+	Pick<TransitionSettings, "transition_point">;
 export type SyncableSettingsFlags = OptionsFlags<SyncableSettings>;
 
 export type LanguageSettings = {
