@@ -49,6 +49,7 @@ const initialState: AppState = {
 		release_time: false,
 		threshold: false,
 		output_gain: false,
+		transition_point: false,
 	},
 	languagesSettings: {},
 };
@@ -447,11 +448,21 @@ const { actions, reducer } = createSlice({
 			})
 			.addCase(setTransition.fulfilled, (state, { payload: transitionSettings }) => {
 				for (const language in transitionSettings.data) {
-					const updatedTransitionSettings = transitionSettings.data[language];
-					state.languagesSettings[language].transition = {
-						...state.languagesSettings[language].transition,
-						...updatedTransitionSettings,
-					};
+					if (language === "__all__") {
+						const languages = Object.keys(state.languagesSettings);
+						languages.forEach((language) => {
+							state.languagesSettings[language].transition = {
+								...state.languagesSettings[language].transition,
+								...transitionSettings?.data?.["__all__"],
+							};
+						});
+					} else {
+						const updatedTransitionSettings = transitionSettings.data[language];
+						state.languagesSettings[language].transition = {
+							...state.languagesSettings[language].transition,
+							...updatedTransitionSettings,
+						};
+					}
 				}
 			}),
 });

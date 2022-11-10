@@ -29,7 +29,7 @@ h6 {
 .content-panel {
 	/* height: calc(100% - 60px); */
 	padding: 0.5rem;
-	max-width: 980px;
+	max-width: 1060px;
 }
 
 .content-panel__actions {

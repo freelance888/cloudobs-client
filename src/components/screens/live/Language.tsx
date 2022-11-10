@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useLogger from "../../../hooks/useLogger";
 import { EMPTY_LANGUAGE_SETTINGS } from "../../../services/emptyData";
@@ -29,7 +29,7 @@ const MIN_SOURCE_VOLUME = -100;
 const MAX_SOURCE_VOLUME = 0;
 
 const MIN_TRANSITION_POINT = 0;
-const MAX_TRANSITION_POINT = 10000;
+const MAX_TRANSITION_POINT = 20000;
 const TRANSITION_POINT_STEP = 100;
 
 export type LanguageProps = {
@@ -57,6 +57,13 @@ const Language: React.FC<LanguageProps> = ({
 
 	const { sourceVolume, translationVolume, translationOffset } = languageSettings.streamParameters;
 	const { ratio, release_time, threshold, output_gain } = languageSettings.sidechain;
+
+	useEffect(() => {
+		setEditedTransitionSettings((previousTransitionSettings) => ({
+			...previousTransitionSettings,
+			transition_point: languageSettings.transition.transition_point,
+		}));
+	}, [languageSettings.transition.transition_point]);
 
 	return (
 		<div
@@ -286,7 +293,7 @@ const Language: React.FC<LanguageProps> = ({
 								maxValue={MAX_TRANSITION_POINT}
 								step={TRANSITION_POINT_STEP}
 								value={editedTransitionSettings.transition_point}
-								// syncAll={syncedParameters.transition}
+								syncAll={syncedParameters.transition_point}
 								units={"ms"}
 								onValueChanged={(updatedTransitionPoint) => {
 									// dispatch(setTransition({ [language]: { transition_point: updatedTransitionPoint } }) as any)
@@ -295,13 +302,24 @@ const Language: React.FC<LanguageProps> = ({
 										transition_point: updatedTransitionPoint,
 									}));
 								}}
-								// onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ threshold: updatedSyncAll }))}
+								onSyncAllChanged={(updatedSyncAll) =>
+									dispatch(updateSyncedParameters({ transition_point: updatedSyncAll }))
+								}
 							/>
 
 							<button
 								className="btn btn-sm btn-primary mt-2"
-								onClick={() => {
-									dispatch(setTransition({ [language]: editedTransitionSettings }) as any);
+								onClick={async () => {
+									await dispatch(setTransition({ [language]: editedTransitionSettings }) as any);
+
+									const syncAllTransitionPoints = syncedParameters.transition_point;
+									if (syncAllTransitionPoints) {
+										dispatch(
+											setTransition({
+												__all__: { transition_point: editedTransitionSettings.transition_point },
+											}) as any
+										);
+									}
 								}}
 							>
 								Save
