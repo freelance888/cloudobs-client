@@ -10,6 +10,7 @@ import {
 	SheetInitialSettings,
 	UpdatedMediaScheduleItem,
 } from "../../services/types";
+import { parseTimestamps } from "../../utils/timestamp";
 import { RootSelector, RootState } from "../store";
 
 type MediaScheduleState = {
@@ -162,7 +163,8 @@ const { reducer } = createSlice({
 	reducers: {},
 	extraReducers: (builder) =>
 		builder.addCase(fetchMediaSchedule.fulfilled, (state, { payload }) => {
-			const mediaSchedule = payload.data as MediaSchedule;
+			let mediaSchedule = payload.data as MediaSchedule;
+			mediaSchedule = parseTimestamps(mediaSchedule);
 			state.mediaSchedule = mediaSchedule;
 		}),
 	// .addCase(playMedia.fulfilled, (state, { payload }) => {
