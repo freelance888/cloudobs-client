@@ -28,7 +28,16 @@ export const EnvironmentSettings: React.FC = () => {
 					Clean up server data:
 				</label>
 				<div>
-					<button className="btn btn-sm btn-primary" onClick={() => dispatch(deleteMinions() as any)}>
+					<button
+						className="btn btn-sm btn-primary"
+						onClick={() => {
+							if (window.confirm("❗️ You are going to delete all minion servers") === true) {
+								if (window.confirm("Are you really sure? 🙂") === true) {
+									dispatch(deleteMinions() as any);
+								}
+							}
+						}}
+					>
 						<i className={"bi bi-trash-fill"} />
 						<span>Delete minions</span>
 					</button>

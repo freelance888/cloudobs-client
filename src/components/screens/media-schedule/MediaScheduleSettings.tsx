@@ -9,7 +9,7 @@ import {
 	resetMediaSchedule,
 	selectMediaSchedule,
 	// setMediaSchedule,
-	// stopMedia,
+	stopMedia,
 	updateMedia,
 } from "../../../store/slices/media-schedule";
 import ContentPanel from "../../ContentPanel";
@@ -121,19 +121,36 @@ export const MediaScheduleSettings = () => {
 				</>
 			}
 			endActions={
-				<button
-					className="btn btn-secondary ms-2"
-					onClick={() => {
-						dispatch(resetMediaSchedule() as any);
-					}}
-				>
-					<span>Reset</span>
-				</button>
+				<>
+					<button
+						className="btn btn-primary ms-2"
+						type="button"
+						title="Stop media"
+						onClick={() => {
+							if (window.confirm("Are you sure?") === true) {
+								dispatch(stopMedia() as any);
+							}
+						}}
+					>
+						<i className="bi bi-stop-fill me-1" />
+						Stop media
+					</button>
+					<button
+						className="btn btn-secondary ms-2"
+						onClick={() => {
+							if (window.confirm("❗️ Reset the current media schedule?") === true) {
+								dispatch(resetMediaSchedule() as any);
+							}
+						}}
+					>
+						<span>Reset</span>
+					</button>
+				</>
 			}
 		>
 			{/* <div className="video-schedule-list-now col-12 mb-3">Current timestamp: {currentTimestamp}</div> */}
 			<div className="video-schedule-list col-12 mb-3">
-				<div className="container">
+				<div className="container-fluid">
 					<div className="stream-settings-video-list-head row mb-1">
 						<div className="col-1">Enabled</div>
 						<div className="col-5">Media name</div>
@@ -196,18 +213,6 @@ export const MediaScheduleSettings = () => {
 												<i className="bi bi-play-fill me-1" />
 												Play
 											</button>
-											{/* TODO wait until backend is fixed, stop now throws 500 error */}
-											{/* <button
-												className="btn btn-sm btn-primary ms-2"
-												type="button"
-												title="Stop"
-												onClick={() => {
-													dispatch(stopMedia() as any);
-												}}
-											>
-												<i className="bi bi-stop-fill me-1" />
-												Stop
-											</button> */}
 										</div>
 									</div>
 								</div>

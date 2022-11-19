@@ -27,7 +27,9 @@ const StartStopStreamingButton = () => {
 			disabled={languagesCount === 0 || activeRequest === "postStreamStart" || activeRequest === "postStreamStop"}
 			onClick={() => {
 				if (streamsActive) {
-					dispatch(stopStreaming() as any);
+					if (window.confirm("❗️ Stop all streams?") === true) {
+						dispatch(stopStreaming() as any);
+					}
 				} else {
 					dispatch(startStreaming() as any);
 				}
