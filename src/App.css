@@ -216,7 +216,6 @@ i.bi:not(.bi-no-margin) {
 .Language {
 	display: flex;
 	flex-direction: column;
-	border: 1px solid #eee;
 	box-shadow: 2px 1px 7px #ccc;
 	margin-bottom: 0.75rem;
 	padding: 0.5rem;
@@ -238,6 +237,10 @@ i.bi:not(.bi-no-margin) {
 
 .language-name-ip {
 	cursor: pointer;
+	padding-bottom: 1px;
+}
+.language-name-ip:hover {
+	border-bottom: 1px dotted rgb(48, 48, 48);
 }
 
 .language-body {

@@ -25,6 +25,7 @@ const StartStopStreamingButton = () => {
 		<button
 			className={streamsActive ? "btn btn-danger" : "btn btn-success"}
 			disabled={languagesCount === 0 || activeRequest === "postStreamStart" || activeRequest === "postStreamStop"}
+			title={(streamsActive ? "Stop" : "Start") + " streaming of all languages"}
 			onClick={() => {
 				if (streamsActive) {
 					if (window.confirm("❗️ Stop all streams?") === true) {
