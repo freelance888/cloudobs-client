@@ -8,12 +8,11 @@ import {
 	pullMediaSchedule,
 	resetMediaSchedule,
 	selectMediaSchedule,
-	// setMediaSchedule,
-	stopMedia,
 	updateMedia,
 } from "../../../store/slices/media-schedule";
 import ContentPanel from "../../ContentPanel";
 import MediaScheduleTableInitSettings from "../initialization/MediaScheduleTableInitSettings";
+import StopMediaButton from "../../StopMediaButton";
 // import { convertTimeStampToTime } from "../../../utils/timestamp";
 
 type DisplayMode = "BLANK" | "NOT_INITIALIZED" | "NOT_PULLED" | "READY";
@@ -135,19 +134,7 @@ export const MediaScheduleSettings = () => {
 			}
 			endActions={
 				<>
-					<button
-						className="btn btn-primary ms-2"
-						type="button"
-						title="Stop media"
-						onClick={() => {
-							if (window.confirm("Are you sure?") === true) {
-								dispatch(stopMedia() as any);
-							}
-						}}
-					>
-						<i className="bi bi-stop-fill me-1" />
-						Stop media
-					</button>
+					<StopMediaButton />
 					<button
 						className="btn btn-secondary ms-2"
 						onClick={() => {

@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-	fetchLanguagesSettings,
 	selectInitialLanguagesSettingsLoaded,
 	selectInitialized,
 	selectLanguagesSettings,
@@ -9,7 +8,9 @@ import {
 	refreshSource,
 } from "../../../store/slices/app";
 import ContentPanel from "../../ContentPanel";
+import StopMediaButton from "../../StopMediaButton";
 import Language from "./Language";
+import LanguageFilter from "./LanguageFilter";
 import StartStopStreamingButton from "./StartStopStreamingButton";
 
 const LanguageSettings = () => {
@@ -22,19 +23,16 @@ const LanguageSettings = () => {
 	const languagesCount = useMemo(() => Object.keys(languagesSettings).length, [languagesSettings]);
 
 	const [collapsedStates, setCollapsedStates] = useState({});
+	const [languageFilter, setLanguageFilter] = useState<string>("");
 
 	return (
 		<ContentPanel
 			mainActions={
 				languagesCount > 0 && (
 					<>
-						<button className="btn btn-primary me-2" onClick={() => dispatch(fetchLanguagesSettings() as any)}>
-							<i className="bi bi-arrow-clockwise" />
-							<span>Refresh</span>
-						</button>
 						<button
 							className="btn btn-info me-2"
-							title="Refresh servers data from spreadsheet table"
+							title="Refresh servers data from spreadsheet table and update UI"
 							onClick={() => {
 								dispatch(refreshServers() as any);
 							}}
@@ -46,12 +44,15 @@ const LanguageSettings = () => {
 						<button
 							className="btn btn-dark ms-2"
 							onClick={() => {
-								dispatch(refreshSource(["__all__"]) as any);
+								if (window.confirm("Are you sure?") === true) {
+									dispatch(refreshSource(["__all__"]) as any);
+								}
 							}}
 						>
 							<i className={"bi bi-eye"} />
 							Refresh all sources
 						</button>
+						<StopMediaButton class="ms-2" />
 					</>
 				)
 			}
@@ -83,20 +84,30 @@ const LanguageSettings = () => {
 			) : !loaded ? (
 				"Loading..."
 			) : (
-				Object.entries(languagesSettings).map(([language, settings]) => (
-					<Language
-						key={language}
-						language={language}
-						languageSettings={settings}
-						collapsed={collapsedStates[language]}
-						onCollapsedToggled={() => {
-							setCollapsedStates({
-								...collapsedStates,
-								[language]: !collapsedStates[language],
-							});
-						}}
-					/>
-				))
+				<>
+					<hr />
+					<div className="mb-4">
+						<LanguageFilter value={languageFilter} onValueChanged={setLanguageFilter} />
+					</div>
+					{Object.entries(languagesSettings)
+						.filter(([language]) => {
+							return language.toLowerCase().includes(languageFilter.toLowerCase());
+						})
+						.map(([language, settings]) => (
+							<Language
+								key={language}
+								language={language}
+								languageSettings={settings}
+								collapsed={collapsedStates[language]}
+								onCollapsedToggled={() => {
+									setCollapsedStates({
+										...collapsedStates,
+										[language]: !collapsedStates[language],
+									});
+								}}
+							/>
+						))}
+				</>
 			)}
 		</ContentPanel>
 	);

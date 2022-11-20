@@ -19,12 +19,6 @@ import {
 } from "../../services/types";
 import { RootSelector, RootState } from "../store";
 
-export type HostAddress = {
-	protocol: string;
-	ipAddress: string;
-	port: string;
-};
-
 type ActiveRequest = keyof typeof ApiService;
 
 type AppState = {
