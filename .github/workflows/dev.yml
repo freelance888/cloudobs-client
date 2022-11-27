@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - 'dev'
-      - 'feature/**'
 
 env:
     HOST: app@${{ secrets.DEV_HOST_IP }}
