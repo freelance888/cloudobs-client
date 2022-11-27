@@ -137,9 +137,10 @@ export const MediaScheduleSettings = () => {
 					<StopMediaButton />
 					<button
 						className="btn btn-secondary ms-2"
-						onClick={() => {
+						onClick={async () => {
 							if (window.confirm("❗️ Reset the current media schedule?") === true) {
-								dispatch(resetMediaSchedule() as any);
+								await dispatch(resetMediaSchedule() as any);
+								setDisplayMode("NOT_INITIALIZED");
 							}
 						}}
 					>
