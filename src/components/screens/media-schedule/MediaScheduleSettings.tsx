@@ -4,6 +4,7 @@ import { MediaSchedule } from "../../../services/types";
 import * as ApiService from "../../../services/api/index";
 import {
 	fetchMediaSchedule,
+	fetchTimingStatus,
 	playMedia,
 	pullMediaSchedule,
 	resetMediaSchedule,
@@ -13,30 +14,17 @@ import {
 import ContentPanel from "../../ContentPanel";
 import MediaScheduleTableInitSettings from "../initialization/MediaScheduleTableInitSettings";
 import StopMediaButton from "../../StopMediaButton";
-// import { convertTimeStampToTime } from "../../../utils/timestamp";
+import TimingStatus from "./TimingStatus";
 
 type DisplayMode = "BLANK" | "NOT_INITIALIZED" | "NOT_PULLED" | "READY";
 
 export const MediaScheduleSettings = () => {
 	const dispatch = useDispatch();
 	const [displayMode, setDisplayMode] = useState<DisplayMode>("BLANK");
-	// const [currentTimestamp, setCurrentTimestamp] = useState(40);
 
 	const mediaSchedule = useSelector(selectMediaSchedule);
 
 	const [editedMediaSchedule, setEditedMediaSchedule] = useState<MediaSchedule>({});
-
-	// const playedValue: string = useMemo(() => {
-	// 	const videosCount = Object.keys(editedMediaSchedule).length;
-
-	// 	if (videosCount === 0) {
-	// 		return "N/A";
-	// 	}
-
-	// 	const playedVideosCount = Object.values(editedMediaSchedule).filter((media) => media.is_played).length;
-
-	// 	return `${playedVideosCount} / ${videosCount} (${Math.round((playedVideosCount / videosCount) * 100)}%)`;
-	// }, [editedMediaSchedule]);
 
 	useEffect(() => {
 		setEditedMediaSchedule(mediaSchedule);
@@ -56,20 +44,10 @@ export const MediaScheduleSettings = () => {
 			} else {
 				setDisplayMode("READY");
 				await dispatch(fetchMediaSchedule() as any);
-				// setCurrentTimestamp(0);
-				// interval = setInterval(() => {
-				// 	setCurrentTimestamp((previousTimestamp) => previousTimestamp + 1);
-				// }, 1000);
+				dispatch(fetchTimingStatus() as any);
 			}
 		})();
 	}, [dispatch]);
-
-	// useEffect(() => {
-	// 	if (displayMode === "READY") {
-	// 		dispatch(fetchMediaSchedule() as any);
-	// 		setCurrentTimestamp(0);
-	// 	}
-	// }, [dispatch, displayMode]);
 
 	if (displayMode === "BLANK") {
 		return <ContentPanel>Loading...</ContentPanel>;
@@ -137,9 +115,10 @@ export const MediaScheduleSettings = () => {
 					<StopMediaButton />
 					<button
 						className="btn btn-secondary ms-2"
-						onClick={() => {
+						onClick={async () => {
 							if (window.confirm("❗️ Reset the current media schedule?") === true) {
-								dispatch(resetMediaSchedule() as any);
+								await dispatch(resetMediaSchedule() as any);
+								setDisplayMode("NOT_INITIALIZED");
 							}
 						}}
 					>
@@ -148,15 +127,13 @@ export const MediaScheduleSettings = () => {
 				</>
 			}
 		>
-			{/* TODO add when current timestamp will be in API */}
-			{/* <div className="row mb-3">
-				<div className="video-schedule-list-now col-6">
-					Current time: <b>{convertTimeStampToTime(currentTimestamp)}</b>
+			<div className="row mb-3">
+				<div className="video-schedule-list-now col">
+					<div>
+						<TimingStatus />
+					</div>
 				</div>
-				<div className="col-6">
-					Played: <b>{playedValue}</b>
-				</div>
-			</div> */}
+			</div>
 			<div className="video-schedule-list col-12 mb-3">
 				<div className="container-fluid">
 					<div className="stream-settings-video-list-head row mb-1">

@@ -2,6 +2,7 @@ import {
 	All,
 	MediaPlaySettings,
 	MediaSchedule,
+	MediaScheduleStatus,
 	NewMediaSchedule,
 	SheetInitialSettings,
 	UpdatedMediaScheduleItem,
@@ -13,6 +14,7 @@ const API_URL_MEDIA_PLAY = "/media/play";
 const API_URL_MEDIA_SCHEDULE = "/media/schedule";
 const API_URL_MEDIA_SCHEDULE_SETUP = "/media/schedule/setup";
 const API_URL_MEDIA_SCHEDULE_PULL = "/media/schedule/pull";
+const API_URL_MEDIA_SCHEDULE_STATUS = "/media/schedule/status";
 
 /**
  * POST /media/play
@@ -146,6 +148,20 @@ export const postMediaSchedulePull: ApiCall<void, never> = () => {
 		messages: {
 			success: "Pull done",
 			error: "Pull error",
+		},
+	});
+};
+
+/**
+ * GET /media/schedule/status
+ * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#get-mediaschedulestatus
+ */
+export const getMediaScheduleStatus: ApiCall<void, MediaScheduleStatus> = () => {
+	return sendRequest({
+		url: API_URL_MEDIA_SCHEDULE_STATUS,
+		messages: {
+			success: "Schedule status fetched",
+			error: "Schedule status fetching failed",
 		},
 	});
 };

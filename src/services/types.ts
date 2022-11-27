@@ -14,6 +14,11 @@ export type MediaSchedule = Record<string, MediaScheduleItem>; // id: { name: ".
 export type NewMediaScheduleItem = [string, string];
 export type NewMediaSchedule = NewMediaScheduleItem[];
 
+export type MediaScheduleStatus = {
+	running: boolean;
+	timestamp: string;
+};
+
 export type GlobalSettings = {
 	server_langs: InitialSettings;
 	stream_settings: StreamDestinationSettings;

@@ -11,6 +11,7 @@ export {
 	deleteMediaPlay,
 	postMediaScheduleSetup,
 	postMediaSchedulePull,
+	getMediaScheduleStatus,
 } from "./media";
 export { deleteMinionsDeleteVms as postMinionsDeleteVms } from "./minions";
 export { postSourceVolume, putSourceRefresh } from "./source";
