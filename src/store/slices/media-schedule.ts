@@ -6,6 +6,7 @@ import {
 	MediaPlaySettings,
 	MediaSchedule,
 	MediaScheduleItem,
+	MediaScheduleStatus,
 	NewMediaSchedule,
 	SheetInitialSettings,
 	UpdatedMediaScheduleItem,
@@ -15,10 +16,12 @@ import { RootSelector, RootState } from "../store";
 
 type MediaScheduleState = {
 	mediaSchedule: MediaSchedule;
+	mediaScheduleStatus: MediaScheduleStatus;
 };
 
 const initialState: MediaScheduleState = {
 	mediaSchedule: {},
+	mediaScheduleStatus: { running: false, timestamp: "" },
 };
 
 export const setupMediaSchedule: AsyncThunk<ApiResult, SheetInitialSettings, { state: RootState }> = createAsyncThunk<
@@ -72,6 +75,23 @@ export const fetchMediaSchedule: AsyncThunk<ApiResult<MediaSchedule>, void, { st
 
 	return result;
 });
+
+export const fetchTimingStatus: AsyncThunk<
+	ApiResult<MediaScheduleStatus>,
+	void,
+	{ state: RootState }
+> = createAsyncThunk<ApiResult<MediaScheduleStatus>, void, { state: RootState }>(
+	"media-schedule/fetchTimingStatus",
+	async (_, { rejectWithValue }) => {
+		const result = await ApiService.getMediaScheduleStatus();
+
+		if (result.status === "error") {
+			return rejectWithValue(result.message);
+		}
+
+		return result;
+	}
+);
 
 export const setMediaSchedule: AsyncThunk<void, NewMediaSchedule, { state: RootState }> = createAsyncThunk<
 	void,
@@ -162,11 +182,16 @@ const { reducer } = createSlice({
 	initialState,
 	reducers: {},
 	extraReducers: (builder) =>
-		builder.addCase(fetchMediaSchedule.fulfilled, (state, { payload }) => {
-			let mediaSchedule = payload.data as MediaSchedule;
-			mediaSchedule = parseTimestamps(mediaSchedule);
-			state.mediaSchedule = mediaSchedule;
-		}),
+		builder
+			.addCase(fetchMediaSchedule.fulfilled, (state, { payload }) => {
+				let mediaSchedule = payload.data as MediaSchedule;
+				mediaSchedule = parseTimestamps(mediaSchedule);
+				state.mediaSchedule = mediaSchedule;
+			})
+			.addCase(fetchTimingStatus.fulfilled, (state, { payload }) => {
+				const timingStatus = payload.data as MediaScheduleStatus;
+				state.mediaScheduleStatus = timingStatus;
+			}),
 	// .addCase(playMedia.fulfilled, (state, { payload }) => {
 	// 	const videoIndex = Object.values(state.mediaSchedule).findIndex(({ name }) => name === payload);
 	// 	state.mediaSchedule[videoIndex].is_played = true;
@@ -174,5 +199,7 @@ const { reducer } = createSlice({
 });
 
 export const selectMediaSchedule: RootSelector<MediaSchedule> = ({ mediaSchedule }) => mediaSchedule.mediaSchedule;
+export const selectMediaScheduleStatus: RootSelector<MediaScheduleStatus> = ({ mediaSchedule }) =>
+	mediaSchedule.mediaScheduleStatus;
 
 export default reducer;

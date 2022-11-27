@@ -336,3 +336,12 @@ i.bi:not(.bi-no-margin) {
 .stream-settings-video-list-head {
 	font-size: 0.8rem;
 }
+
+.timing-status--running {
+	font-weight: bold;
+	color: rgb(67, 190, 67);
+}
+
+.timing-status--inactive {
+	color: rgb(189, 179, 179);
+}
