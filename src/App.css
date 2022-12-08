@@ -345,3 +345,9 @@ i.bi:not(.bi-no-margin) {
 .timing-status--inactive {
 	color: rgb(189, 179, 179);
 }
+
+.videos-downloaded-counter--failed {
+	background-color: #d63131;
+	color: white;
+	padding: 0 11px;
+}
