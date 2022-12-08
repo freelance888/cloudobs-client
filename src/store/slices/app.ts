@@ -4,6 +4,7 @@ import { ApiResult } from "../../services/api/types";
 import { EMPTY_LANGUAGE_SETTINGS } from "../../services/emptyData";
 import {
 	All,
+	GDriveFile,
 	getAllGDriveSettings,
 	GlobalSettings,
 	LanguagesSettings,
@@ -28,6 +29,7 @@ type AppState = {
 	activeRequest: ActiveRequest | null;
 	syncedParameters: SyncableSettingsFlags;
 	languagesSettings: LanguagesSettings;
+	videoData: All<GDriveFile[]>;
 };
 
 const initialState: AppState = {
@@ -46,6 +48,7 @@ const initialState: AppState = {
 		transition_point: false,
 	},
 	languagesSettings: {},
+	videoData: {},
 };
 
 const getAllLanguages: (state: RootState) => string[] = (state) => {
@@ -75,16 +78,32 @@ export const fetchLanguagesSettings: AsyncThunk<
 	{ state: RootState }
 > = createAsyncThunk<ApiResult<All<GlobalSettings | "#">>, void, { state: RootState }>(
 	"app/fetchLanguagesSettings",
-	async (_, { rejectWithValue }) => {
+	async (_, { dispatch, rejectWithValue }) => {
 		const result = await ApiService.getInfo();
 
 		if (result.status === "error") {
 			return rejectWithValue(result.message);
 		}
 
+		dispatch(fetchVideosData() as any);
+
 		return result;
 	}
 );
+
+export const fetchVideosData: AsyncThunk<ApiResult<All<GDriveFile[]>>, void, { state: RootState }> = createAsyncThunk<
+	ApiResult<All<GDriveFile[]>>,
+	void,
+	{ state: RootState }
+>("app/fetchVideosData", async (_, { rejectWithValue }) => {
+	const result = await ApiService.getGDriveFiles(1);
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
+
+	return result;
+});
 
 export const cleanup: AsyncThunk<void, void, { state: RootState }> = createAsyncThunk<void, void, { state: RootState }>(
 	"app/cleanup",
@@ -385,6 +404,14 @@ const { actions, reducer } = createSlice({
 				}
 				state.initialLanguageSettingsLoaded = true;
 			})
+			.addCase(fetchVideosData.fulfilled, (state, { payload }) => {
+				if (payload.data) {
+					Object.keys(payload.data).forEach((lang) => {
+						const langVideoData = payload.data?.[lang] as GDriveFile[];
+						state.videoData[lang] = langVideoData;
+					});
+				}
+			})
 			.addCase(cleanup.pending, (state) => {
 				state.activeRequest = "postCleanup";
 			})
@@ -473,5 +500,7 @@ export const selectActiveRequest: RootSelector<ActiveRequest | null> = ({ app })
 export const selectSyncedParameters: RootSelector<SyncableSettingsFlags> = ({ app }) => app.syncedParameters;
 
 export const selectLanguagesSettings: RootSelector<LanguagesSettings> = ({ app }) => app.languagesSettings;
+
+export const selectVideosData: RootSelector<All<GDriveFile[]>> = ({ app }) => app.videoData;
 
 export default reducer;

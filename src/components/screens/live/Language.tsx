@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useLogger from "../../../hooks/useLogger";
 import { EMPTY_LANGUAGE_SETTINGS } from "../../../services/emptyData";
@@ -7,6 +7,7 @@ import { LanguageSettings, TransitionSettings } from "../../../services/types";
 import {
 	refreshSource,
 	selectSyncedParameters,
+	selectVideosData,
 	setSidechain,
 	setSourceVolume,
 	setTransition,
@@ -58,6 +59,27 @@ const Language: React.FC<LanguageProps> = ({
 	const { sourceVolume, translationVolume, translationOffset } = languageSettings.streamParameters;
 	const { ratio, release_time, threshold, output_gain } = languageSettings.sidechain;
 
+	const videosData = useSelector(selectVideosData);
+
+	const videosCounts = useMemo(() => {
+		if (!videosData[language]) {
+			return {
+				downloaded: "-",
+				all: "-",
+			};
+		}
+
+		const languageVideosData = videosData[language];
+
+		const downloadedVideosCount = languageVideosData.filter(([_, videoStatus]) => videoStatus === true).length;
+		const allVideosCount = languageVideosData.length;
+
+		return {
+			downloaded: downloadedVideosCount,
+			all: allVideosCount,
+		};
+	}, [videosData[language]]);
+
 	useEffect(() => {
 		setEditedTransitionSettings((previousTransitionSettings) => ({
 			...previousTransitionSettings,
@@ -92,6 +114,14 @@ const Language: React.FC<LanguageProps> = ({
 					</span>
 				</div>
 				<EditableStreamDestinationSettings language={language} languageSettings={languageSettings} />
+
+				<div
+					className={classNames("videos-downloaded-counter ms-2", {
+						"videos-downloaded-counter--failed": videosCounts.downloaded !== videosCounts.all,
+					})}
+				>
+					Videos: {videosCounts.downloaded} / {videosCounts.all}
+				</div>
 
 				<button
 					className="btn btn-sm btn-dark ms-auto"
