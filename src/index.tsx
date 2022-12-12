@@ -9,7 +9,7 @@ import "./index.css";
 const container = document.getElementById("root");
 const root = createRoot(container as Element);
 
-window["APP_VERSION"] = "1.7.4";
+window["APP_VERSION"] = "1.7.5";
 
 root.render(
 	<Provider store={store}>
