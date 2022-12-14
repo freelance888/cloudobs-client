@@ -24,7 +24,7 @@ const EMPTY_STREAM_PARAMETERS_SETTINGS: StreamParametersSettings = {
 	streamActive: false,
 	sourceVolume: 0,
 	translationVolume: 0,
-	translationOffset: 6000,
+	translationOffset: 8000,
 };
 
 const EMPTY_SIDECHAIN_SETTINGS: SidechainSettings = {
