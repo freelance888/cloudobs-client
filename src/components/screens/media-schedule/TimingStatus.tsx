@@ -19,8 +19,10 @@ const TimingStatus = () => {
 		if (running) {
 			intervalTicker.current && clearInterval(intervalTicker.current);
 
+			const timestampZero = `${timestamp}Z`;
+
 			const now = new Date();
-			const timingStartTime = new Date(timestamp);
+			const timingStartTime = new Date(timestampZero);
 
 			const millisFromStart = now.getTime() - timingStartTime.getTime();
 
