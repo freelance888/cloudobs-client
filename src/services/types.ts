@@ -27,7 +27,7 @@ export type GlobalSettings = {
 	ts_volume: { value: number };
 	source_volume: { value: number };
 	sidechain: SidechainSettings;
-	transition: { transition_name: "Cut" | "Stinger"; path: string; transition_point: number };
+	transition: {transition_point: number };
 	gdrive_settings: GDriveSettings;
 };
 
@@ -38,9 +38,7 @@ export type MediaPlaySettings = {
 };
 
 export type TransitionSettings = {
-	transition_name: Transition;
 	transition_point: number;
-	path: string;
 };
 
 export type GDriveSettings = {

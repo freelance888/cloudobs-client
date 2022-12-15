@@ -48,9 +48,6 @@ const Language: React.FC<LanguageProps> = ({
 }: LanguageProps) => {
 	const dispatch = useDispatch();
 	const { logSuccess } = useLogger();
-	const [editedTransitionSettings, setEditedTransitionSettings] = useState<TransitionSettings>(
-		languageSettings.transition || EMPTY_LANGUAGE_SETTINGS.transition
-	);
 
 	const syncedParameters = useSelector(selectSyncedParameters);
 
@@ -79,13 +76,6 @@ const Language: React.FC<LanguageProps> = ({
 			all: allVideosCount,
 		};
 	}, [videosData[language]]);
-
-	useEffect(() => {
-		setEditedTransitionSettings((previousTransitionSettings) => ({
-			...previousTransitionSettings,
-			transition_point: languageSettings.transition.transition_point,
-		}));
-	}, [languageSettings.transition.transition_point]);
 
 	return (
 		<div
@@ -250,110 +240,29 @@ const Language: React.FC<LanguageProps> = ({
 
 						<div className="language-transition-settings px-3">
 							<h6>Transition</h6>
-							<label htmlFor="transition-type">
-								Type
-								<div
-									id="transition-type"
-									className="btn-group btn-group-sm my-2 d-flex"
-									role="group"
-									aria-label="Transition type"
-								>
-									<input
-										type="radio"
-										className="btn-check"
-										name={`btnradio-${language}`}
-										id={`btnradio1-${language}`}
-										checked={editedTransitionSettings.transition_name === "Cut"}
-										onChange={() => {
-											setEditedTransitionSettings((previousTransitionSettings) => ({
-												...previousTransitionSettings,
-												transition_name: "Cut",
-											}));
-										}}
-									/>
-									<label
-										className={`btn btn-${editedTransitionSettings.transition_name === "Cut" ? "" : "outline-"}primary`}
-										htmlFor={`btnradio1-${language}`}
-									>
-										Cut
-									</label>
-
-									<input
-										type="radio"
-										className="btn-check"
-										name={`btnradio-${language}`}
-										id={`btnradio2-${language}`}
-										checked={editedTransitionSettings.transition_name === "Stinger"}
-										onChange={() => {
-											setEditedTransitionSettings((previousTransitionSettings) => ({
-												...previousTransitionSettings,
-												transition_name: "Stinger",
-											}));
-										}}
-									/>
-									<label
-										className={`btn btn-${
-											editedTransitionSettings.transition_name === "Stinger" ? "" : "outline-"
-										}primary`}
-										htmlFor={`btnradio2-${language}`}
-									>
-										Stinger
-									</label>
-								</div>
-							</label>
-
-							<label htmlFor="stinger-filename" className="mb-2">
-								Stinger filename
-								<input
-									type="text"
-									value={editedTransitionSettings.path}
-									disabled={editedTransitionSettings.transition_name !== "Stinger"}
-									onChange={(event) => {
-										setEditedTransitionSettings((previousTransitionSettings) => ({
-											...previousTransitionSettings,
-											path: event.target.value,
-										}));
-									}}
-								/>
-							</label>
-
 							<RangeInput
 								label="Transition point"
 								minValue={MIN_TRANSITION_POINT}
 								maxValue={MAX_TRANSITION_POINT}
 								step={TRANSITION_POINT_STEP}
-								value={editedTransitionSettings.transition_point}
-								syncAll={syncedParameters.transition_point}
+								value={languageSettings.transition?.transition_point
+									|| EMPTY_LANGUAGE_SETTINGS.transition?.transition_point}
+								syncAll={syncedParameters?.transition_point}
 								units={"ms"}
 								onValueChanged={(updatedTransitionPoint) => {
-									// dispatch(setTransition({ [language]: { transition_point: updatedTransitionPoint } }) as any)
-									setEditedTransitionSettings((previousTransitionSettings) => ({
-										...previousTransitionSettings,
-										transition_point: updatedTransitionPoint,
-									}));
+									dispatch(setTransition({ [language]: { transition_point: updatedTransitionPoint } }) as any)
+									if (syncedParameters.transition_point) {
+										dispatch(
+											setTransition({
+												__all__: { transition_point: updatedTransitionPoint },
+											}) as any
+										);
+									}
 								}}
 								onSyncAllChanged={(updatedSyncAll) =>
 									dispatch(updateSyncedParameters({ transition_point: updatedSyncAll }))
 								}
 							/>
-
-							<button
-								className="btn btn-sm btn-primary mt-2"
-								onClick={async () => {
-									await dispatch(setTransition({ [language]: editedTransitionSettings }) as any);
-
-									const syncAllTransitionPoints = syncedParameters.transition_point;
-									if (syncAllTransitionPoints) {
-										dispatch(
-											setTransition({
-												__all__: { transition_point: editedTransitionSettings.transition_point },
-											}) as any
-										);
-									}
-								}}
-							>
-								Save
-							</button>
 						</div>
 					</div>
 				</div>

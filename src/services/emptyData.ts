@@ -35,9 +35,7 @@ const EMPTY_SIDECHAIN_SETTINGS: SidechainSettings = {
 };
 
 const EMPTY_TRANSITION_SETTINGS: TransitionSettings = {
-	transition_name: "Cut",
-	transition_point: 3500,
-	path: "",
+	transition_point: 6800,
 };
 
 const EMPTY_GDRIVE_SETTINGS: GDriveSettings = {
