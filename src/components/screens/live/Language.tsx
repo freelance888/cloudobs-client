@@ -1,9 +1,9 @@
 import classNames from "classnames";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useLogger from "../../../hooks/useLogger";
 import { EMPTY_LANGUAGE_SETTINGS } from "../../../services/emptyData";
-import { LanguageSettings, TransitionSettings } from "../../../services/types";
+import { LanguageSettings } from "../../../services/types";
 import {
 	refreshSource,
 	selectSyncedParameters,
@@ -75,7 +75,7 @@ const Language: React.FC<LanguageProps> = ({
 			downloaded: downloadedVideosCount,
 			all: allVideosCount,
 		};
-	}, [videosData[language]]);
+	}, [language, videosData]);
 
 	return (
 		<div
@@ -245,12 +245,13 @@ const Language: React.FC<LanguageProps> = ({
 								minValue={MIN_TRANSITION_POINT}
 								maxValue={MAX_TRANSITION_POINT}
 								step={TRANSITION_POINT_STEP}
-								value={languageSettings.transition?.transition_point
-									|| EMPTY_LANGUAGE_SETTINGS.transition?.transition_point}
+								value={
+									languageSettings.transition?.transition_point || EMPTY_LANGUAGE_SETTINGS.transition?.transition_point
+								}
 								syncAll={syncedParameters?.transition_point}
 								units={"ms"}
 								onValueChanged={(updatedTransitionPoint) => {
-									dispatch(setTransition({ [language]: { transition_point: updatedTransitionPoint } }) as any)
+									dispatch(setTransition({ [language]: { transition_point: updatedTransitionPoint } }) as any);
 									if (syncedParameters.transition_point) {
 										dispatch(
 											setTransition({

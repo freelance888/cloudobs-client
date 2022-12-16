@@ -10,6 +10,7 @@ export {
 	postMediaPlay,
 	deleteMediaPlay,
 	postMediaScheduleSetup,
+	postMediaScheduleReset,
 	postMediaSchedulePull,
 	getMediaScheduleStatus,
 } from "./media";
