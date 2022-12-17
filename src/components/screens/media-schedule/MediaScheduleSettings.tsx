@@ -16,7 +16,7 @@ import MediaScheduleTableInitSettings from "../initialization/MediaScheduleTable
 import StopMediaButton from "../../StopMediaButton";
 import TimingStatus from "./TimingStatus";
 
-type DisplayMode = "BLANK" | "NOT_INITIALIZED" | "NOT_PULLED" | "READY";
+export type DisplayMode = "BLANK" | "NOT_INITIALIZED" | "NOT_PULLED" | "READY";
 
 export const MediaScheduleSettings = () => {
 	const dispatch = useDispatch();
@@ -116,13 +116,13 @@ export const MediaScheduleSettings = () => {
 					<button
 						className="btn btn-secondary ms-2"
 						onClick={async () => {
-							if (window.confirm("❗️ Reset the current media schedule?") === true) {
+							if (window.confirm("❗️ Stop the timing?") === true) {
 								await dispatch(resetMediaSchedule() as any);
-								setDisplayMode("NOT_INITIALIZED");
+								dispatch(fetchTimingStatus() as any);
 							}
 						}}
 					>
-						<span>Reset</span>
+						<span>Stop timing</span>
 					</button>
 				</>
 			}
@@ -130,7 +130,7 @@ export const MediaScheduleSettings = () => {
 			<div className="row mb-3">
 				<div className="video-schedule-list-now col">
 					<div>
-						<TimingStatus />
+						<TimingStatus onDisplayModeChanged={setDisplayMode} />
 					</div>
 				</div>
 			</div>

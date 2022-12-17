@@ -140,6 +140,20 @@ export const resetMediaSchedule: AsyncThunk<void, never, { state: RootState }> =
 	never,
 	{ state: RootState }
 >("media-schedule/resetMediaSchedule", async (ignored, { dispatch, rejectWithValue }) => {
+	const result = await ApiService.postMediaScheduleReset();
+
+	if (result.status === "error") {
+		return rejectWithValue(result.message);
+	}
+
+	dispatch(fetchMediaSchedule());
+});
+
+export const deleteTiming: AsyncThunk<void, never, { state: RootState }> = createAsyncThunk<
+	void,
+	never,
+	{ state: RootState }
+>("media-schedule/deleteTiming", async (ignored, { dispatch, rejectWithValue }) => {
 	const result = await ApiService.deleteMediaSchedule();
 
 	if (result.status === "error") {

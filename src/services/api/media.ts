@@ -13,6 +13,7 @@ import { sendRequest } from "./utils";
 const API_URL_MEDIA_PLAY = "/media/play";
 const API_URL_MEDIA_SCHEDULE = "/media/schedule";
 const API_URL_MEDIA_SCHEDULE_SETUP = "/media/schedule/setup";
+const API_URL_MEDIA_SCHEDULE_RESET = "/media/schedule/reset";
 const API_URL_MEDIA_SCHEDULE_PULL = "/media/schedule/pull";
 const API_URL_MEDIA_SCHEDULE_STATUS = "/media/schedule/status";
 
@@ -133,6 +134,21 @@ export const postMediaScheduleSetup: ApiCall<SheetInitialSettings, never> = ({ s
 		messages: {
 			success: "Setup done",
 			error: "Setup error",
+		},
+	});
+};
+
+/**
+ * POST /media/schedule/reset
+ * https://github.com/ALLATRA-IT/cloudobs/blob/dev/api_docs.md#post-mediaschedulereset
+ */
+export const postMediaScheduleReset: ApiCall<void, never> = () => {
+	return sendRequest({
+		method: "POST",
+		url: API_URL_MEDIA_SCHEDULE_RESET,
+		messages: {
+			success: "Reset done",
+			error: "Reset error",
 		},
 	});
 };
