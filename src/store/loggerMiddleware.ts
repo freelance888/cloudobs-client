@@ -1,5 +1,7 @@
 import { isRejectedWithValue, PayloadAction } from "@reduxjs/toolkit";
+
 import { buildUrl } from "../services/utils";
+
 import { HostAddress } from "./slices/environment";
 import { logMessage } from "./slices/logs";
 import { AppMiddleware } from "./store";
@@ -31,7 +33,7 @@ export const loggerMiddleware: AppMiddleware =
 			const { useLocalhost } = payload;
 
 			if (useLocalhost) {
-				dispatch(logMessage({ text: `Use localhost for server address set`, severity: "success" }));
+				dispatch(logMessage({ text: "Use localhost for server address set", severity: "success" }));
 			} else {
 				dispatch(logMessage({ text: `Host server address updated to: ${buildUrl(payload)}`, severity: "success" }));
 			}

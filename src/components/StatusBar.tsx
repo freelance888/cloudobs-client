@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+
 import { selectLogMessages } from "../store/slices/logs";
 
 const STATUS_BAR_TIMEOUT_MS = 8000;

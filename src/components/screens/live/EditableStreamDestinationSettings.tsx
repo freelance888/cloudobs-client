@@ -1,9 +1,12 @@
-import produce from "immer";
 import { useCallback, useEffect, useState } from "react";
+
+import produce from "immer";
 import { useDispatch } from "react-redux";
+
 import useLogger from "../../../hooks/useLogger";
 import { LanguageSettings } from "../../../services/types";
 import { setStreamSettings } from "../../../store/slices/app";
+import { AppDispatch } from "../../../store/store";
 
 type Props = {
 	language: string;
@@ -11,7 +14,7 @@ type Props = {
 };
 
 const EditableStreamDestinationSettings = ({ language, languageSettings }: Props) => {
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 	const { logSuccess, logError } = useLogger();
 
 	const [destinationSettingsOpen, setDestinationSettingsOpen] = useState(false);
@@ -27,7 +30,7 @@ const EditableStreamDestinationSettings = ({ language, languageSettings }: Props
 	}, [updatedDestinationSettings]);
 
 	const saveDestinationSettings = useCallback(() => {
-		dispatch(setStreamSettings({ [language]: updatedDestinationSettings }) as any);
+		dispatch(setStreamSettings({ [language]: updatedDestinationSettings }));
 
 		setDestinationSettingsOpen(false);
 	}, [dispatch, updatedDestinationSettings, language]);

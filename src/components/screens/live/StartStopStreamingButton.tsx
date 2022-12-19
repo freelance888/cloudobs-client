@@ -1,10 +1,13 @@
 import { useMemo } from "react";
+
 import { useDispatch, useSelector } from "react-redux";
+
 import { LanguageSettings } from "../../../services/types";
 import { stopStreaming, startStreaming, selectLanguagesSettings, selectActiveRequest } from "../../../store/slices/app";
+import { AppDispatch } from "../../../store/store";
 
 const StartStopStreamingButton = () => {
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 	const activeRequest = useSelector(selectActiveRequest);
 	const languagesSettings = useSelector(selectLanguagesSettings);
 
@@ -29,10 +32,10 @@ const StartStopStreamingButton = () => {
 			onClick={() => {
 				if (streamsActive) {
 					if (window.confirm("❗️ Stop all streams?") === true) {
-						dispatch(stopStreaming() as any);
+						dispatch(stopStreaming());
 					}
 				} else {
-					dispatch(startStreaming() as any);
+					dispatch(startStreaming());
 				}
 			}}
 		>

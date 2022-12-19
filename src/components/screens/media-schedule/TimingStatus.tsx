@@ -1,8 +1,19 @@
-import classNames from "classnames";
 import { useEffect, useRef, useState } from "react";
+
+import classNames from "classnames";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteTiming, fetchTimingStatus, selectMediaScheduleStatus } from "../../../store/slices/media-schedule";
+
+import {
+	deleteTiming,
+	fetchTimingStatus,
+	pullMediaSchedule,
+	resetMediaSchedule,
+	selectMediaScheduleStatus,
+} from "../../../store/slices/media-schedule";
 import { convertTimeStampToTime } from "../../../utils/timestamp";
+import { AppDispatch } from "../../../store/store";
+import StopMediaButton from "../../StopMediaButton";
+
 import { DisplayMode } from "./MediaScheduleSettings";
 
 type Props = {
@@ -10,7 +21,7 @@ type Props = {
 };
 
 const TimingStatus = ({ onDisplayModeChanged }: Props) => {
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 	const intervalTicker = useRef<ReturnType<typeof setInterval>>();
 	const mediaScheduleStatus = useSelector(selectMediaScheduleStatus);
 	const { running, timestamp } = mediaScheduleStatus;
@@ -40,7 +51,7 @@ const TimingStatus = ({ onDisplayModeChanged }: Props) => {
 	}, [running, timestamp]);
 
 	return (
-		<div className="d-flex">
+		<div className="d-flex justify-content-between">
 			<div>
 				<span>Schedule:&nbsp;</span>
 				<span className={classNames("timing-status", classes)}>{text}</span>
@@ -52,23 +63,46 @@ const TimingStatus = ({ onDisplayModeChanged }: Props) => {
 				<button
 					className="btn btn-sm btn-info ms-3"
 					onClick={() => {
-						dispatch(fetchTimingStatus() as any);
+						dispatch(fetchTimingStatus());
 					}}
 				>
 					Refresh
 				</button>
+				<button
+					className="btn btn-sm btn-secondary ms-3"
+					onClick={async () => {
+						if (window.confirm("❗️ Stop the timing?") === true) {
+							await dispatch(resetMediaSchedule());
+							dispatch(fetchTimingStatus());
+						}
+					}}
+				>
+					Stop timing
+				</button>
 			</div>
-			<button
-				className="btn btn-sm btn-danger ms-auto"
-				onClick={async () => {
-					if (window.confirm("Timing will be deleted. Are you sure?") === true) {
-						await dispatch(deleteTiming() as any);
-						onDisplayModeChanged("NOT_INITIALIZED");
-					}
-				}}
-			>
-				Delete timing
-			</button>
+			<div className="d-flex">
+				<button
+					className="btn btn-sm btn-secondary ms-3"
+					title="Update server data and fetch current spreadsheet state to app UI"
+					onClick={() => {
+						dispatch(pullMediaSchedule());
+					}}
+				>
+					Pull & refresh
+				</button>
+				<StopMediaButton class="ms-3 btn-sm" />
+				<button
+					className="btn btn-sm btn-danger ms-3"
+					onClick={async () => {
+						if (window.confirm("Timing will be deleted. Are you sure?") === true) {
+							await dispatch(deleteTiming());
+							onDisplayModeChanged("NOT_INITIALIZED");
+						}
+					}}
+				>
+					Delete timing
+				</button>
+			</div>
 		</div>
 	);
 };

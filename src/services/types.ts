@@ -27,7 +27,7 @@ export type GlobalSettings = {
 	ts_volume: { value: number };
 	source_volume: { value: number };
 	sidechain: SidechainSettings;
-	transition: {transition_point: number };
+	transition: { transition_point: number };
 	gdrive_settings: GDriveSettings;
 };
 

@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
+
 import { useDispatch, useSelector } from "react-redux";
+
 import {
 	selectInitialLanguagesSettingsLoaded,
 	selectInitialized,
@@ -9,12 +11,14 @@ import {
 } from "../../../store/slices/app";
 import ContentPanel from "../../ContentPanel";
 import StopMediaButton from "../../StopMediaButton";
+import { AppDispatch } from "../../../store/store";
+
 import Language from "./Language";
 import LanguageFilter from "./LanguageFilter";
 import StartStopStreamingButton from "./StartStopStreamingButton";
 
 const LanguageSettings = () => {
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 
 	const loaded = useSelector(selectInitialLanguagesSettingsLoaded);
 	const initialized = useSelector(selectInitialized);
@@ -34,7 +38,7 @@ const LanguageSettings = () => {
 							className="btn btn-info me-2"
 							title="Refresh servers data from spreadsheet table and update UI"
 							onClick={() => {
-								dispatch(refreshServers() as any);
+								dispatch(refreshServers());
 							}}
 						>
 							<i className="bi bi-arrow-clockwise" />
@@ -45,7 +49,7 @@ const LanguageSettings = () => {
 							className="btn btn-dark ms-2"
 							onClick={() => {
 								if (window.confirm("Are you sure?") === true) {
-									dispatch(refreshSource(["__all__"]) as any);
+									dispatch(refreshSource(["__all__"]));
 								}
 							}}
 						>

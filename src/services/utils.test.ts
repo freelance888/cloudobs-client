@@ -1,4 +1,5 @@
 import { HostAddress } from "../store/slices/environment";
+
 import { buildHostBaseAddress, buildUrl } from "./utils";
 
 describe("buildHostBaseAddress", () => {

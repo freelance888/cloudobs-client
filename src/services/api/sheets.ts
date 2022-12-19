@@ -13,7 +13,7 @@ export const postSheetsPull: ApiCall<void, never> = () => {
 		method: "POST",
 		url: API_URL_SHEETS_PULL,
 		messages: {
-			success: `Servers data refreshed`,
+			success: "Servers data refreshed",
 			error: "Servers data refreshing failed",
 		},
 	});

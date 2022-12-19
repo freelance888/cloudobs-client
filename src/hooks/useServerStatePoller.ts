@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import { getServerState, ServerState } from "../services/api/state";
 
 const POLL_INTERVAL_MS = 5000;

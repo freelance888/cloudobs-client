@@ -1,11 +1,14 @@
 import { useState } from "react";
+
 import { useDispatch, useSelector } from "react-redux";
+
 import { selectActiveRequest } from "../../../store/slices/app";
 import { setupMediaSchedule } from "../../../store/slices/media-schedule";
 import ContentPanel from "../../ContentPanel";
+import { AppDispatch } from "../../../store/store";
 
 export const MediaScheduleTableInitSettings: React.FC = () => {
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 	const activeRequest = useSelector(selectActiveRequest);
 
 	const [sheetUrl, setSheetUrl] = useState("");
@@ -14,10 +17,7 @@ export const MediaScheduleTableInitSettings: React.FC = () => {
 	return (
 		<ContentPanel
 			mainActions={
-				<button
-					className="btn btn-primary"
-					onClick={() => dispatch(setupMediaSchedule({ sheetUrl, worksheetName }) as any)}
-				>
+				<button className="btn btn-primary" onClick={() => dispatch(setupMediaSchedule({ sheetUrl, worksheetName }))}>
 					<i className={activeRequest === "postInit" ? "bi bi-arrow-clockwise spin" : "bi bi-cloud-arrow-up"} />
 					<span>Setup media schedule</span>
 				</button>

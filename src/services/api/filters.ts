@@ -1,4 +1,5 @@
 import { All, SidechainSettings } from "../types";
+
 import { ApiCall } from "./types";
 import { sendRequest } from "./utils";
 

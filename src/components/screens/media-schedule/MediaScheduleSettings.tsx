@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+
 import { useDispatch, useSelector } from "react-redux";
+
 import { MediaSchedule } from "../../../services/types";
 import * as ApiService from "../../../services/api/index";
 import {
@@ -7,19 +9,19 @@ import {
 	fetchTimingStatus,
 	playMedia,
 	pullMediaSchedule,
-	resetMediaSchedule,
 	selectMediaSchedule,
 	updateMedia,
 } from "../../../store/slices/media-schedule";
 import ContentPanel from "../../ContentPanel";
 import MediaScheduleTableInitSettings from "../initialization/MediaScheduleTableInitSettings";
-import StopMediaButton from "../../StopMediaButton";
+import { AppDispatch } from "../../../store/store";
+
 import TimingStatus from "./TimingStatus";
 
 export type DisplayMode = "BLANK" | "NOT_INITIALIZED" | "NOT_PULLED" | "READY";
 
 export const MediaScheduleSettings = () => {
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 	const [displayMode, setDisplayMode] = useState<DisplayMode>("BLANK");
 
 	const mediaSchedule = useSelector(selectMediaSchedule);
@@ -43,8 +45,8 @@ export const MediaScheduleSettings = () => {
 				}
 			} else {
 				setDisplayMode("READY");
-				await dispatch(fetchMediaSchedule() as any);
-				dispatch(fetchTimingStatus() as any);
+				await dispatch(fetchMediaSchedule());
+				dispatch(fetchTimingStatus());
 			}
 		})();
 	}, [dispatch]);
@@ -65,7 +67,7 @@ export const MediaScheduleSettings = () => {
 				<button
 					className="btn btn-sm btn-primary"
 					onClick={() => {
-						dispatch(pullMediaSchedule() as any);
+						dispatch(pullMediaSchedule());
 					}}
 				>
 					Pull media schedule
@@ -75,59 +77,8 @@ export const MediaScheduleSettings = () => {
 	}
 
 	return (
-		<ContentPanel
-			mainActions={
-				<>
-					{/* <button
-						className="btn btn-primary"
-						onClick={() => {
-							dispatch(
-								setMediaSchedule(
-									Object.values(editedMediaSchedule).map(({ name, timestamp }) => [name, timestamp])
-								) as any
-							);
-						}}
-					>
-						<span>Save</span>
-					</button> */}
-					<button
-						className="btn btn-primary"
-						title="Fetch current spreadsheet state to app UI"
-						onClick={() => {
-							dispatch(fetchMediaSchedule() as any);
-						}}
-					>
-						Refresh
-					</button>
-					<button
-						className="btn btn-secondary ms-2"
-						title="Update server data and fetch current spreadsheet state to app UI"
-						onClick={() => {
-							dispatch(pullMediaSchedule() as any);
-						}}
-					>
-						Pull & refresh
-					</button>
-				</>
-			}
-			endActions={
-				<>
-					<StopMediaButton />
-					<button
-						className="btn btn-secondary ms-2"
-						onClick={async () => {
-							if (window.confirm("❗️ Stop the timing?") === true) {
-								await dispatch(resetMediaSchedule() as any);
-								dispatch(fetchTimingStatus() as any);
-							}
-						}}
-					>
-						<span>Stop timing</span>
-					</button>
-				</>
-			}
-		>
-			<div className="row mb-3">
+		<ContentPanel>
+			<div className="row sticky-top" style={{ backgroundColor: "white", paddingTop: "5px", paddingBottom: "10px" }}>
 				<div className="video-schedule-list-now col">
 					<div>
 						<TimingStatus onDisplayModeChanged={setDisplayMode} />
@@ -158,7 +109,7 @@ export const MediaScheduleSettings = () => {
 													updateMedia({
 														id: mediaId,
 														is_enabled: event.target.checked,
-													}) as any
+													})
 												);
 											}}
 										/>
@@ -192,7 +143,7 @@ export const MediaScheduleSettings = () => {
 												type="button"
 												title="Play now"
 												onClick={() => {
-													dispatch(playMedia(item) as any);
+													dispatch(playMedia(item));
 												}}
 											>
 												<i className="bi bi-play-fill me-1" />

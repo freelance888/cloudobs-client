@@ -1,6 +1,7 @@
 import { HostAddress } from "../../store/slices/environment";
 import store from "../../store/store";
 import { buildUrl } from "../utils";
+
 import { ApiResult } from "./types";
 
 type RequestMethod = "GET" | "POST" | "PUT" | "DELETE";
@@ -20,6 +21,7 @@ export const getHostAddress = (): HostAddress => {
 	return store.getState().environment.hostAddress;
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export const sendRequest: <T extends {} = {}>(options: RequestOptions<T>) => Promise<ApiResult<T>> = async ({
 	method = "GET",
 	url,
@@ -36,6 +38,7 @@ export const sendRequest: <T extends {} = {}>(options: RequestOptions<T>) => Pro
 	return processResponse(response, messages, dataToReturn);
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 const processResponse = async <T extends {} = {}>(
 	response: Response,
 	messages: {
@@ -57,7 +60,9 @@ const processResponse = async <T extends {} = {}>(
 		else if (response.status === 200) {
 			try {
 				data = await response.json();
-			} catch (error) {}
+			} catch (error) {
+				console.log(error);
+			}
 			return { status: "success", message: success, data: dataToReturn ?? data };
 		}
 		// Error response
@@ -71,9 +76,5 @@ const processResponse = async <T extends {} = {}>(
 };
 
 export const createApiResult: <T>(data: T) => ApiResult<T> = (data) => {
-	return {
-		message: "",
-		status: "success",
-		data,
-	};
+	return { message: "", status: "success", data };
 };

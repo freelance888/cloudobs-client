@@ -1,6 +1,8 @@
-import classNames from "classnames";
 import { useMemo } from "react";
+
+import classNames from "classnames";
 import { useDispatch, useSelector } from "react-redux";
+
 import useLogger from "../../../hooks/useLogger";
 import { EMPTY_LANGUAGE_SETTINGS } from "../../../services/emptyData";
 import { LanguageSettings } from "../../../services/types";
@@ -15,6 +17,8 @@ import {
 	setTranslationVolume,
 	updateSyncedParameters,
 } from "../../../store/slices/app";
+import { AppDispatch } from "../../../store/store";
+
 import EditableStreamDestinationSettings from "./EditableStreamDestinationSettings";
 import RangeInput from "./RangeInput";
 import StreamActiveToggle from "./StreamActiveToggle";
@@ -46,7 +50,7 @@ const Language: React.FC<LanguageProps> = ({
 	collapsed,
 	onCollapsedToggled,
 }: LanguageProps) => {
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 	const { logSuccess } = useLogger();
 
 	const syncedParameters = useSelector(selectSyncedParameters);
@@ -68,7 +72,7 @@ const Language: React.FC<LanguageProps> = ({
 
 		const languageVideosData = videosData[language];
 
-		const downloadedVideosCount = languageVideosData.filter(([_, videoStatus]) => videoStatus === true).length;
+		const downloadedVideosCount = languageVideosData.filter(([, videoStatus]) => videoStatus === true).length;
 		const allVideosCount = languageVideosData.length;
 
 		return {
@@ -116,7 +120,7 @@ const Language: React.FC<LanguageProps> = ({
 				<button
 					className="btn btn-sm btn-dark ms-auto"
 					onClick={() => {
-						dispatch(refreshSource([language]) as any);
+						dispatch(refreshSource([language]));
 					}}
 				>
 					<i className={"bi bi-eye"} />
@@ -141,9 +145,7 @@ const Language: React.FC<LanguageProps> = ({
 								syncAll={syncedParameters.sourceVolume}
 								value={sourceVolume}
 								units={"dB"}
-								onValueChanged={(updatedSourceVolume) =>
-									dispatch(setSourceVolume({ [language]: updatedSourceVolume }) as any)
-								}
+								onValueChanged={(updatedSourceVolume) => dispatch(setSourceVolume({ [language]: updatedSourceVolume }))}
 								onSyncAllChanged={(updatedSyncAll) =>
 									dispatch(updateSyncedParameters({ sourceVolume: updatedSyncAll }))
 								}
@@ -158,7 +160,7 @@ const Language: React.FC<LanguageProps> = ({
 								value={translationVolume}
 								units={"dB"}
 								onValueChanged={(updatedTranslationVolume) =>
-									dispatch(setTranslationVolume({ [language]: updatedTranslationVolume }) as any)
+									dispatch(setTranslationVolume({ [language]: updatedTranslationVolume }))
 								}
 								onSyncAllChanged={(updatedSyncAll) =>
 									dispatch(updateSyncedParameters({ translationVolume: updatedSyncAll }))
@@ -175,7 +177,7 @@ const Language: React.FC<LanguageProps> = ({
 								value={translationOffset}
 								units={"ms"}
 								onValueChanged={(updatedTranslationOffset) =>
-									dispatch(setTranslationOffset({ [language]: updatedTranslationOffset }) as any)
+									dispatch(setTranslationOffset({ [language]: updatedTranslationOffset }))
 								}
 								onSyncAllChanged={(updatedSyncAll) =>
 									dispatch(updateSyncedParameters({ translationOffset: updatedSyncAll }))
@@ -192,9 +194,7 @@ const Language: React.FC<LanguageProps> = ({
 								value={ratio}
 								// syncAll={syncedParameters.ratio}
 								units={": 1"}
-								onValueChanged={(updatedRatio) =>
-									dispatch(setSidechain({ [language]: { ratio: updatedRatio } }) as any)
-								}
+								onValueChanged={(updatedRatio) => dispatch(setSidechain({ [language]: { ratio: updatedRatio } }))}
 								// onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ ratio: updatedSyncAll }))}
 							/>
 
@@ -206,7 +206,7 @@ const Language: React.FC<LanguageProps> = ({
 								// syncAll={syncedParameters.release_time}
 								units={"ms"}
 								onValueChanged={(updatedRelease) =>
-									dispatch(setSidechain({ [language]: { release_time: updatedRelease } }) as any)
+									dispatch(setSidechain({ [language]: { release_time: updatedRelease } }))
 								}
 								// onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ release_time: updatedSyncAll }))}
 							/>
@@ -219,7 +219,7 @@ const Language: React.FC<LanguageProps> = ({
 								// syncAll={syncedParameters.threshold}
 								units={"dB"}
 								onValueChanged={(updatedThreshold) =>
-									dispatch(setSidechain({ [language]: { threshold: updatedThreshold } }) as any)
+									dispatch(setSidechain({ [language]: { threshold: updatedThreshold } }))
 								}
 								// onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ threshold: updatedSyncAll }))}
 							/>
@@ -232,7 +232,7 @@ const Language: React.FC<LanguageProps> = ({
 								// syncAll={syncedParameters.output_gain}
 								units={"dB"}
 								onValueChanged={(updatedOutputGain) =>
-									dispatch(setSidechain({ [language]: { output_gain: updatedOutputGain } }) as any)
+									dispatch(setSidechain({ [language]: { output_gain: updatedOutputGain } }))
 								}
 								// onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ output_gain: updatedSyncAll }))}
 							/>
@@ -251,12 +251,12 @@ const Language: React.FC<LanguageProps> = ({
 								syncAll={syncedParameters?.transition_point}
 								units={"ms"}
 								onValueChanged={(updatedTransitionPoint) => {
-									dispatch(setTransition({ [language]: { transition_point: updatedTransitionPoint } }) as any);
+									dispatch(setTransition({ [language]: { transition_point: updatedTransitionPoint } }));
 									if (syncedParameters.transition_point) {
 										dispatch(
 											setTransition({
 												__all__: { transition_point: updatedTransitionPoint },
-											}) as any
+											})
 										);
 									}
 								}}

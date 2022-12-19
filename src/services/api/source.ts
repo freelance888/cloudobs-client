@@ -1,4 +1,5 @@
 import { All, SourceVolumeSettings } from "../types";
+
 import { ApiCall } from "./types";
 import { sendRequest } from "./utils";
 
@@ -40,7 +41,7 @@ export const putSourceRefresh: ApiCall<string[]> = (languages = ["__all__"]) => 
 		url: API_URL_SOURCE_REFRESH,
 		data,
 		messages: {
-			success: languages?.[0] === "__all__" ? `All sources refreshed` : `Source '${languages?.[0]}' refreshed`,
+			success: languages?.[0] === "__all__" ? "All sources refreshed" : `Source '${languages?.[0]}' refreshed`,
 			error: "Source refreshing failed",
 		},
 		dataToReturn: languages,

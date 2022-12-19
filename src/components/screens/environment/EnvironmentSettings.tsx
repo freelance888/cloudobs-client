@@ -1,5 +1,7 @@
 import { useState } from "react";
+
 import { useDispatch, useSelector } from "react-redux";
+
 import { NewVMixPlayer } from "../../../services/types";
 import {
 	deleteMinions,
@@ -10,11 +12,12 @@ import {
 	updateHostAddress,
 } from "../../../store/slices/environment";
 import ContentPanel from "../../ContentPanel";
+import { AppDispatch } from "../../../store/store";
 
 const INITIAL_NEW_VMIX_PLAYER: NewVMixPlayer = { ip: "", label: "" };
 
 export const EnvironmentSettings: React.FC = () => {
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 	const [editedHostAddress, setEditedHostAddress] = useState(useSelector(selectHostAddress));
 	const vMixPlayers = useSelector(selectVMixPlayers);
 	const [newVMixPlayer, setNewVMixPlayer] = useState<NewVMixPlayer>(INITIAL_NEW_VMIX_PLAYER);
@@ -33,7 +36,7 @@ export const EnvironmentSettings: React.FC = () => {
 						onClick={() => {
 							if (window.confirm("❗️ You are going to delete all minion servers") === true) {
 								if (window.confirm("Are you really sure? 🙂") === true) {
-									dispatch(deleteMinions() as any);
+									dispatch(deleteMinions());
 								}
 							}
 						}}
@@ -137,7 +140,7 @@ export const EnvironmentSettings: React.FC = () => {
 							className="form-check-input mt-0"
 							type="radio"
 							checked={allActive}
-							onChange={() => dispatch(setVMixPlayerActive("*") as any)}
+							onChange={() => dispatch(setVMixPlayerActive("*"))}
 						/>
 					</div>
 					<div className="form-control" style={{ maxWidth: "160px" }}>
@@ -155,7 +158,7 @@ export const EnvironmentSettings: React.FC = () => {
 									className="form-check-input mt-0"
 									type="radio"
 									checked={active && !allActive}
-									onChange={() => dispatch(setVMixPlayerActive(ip) as any)}
+									onChange={() => dispatch(setVMixPlayerActive(ip))}
 								/>
 							</div>
 							<div className="form-control" style={{ maxWidth: "160px" }}>
@@ -206,7 +209,7 @@ export const EnvironmentSettings: React.FC = () => {
 								newVMixPlayer,
 							];
 
-							dispatch(initializeVMixPlayers(newVMixPlayers) as any);
+							dispatch(initializeVMixPlayers(newVMixPlayers));
 
 							setNewVMixPlayer(INITIAL_NEW_VMIX_PLAYER);
 						}}

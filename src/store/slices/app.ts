@@ -1,4 +1,5 @@
 import { AsyncThunk, createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+
 import * as ApiService from "../../services/api/index";
 import { ApiResult } from "../../services/api/types";
 import { EMPTY_LANGUAGE_SETTINGS } from "../../services/emptyData";
@@ -85,7 +86,7 @@ export const fetchLanguagesSettings: AsyncThunk<
 			return rejectWithValue(result.message);
 		}
 
-		dispatch(fetchVideosData() as any);
+		dispatch(fetchVideosData());
 
 		return result;
 	}
