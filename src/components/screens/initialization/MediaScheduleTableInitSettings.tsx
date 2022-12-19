@@ -7,7 +7,7 @@ import { setupMediaSchedule } from "../../../store/slices/media-schedule";
 import ContentPanel from "../../ContentPanel";
 import { AppDispatch } from "../../../store/store";
 
-export const MediaScheduleTableInitSettings: React.FC = () => {
+const MediaScheduleTableInitSettings: React.FC = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const activeRequest = useSelector(selectActiveRequest);
 

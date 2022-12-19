@@ -16,7 +16,7 @@ import { AppDispatch } from "../../../store/store";
 
 const INITIAL_NEW_VMIX_PLAYER: NewVMixPlayer = { ip: "", label: "" };
 
-export const EnvironmentSettings: React.FC = () => {
+const EnvironmentSettings: React.FC = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const [editedHostAddress, setEditedHostAddress] = useState(useSelector(selectHostAddress));
 	const vMixPlayers = useSelector(selectVMixPlayers);

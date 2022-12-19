@@ -6,7 +6,7 @@ import { initialize, selectActiveRequest } from "../../../store/slices/app";
 import ContentPanel from "../../ContentPanel";
 import { AppDispatch } from "../../../store/store";
 
-export const VideoTableInitSettings: React.FC = () => {
+const VideoTableInitSettings: React.FC = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const activeRequest = useSelector(selectActiveRequest);
 

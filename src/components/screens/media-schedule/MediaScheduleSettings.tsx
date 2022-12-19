@@ -20,7 +20,7 @@ import TimingStatus from "./TimingStatus";
 
 export type DisplayMode = "BLANK" | "NOT_INITIALIZED" | "NOT_PULLED" | "READY";
 
-export const MediaScheduleSettings = () => {
+const MediaScheduleSettings = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const [displayMode, setDisplayMode] = useState<DisplayMode>("BLANK");
 
