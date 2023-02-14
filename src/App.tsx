@@ -1,23 +1,28 @@
 import React from "react";
 
-import useServerStatePoller from "./hooks/useServerStatePoller";
-import useInitialization from "./hooks/useInitialization";
+import { useSelector } from "react-redux";
+
 import AppContentScreen from "./components/screens/AppContentScreen";
 import VideoTableInitSettings from "./components/screens/initialization/VideoTableInitSettings";
 import "./App.css";
-import { ServerState } from "./services/api/state";
+import { ServerStatus } from "./services/api/state";
+import { selectRegistry } from "./store/slices/app";
+import useInitSocket from "./hooks/useInitSocket";
 
 const App: React.FC = () => {
-	const serverState = useServerStatePoller();
+	useInitSocket();
+	const registry = useSelector(selectRegistry);
+	const serverStatus = registry?.server_status;
 
-	useInitialization(serverState === ServerState.RUNNING);
+	console.log("registry", registry);
+	console.log("serverState", registry?.server_status);
 
-	switch (serverState) {
-		case ServerState.INITIALIZING:
+	switch (serverStatus) {
+		case ServerStatus.INITIALIZING:
 			return <div>Initializing... Please wait 🙂</div>;
-		case ServerState.RUNNING:
+		case ServerStatus.RUNNING:
 			return <AppContentScreen />;
-		case ServerState.DISPOSING:
+		case ServerStatus.DISPOSING:
 			return <div>Server is being disposed...</div>;
 		default:
 			return <VideoTableInitSettings />;

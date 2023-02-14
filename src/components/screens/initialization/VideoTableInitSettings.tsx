@@ -1,15 +1,13 @@
 import { useState } from "react";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
-import { initialize, selectActiveRequest } from "../../../store/slices/app";
+import { selectActiveRequest } from "../../../store/slices/app";
 import ContentPanel from "../../ContentPanel";
-import { AppDispatch } from "../../../store/store";
+import { pullConfig } from "../../../services/soketApi";
 
 const VideoTableInitSettings: React.FC = () => {
-	const dispatch = useDispatch<AppDispatch>();
 	const activeRequest = useSelector(selectActiveRequest);
-
 	const [sheetUrl, setSheetUrl] = useState("");
 	const [worksheetName, setWorkSheetName] = useState("");
 
@@ -19,7 +17,7 @@ const VideoTableInitSettings: React.FC = () => {
 				<button
 					className="btn btn-primary"
 					disabled={activeRequest === "postInit"}
-					onClick={() => dispatch(initialize({ sheetUrl, worksheetName }))}
+					onClick={() => pullConfig(sheetUrl, worksheetName)}
 				>
 					<i className={activeRequest === "postInit" ? "bi bi-arrow-clockwise spin" : "bi bi-cloud-arrow-up"} />
 					<span>Init</span>

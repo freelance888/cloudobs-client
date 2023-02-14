@@ -1,3 +1,5 @@
+import { ServerStatus } from "./api/state";
+
 export type All<T> = Record<string, T>;
 
 export type MediaScheduleItem = {
@@ -114,7 +116,7 @@ export type LanguagesSettings = All<LanguageSettings>;
 
 export type VMixPlayer = {
 	ip: string;
-	label: string;
+	name: string;
 	active: boolean;
 };
 
@@ -124,6 +126,100 @@ export type GDriveFile = [
 	string, // filename
 	boolean // loaded
 ];
+
+export interface InfoResponse {
+	result: boolean;
+	details: string;
+	serializable_object?: {
+		registry: object;
+	};
+}
+
+export interface AddrConfig {
+	obs_host: string;
+	minion_server_addr: string;
+	websocket_port: number;
+	password: string;
+	original_media_url: string;
+}
+
+export interface StreamSettings {
+	server: string;
+	key: string;
+}
+
+export interface StreamOn {
+	value: boolean;
+}
+
+export interface TsOffset {
+	value: number;
+}
+
+export interface TsVolume {
+	value: number;
+}
+
+export interface SourceVolume {
+	value: number;
+}
+
+export interface SidechainRegSettings {
+	ratio: number;
+	release_time: number;
+	threshold: number;
+	output_gain: number;
+}
+
+export interface TransitionRegSettings {
+	transition_name: string;
+	path: string;
+	transition_point: number;
+}
+
+export interface GdriveSettings {
+	folder_id: string;
+	media_dir: string;
+	api_key: string;
+	sync_seconds: number;
+	gdrive_sync_addr: string;
+}
+
+export interface MinionConfig {
+	addr_config: AddrConfig;
+	stream_settings: StreamSettings;
+	stream_on: StreamOn;
+	ts_offset: TsOffset;
+	ts_volume: TsVolume;
+	source_volume: SourceVolume;
+	sidechain_settings: SidechainRegSettings;
+	transition_settings: TransitionRegSettings;
+	gdrive_settings: GdriveSettings;
+}
+
+export interface TimingEntry {
+	name: string;
+	timestamp: string;
+	is_enabled: boolean;
+	is_played: boolean;
+}
+
+export type Registry = {
+	obs_sheet_url: string;
+	obs_sheet_name: string;
+	minion_configs: All<MinionConfig>;
+	infrastructure_lock: boolean;
+	server_status: ServerStatus;
+	timing_sheet_url: string | null;
+	timing_sheet_name: string | null;
+	timing_start_time: string | null;
+	vmix_players: All<{
+		name: string;
+		active: boolean;
+	}>;
+	active_vmix_player: string;
+	timing_list: TimingEntry[];
+};
 
 const getAllSettings = <T extends AnySettings>(
 	languagesSettings: LanguagesSettings,

@@ -2,16 +2,12 @@ import { useMemo, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 
-import {
-	selectInitialLanguagesSettingsLoaded,
-	selectInitialized,
-	selectLanguagesSettings,
-	refreshServers,
-	refreshSource,
-} from "../../../store/slices/app";
+import { refreshServers, refreshSource, selectRegistry } from "../../../store/slices/app";
 import ContentPanel from "../../ContentPanel";
 import StopMediaButton from "../../StopMediaButton";
 import { AppDispatch } from "../../../store/store";
+import { Registry } from "../../../services/types";
+import { ServerStatus } from "../../../services/api/state";
 
 import Language from "./Language";
 import LanguageFilter from "./LanguageFilter";
@@ -20,10 +16,11 @@ import StartStopStreamingButton from "./StartStopStreamingButton";
 const LanguageSettings = () => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const loaded = useSelector(selectInitialLanguagesSettingsLoaded);
-	const initialized = useSelector(selectInitialized);
-	const languagesSettings = useSelector(selectLanguagesSettings);
+	const registry: Registry = useSelector(selectRegistry);
+	const languagesSettings = registry?.minion_configs;
 
+	console.log(registry);
+	const initialized = registry.server_status === ServerStatus.RUNNING;
 	const languagesCount = useMemo(() => Object.keys(languagesSettings).length, [languagesSettings]);
 
 	const [collapsedStates, setCollapsedStates] = useState({});
@@ -85,8 +82,6 @@ const LanguageSettings = () => {
 		>
 			{!initialized ? (
 				<div>Server is not initialized. Please, go to Stream Settings and initialize the server.</div>
-			) : !loaded ? (
-				"Loading..."
 			) : (
 				<>
 					<hr />

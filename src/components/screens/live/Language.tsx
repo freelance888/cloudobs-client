@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 
 import useLogger from "../../../hooks/useLogger";
 import { EMPTY_LANGUAGE_SETTINGS } from "../../../services/emptyData";
-import { LanguageSettings } from "../../../services/types";
 import {
 	refreshSource,
 	selectSyncedParameters,
@@ -18,6 +17,7 @@ import {
 	updateSyncedParameters,
 } from "../../../store/slices/app";
 import { AppDispatch } from "../../../store/store";
+import { MinionConfig } from "../../../services/types";
 
 import EditableStreamDestinationSettings from "./EditableStreamDestinationSettings";
 import RangeInput from "./RangeInput";
@@ -39,7 +39,7 @@ const TRANSITION_POINT_STEP = 100;
 
 export type LanguageProps = {
 	language: string;
-	languageSettings: LanguageSettings;
+	languageSettings: MinionConfig;
 	collapsed: boolean;
 	onCollapsedToggled: () => void;
 };
@@ -55,10 +55,11 @@ const Language: React.FC<LanguageProps> = ({
 
 	const syncedParameters = useSelector(selectSyncedParameters);
 
-	const serverIp: string = languageSettings.initial.host_url.match(/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/)?.[0] || "";
+	const serverIp: string =
+		languageSettings.addr_config.original_media_url.match(/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/)?.[0] || "";
 
-	const { sourceVolume, translationVolume, translationOffset } = languageSettings.streamParameters;
-	const { ratio, release_time, threshold, output_gain } = languageSettings.sidechain;
+	const { source_volume, ts_volume, ts_offset } = languageSettings;
+	const { ratio, release_time, threshold, output_gain } = languageSettings.sidechain_settings;
 
 	const videosData = useSelector(selectVideosData);
 
@@ -82,12 +83,7 @@ const Language: React.FC<LanguageProps> = ({
 	}, [language, videosData]);
 
 	return (
-		<div
-			className={classNames([
-				"Language",
-				{ "Language--live": languageSettings.streamParameters.streamActive, collapsed },
-			])}
-		>
+		<div className={classNames(["Language", { "Language--live": languageSettings.stream_on.value, collapsed }])}>
 			<div className="language-header">
 				<StreamActiveToggle language={language} languageSettings={languageSettings} />
 				<div className="language-name">
@@ -143,7 +139,7 @@ const Language: React.FC<LanguageProps> = ({
 								minValue={MIN_SOURCE_VOLUME}
 								maxValue={MAX_SOURCE_VOLUME}
 								syncAll={syncedParameters.sourceVolume}
-								value={sourceVolume}
+								value={source_volume.value}
 								units={"dB"}
 								onValueChanged={(updatedSourceVolume) => dispatch(setSourceVolume({ [language]: updatedSourceVolume }))}
 								onSyncAllChanged={(updatedSyncAll) =>
@@ -157,7 +153,7 @@ const Language: React.FC<LanguageProps> = ({
 								minValue={MIN_TS_VOLUME}
 								maxValue={MAX_TS_VOLUME}
 								syncAll={syncedParameters.translationVolume}
-								value={translationVolume}
+								value={ts_volume.value}
 								units={"dB"}
 								onValueChanged={(updatedTranslationVolume) =>
 									dispatch(setTranslationVolume({ [language]: updatedTranslationVolume }))
@@ -174,7 +170,7 @@ const Language: React.FC<LanguageProps> = ({
 								maxValue={MAX_TS_OFFSET}
 								step={TS_OFFSET_STEP}
 								syncAll={syncedParameters.translationOffset}
-								value={translationOffset}
+								value={ts_offset.value}
 								units={"ms"}
 								onValueChanged={(updatedTranslationOffset) =>
 									dispatch(setTranslationOffset({ [language]: updatedTranslationOffset }))
@@ -246,7 +242,8 @@ const Language: React.FC<LanguageProps> = ({
 								maxValue={MAX_TRANSITION_POINT}
 								step={TRANSITION_POINT_STEP}
 								value={
-									languageSettings.transition?.transition_point || EMPTY_LANGUAGE_SETTINGS.transition?.transition_point
+									languageSettings.transition_settings?.transition_point ||
+									EMPTY_LANGUAGE_SETTINGS.transition?.transition_point
 								}
 								syncAll={syncedParameters?.transition_point}
 								units={"ms"}

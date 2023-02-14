@@ -4,7 +4,7 @@ import { getHostAddress } from "./utils";
 
 const SERVER_STATE_ENDPOINT = "/state";
 
-export enum ServerState {
+export enum ServerStatus {
 	SLEEPING = "sleeping",
 	NOT_INITIALIZED = "not initialized",
 	INITIALIZING = "initializing",
@@ -12,11 +12,11 @@ export enum ServerState {
 	DISPOSING = "disposing",
 }
 
-export const getServerState: () => Promise<ServerState> = async () => {
+export const getServerState: () => Promise<ServerStatus> = async () => {
 	const url = buildUrl(getHostAddress(), SERVER_STATE_ENDPOINT);
 
 	const response = await fetch(url);
-	const serverState: ServerState = (await response.text()) as ServerState;
+	const serverState: ServerStatus = (await response.text()) as ServerStatus;
 
 	return serverState;
 };

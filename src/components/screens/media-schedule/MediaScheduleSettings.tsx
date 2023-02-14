@@ -2,19 +2,14 @@ import { useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 
-import { MediaSchedule } from "../../../services/types";
+import { MediaSchedule, Registry } from "../../../services/types";
 import * as ApiService from "../../../services/api/index";
-import {
-	fetchMediaSchedule,
-	fetchTimingStatus,
-	playMedia,
-	pullMediaSchedule,
-	selectMediaSchedule,
-	updateMedia,
-} from "../../../store/slices/media-schedule";
+import { playMedia, selectMediaSchedule, updateMedia } from "../../../store/slices/media-schedule";
 import ContentPanel from "../../ContentPanel";
 import MediaScheduleTableInitSettings from "../initialization/MediaScheduleTableInitSettings";
 import { AppDispatch } from "../../../store/store";
+import { selectRegistry } from "../../../store/slices/app";
+import { pullTiming } from "../../../services/soketApi";
 
 import TimingStatus from "./TimingStatus";
 
@@ -25,7 +20,7 @@ const MediaScheduleSettings = () => {
 	const [displayMode, setDisplayMode] = useState<DisplayMode>("BLANK");
 
 	const mediaSchedule = useSelector(selectMediaSchedule);
-
+	const registry: Registry = useSelector(selectRegistry);
 	const [editedMediaSchedule, setEditedMediaSchedule] = useState<MediaSchedule>({});
 
 	useEffect(() => {
@@ -34,7 +29,10 @@ const MediaScheduleSettings = () => {
 
 	useEffect(() => {
 		(async () => {
-			const res = await ApiService.getMediaSchedule();
+			pullTiming(registry.timing_sheet_url || "", registry.timing_sheet_name || ""); // clarify params
+
+			const res = await ApiService.getMediaSchedule(); // pulled config before
+
 			// let interval: ReturnType<typeof setInterval> | null = null;
 
 			if (res.status === "error") {
@@ -45,8 +43,9 @@ const MediaScheduleSettings = () => {
 				}
 			} else {
 				setDisplayMode("READY");
-				await dispatch(fetchMediaSchedule());
-				dispatch(fetchTimingStatus());
+				// await dispatch(fetchMediaSchedule());
+				// dispatch(fetchTimingStatus());
+				//get from registry
 			}
 		})();
 	}, [dispatch]);
@@ -67,7 +66,7 @@ const MediaScheduleSettings = () => {
 				<button
 					className="btn btn-sm btn-primary"
 					onClick={() => {
-						dispatch(pullMediaSchedule());
+						//dispatch(pullMediaSchedule());Todo clarify logic
 					}}
 				>
 					Pull media schedule

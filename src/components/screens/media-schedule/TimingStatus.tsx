@@ -3,13 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import classNames from "classnames";
 import { useDispatch, useSelector } from "react-redux";
 
-import {
-	deleteTiming,
-	fetchTimingStatus,
-	pullMediaSchedule,
-	resetMediaSchedule,
-	selectMediaScheduleStatus,
-} from "../../../store/slices/media-schedule";
+import { deleteTiming, resetMediaSchedule, selectMediaScheduleStatus } from "../../../store/slices/media-schedule";
 import { convertTimeStampToTime } from "../../../utils/timestamp";
 import { AppDispatch } from "../../../store/store";
 import StopMediaButton from "../../StopMediaButton";
@@ -63,7 +57,7 @@ const TimingStatus = ({ onDisplayModeChanged }: Props) => {
 				<button
 					className="btn btn-sm btn-info ms-3"
 					onClick={() => {
-						dispatch(fetchTimingStatus());
+						//dispatch(fetchTimingStatus()); todo clarify logic
 					}}
 				>
 					Refresh
@@ -73,7 +67,7 @@ const TimingStatus = ({ onDisplayModeChanged }: Props) => {
 					onClick={async () => {
 						if (window.confirm("❗️ Stop the timing?") === true) {
 							await dispatch(resetMediaSchedule());
-							dispatch(fetchTimingStatus());
+							//dispatch(fetchTimingStatus());
 						}
 					}}
 				>
@@ -85,7 +79,7 @@ const TimingStatus = ({ onDisplayModeChanged }: Props) => {
 					className="btn btn-sm btn-secondary ms-3"
 					title="Update server data and fetch current spreadsheet state to app UI"
 					onClick={() => {
-						dispatch(pullMediaSchedule());
+						//dispatch(pullMediaSchedule());todo clarify logic
 					}}
 				>
 					Pull & refresh

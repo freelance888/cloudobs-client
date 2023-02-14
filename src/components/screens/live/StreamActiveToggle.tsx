@@ -1,18 +1,18 @@
 import { useDispatch } from "react-redux";
 
-import { LanguageSettings } from "../../../services/types";
+import { MinionConfig } from "../../../services/types";
 import { startStreaming, stopStreaming } from "../../../store/slices/app";
 import { AppDispatch } from "../../../store/store";
 
 export type Props = {
 	language: string;
-	languageSettings: LanguageSettings;
+	languageSettings: MinionConfig;
 };
 
 const StreamActiveToggle = ({ language, languageSettings }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const { streamActive } = languageSettings.streamParameters;
+	const { stream_on } = languageSettings;
 
 	return (
 		<div className="form-check form-switch">
@@ -21,7 +21,7 @@ const StreamActiveToggle = ({ language, languageSettings }: Props) => {
 				type="checkbox"
 				role="switch"
 				id="stream-on"
-				checked={streamActive}
+				checked={!!stream_on}
 				onChange={async (event: React.ChangeEvent<HTMLInputElement>) => {
 					const active = event.target.checked;
 

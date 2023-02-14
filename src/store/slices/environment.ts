@@ -1,9 +1,8 @@
 import { AsyncThunk, createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import * as ApiService from "../../services/api/index";
 import { RootSelector, RootState } from "../store";
 import { NewVMixPlayer, VMixPlayer } from "../../services/types";
-import { ApiResult } from "../../services/api/types";
+import { dispose, vmixPlayersAdd, vmixSetActive } from "../../services/soketApi";
 
 export type HostAddress = {
 	protocol: string;
@@ -39,78 +38,46 @@ const loadHostAddress = () => {
 	return hostAddress;
 };
 
-export const fetchVMixPlayers: AsyncThunk<ApiResult<VMixPlayer[]>, void, { state: RootState }> = createAsyncThunk<
-	ApiResult<VMixPlayer[]>,
+// export const fetchVMixPlayers: AsyncThunk<ApiResult<VMixPlayer[]>, void, { state: RootState }> = createAsyncThunk<
+// 	ApiResult<VMixPlayer[]>,
+// 	void,
+// 	{ state: RootState }
+// >("environment/fetchVMixPlayers", async (_, { rejectWithValue }) => {
+// 	const result = await ApiService.getVMixPlayers();
+// 	//in registry
+//
+// 	if (result.status === "error") {
+// 		return rejectWithValue(result.message);
+// 	}
+//
+// 	return result;
+// });
+
+export const initializeVMixPlayers: AsyncThunk<void, NewVMixPlayer[], { state: RootState }> = createAsyncThunk<
 	void,
-	{ state: RootState }
->("environment/fetchVMixPlayers", async (_, { rejectWithValue }) => {
-	const result = await ApiService.getVMixPlayers();
-
-	if (result.status === "error") {
-		return rejectWithValue(result.message);
-	}
-
-	return result;
-});
-
-export const initializeVMixPlayers: AsyncThunk<ApiResult, NewVMixPlayer[], { state: RootState }> = createAsyncThunk<
-	ApiResult,
 	NewVMixPlayer[],
 	{ state: RootState }
->("environment/initializeVMixPlayers", async (vMixPlayers, { dispatch, rejectWithValue }) => {
-	const result = await ApiService.postVMixPlayers(vMixPlayers);
-
-	if (result.status === "error") {
-		return rejectWithValue(result.message);
-	}
-
-	dispatch(fetchVMixPlayers());
-
-	return result;
+>("environment/initializeVMixPlayers", async (vMixPlayers) => {
+	// also we have {'*': {'name': 'All', 'active': True}} case
+	vMixPlayers.forEach((player) => {
+		vmixPlayersAdd(player.ip, player.name);
+	});
 });
 
-export const fetchVMixPlayerActive: AsyncThunk<ApiResult<string>, void, { state: RootState }> = createAsyncThunk<
-	ApiResult<string>,
+export const setVMixPlayerActive: AsyncThunk<void, string, { state: RootState }> = createAsyncThunk<
 	void,
-	{ state: RootState }
->("environment/fetchVMixPlayerActive", async (_, { rejectWithValue }) => {
-	const result = await ApiService.getVMixPlayersActive();
-
-	if (result.status === "error") {
-		return rejectWithValue(result.message);
-	}
-
-	return result;
-});
-
-export const setVMixPlayerActive: AsyncThunk<ApiResult, string, { state: RootState }> = createAsyncThunk<
-	ApiResult,
 	string,
 	{ state: RootState }
->("environment/setVMixPlayerActive", async (vMixPlayer, { dispatch, rejectWithValue }) => {
-	const result = await ApiService.postVMixPlayersActive(vMixPlayer);
-
-	if (result.status === "error") {
-		return rejectWithValue(result.message);
-	}
-
-	dispatch(fetchVMixPlayers());
-
-	return result;
+>("environment/setVMixPlayerActive", async (vMixPlayer) => {
+	vmixSetActive(vMixPlayer);
 });
 
-export const deleteMinions: AsyncThunk<ApiResult, void, { state: RootState }> = createAsyncThunk<
-	ApiResult,
+export const deleteMinions: AsyncThunk<void, void, { state: RootState }> = createAsyncThunk<
+	void,
 	void,
 	{ state: RootState }
->("environment/deleteMinions", async (_, { rejectWithValue }) => {
-	const result = await ApiService.postMinionsDeleteVms();
-
-	if (result.status === "error") {
-		return rejectWithValue(result.message);
-	}
-
-	return result;
+>("environment/deleteMinions", async () => {
+	dispose(); // clear up and delete minions
 });
 
 const initialState: EnvironmentState = {
@@ -127,18 +94,10 @@ const { actions, reducer } = createSlice({
 			state.hostAddress = payload;
 		},
 	},
-	extraReducers: (builder) => {
-		builder.addCase(fetchVMixPlayers.fulfilled, (state, { payload }) => {
-			const fetchedVMixPlayers = payload.data as VMixPlayer[];
-			state.vMixPlayers = fetchedVMixPlayers;
-		});
-	},
 });
 
 export const { updateHostAddress } = actions;
 
 export const selectHostAddress: RootSelector<HostAddress> = ({ environment }) => environment.hostAddress;
-
-export const selectVMixPlayers: RootSelector<VMixPlayer[]> = ({ environment }) => environment.vMixPlayers;
 
 export default reducer;

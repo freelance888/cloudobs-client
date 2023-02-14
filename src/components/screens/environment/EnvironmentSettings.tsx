@@ -2,24 +2,25 @@ import { useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 
-import { NewVMixPlayer } from "../../../services/types";
+import { NewVMixPlayer, Registry } from "../../../services/types";
 import {
 	deleteMinions,
 	initializeVMixPlayers,
 	selectHostAddress,
-	selectVMixPlayers,
 	setVMixPlayerActive,
 	updateHostAddress,
 } from "../../../store/slices/environment";
 import ContentPanel from "../../ContentPanel";
 import { AppDispatch } from "../../../store/store";
+import { selectRegistry } from "../../../store/slices/app";
 
-const INITIAL_NEW_VMIX_PLAYER: NewVMixPlayer = { ip: "", label: "" };
+const INITIAL_NEW_VMIX_PLAYER: NewVMixPlayer = { ip: "", name: "" };
 
 const EnvironmentSettings: React.FC = () => {
 	const dispatch = useDispatch<AppDispatch>();
+	const registry: Registry = useSelector(selectRegistry);
 	const [editedHostAddress, setEditedHostAddress] = useState(useSelector(selectHostAddress));
-	const vMixPlayers = useSelector(selectVMixPlayers);
+	const vMixPlayers = registry.vmix_players;
 	const [newVMixPlayer, setNewVMixPlayer] = useState<NewVMixPlayer>(INITIAL_NEW_VMIX_PLAYER);
 
 	const allActive = Object.values(vMixPlayers).every(({ active }) => !!active);
@@ -148,11 +149,11 @@ const EnvironmentSettings: React.FC = () => {
 					</div>
 				</div>
 
-				{vMixPlayers.map((vMixPlayer) => {
-					const { ip, label, active } = vMixPlayer;
+				{Object.entries(vMixPlayers).map(([ip, vMixPlayer]) => {
+					const { name, active } = vMixPlayer;
 
 					return (
-						<div className="input-group mb-1" key={`${ip}-${label}`}>
+						<div className="input-group mb-1" key={`${ip}-${name}`}>
 							<div className="input-group-text">
 								<input
 									className="form-check-input mt-0"
@@ -165,7 +166,7 @@ const EnvironmentSettings: React.FC = () => {
 								{ip}
 							</div>
 							<div className="form-control" style={{ maxWidth: "160px" }}>
-								{label}
+								{name}
 							</div>
 						</div>
 					);
@@ -192,11 +193,11 @@ const EnvironmentSettings: React.FC = () => {
 						style={{ maxWidth: "200px" }}
 						placeholder="Label"
 						aria-label="Label"
-						value={newVMixPlayer.label}
+						value={newVMixPlayer.name}
 						onChange={(event) =>
 							setNewVMixPlayer({
 								...newVMixPlayer,
-								label: event.target.value,
+								name: event.target.value,
 							})
 						}
 					/>
@@ -204,8 +205,8 @@ const EnvironmentSettings: React.FC = () => {
 						className="btn btn-outline-primary"
 						type="button"
 						onClick={() => {
-							const newVMixPlayers: NewVMixPlayer[] = [
-								...vMixPlayers.map(({ ip, label }) => ({ ip, label })),
+							const newVMixPlayers = [
+								...Object.entries(vMixPlayers).map(([ip, { active, name }]) => ({ ip, active, name })),
 								newVMixPlayer,
 							];
 
