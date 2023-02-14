@@ -1,4 +1,4 @@
-import { NewVMixPlayer, VMixPlayer } from "../types";
+import { NewVMixPlayer, VMixPlayerOld } from "../types";
 
 import { ApiCall } from "./types";
 import { sendRequest } from "./utils";
@@ -10,7 +10,7 @@ const API_URL_VMIX_PLAYERS_ACTIVE = "/vmix/players/active";
  * GET /vmix/players
  * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#get-vmixplayers
  */
-export const getVMixPlayers: ApiCall<void, VMixPlayer[]> = () => {
+export const getVMixPlayers: ApiCall<void, VMixPlayerOld[]> = () => {
 	return sendRequest({
 		url: API_URL_VMIX_PLAYERS,
 		messages: {

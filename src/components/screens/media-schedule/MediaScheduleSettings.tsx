@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
-
 import { useDispatch, useSelector } from "react-redux";
-
 import { MediaSchedule, Registry } from "../../../services/types";
 import * as ApiService from "../../../services/api/index";
-import { playMedia, selectMediaSchedule, updateMedia } from "../../../store/slices/media-schedule";
+import { selectMediaSchedule, updateMedia } from "../../../store/slices/media-schedule";
 import ContentPanel from "../../ContentPanel";
 import MediaScheduleTableInitSettings from "../initialization/MediaScheduleTableInitSettings";
 import { AppDispatch } from "../../../store/store";
 import { selectRegistry } from "../../../store/slices/app";
-import { pullTiming } from "../../../services/soketApi";
-
+import { playMedia, pullTiming } from "../../../services/soketApi";
 import TimingStatus from "./TimingStatus";
 
 export type DisplayMode = "BLANK" | "NOT_INITIALIZED" | "NOT_PULLED" | "READY";
@@ -142,7 +139,8 @@ const MediaScheduleSettings = () => {
 												type="button"
 												title="Play now"
 												onClick={() => {
-													dispatch(playMedia(item));
+													const mediaNamePrefix = item.name.split(/^([0-9]+)_.+/)[1];
+													playMedia(mediaNamePrefix, true, "check_any");
 												}}
 											>
 												<i className="bi bi-play-fill me-1" />

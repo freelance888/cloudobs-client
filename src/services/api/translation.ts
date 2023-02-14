@@ -1,4 +1,4 @@
-import { All, TranslationOffsetSettings, TranslationVolumeSettings } from "../types";
+import { LangMap, TranslationOffsetSettings, TranslationVolumeSettings } from "../types";
 
 import { ApiCall } from "./types";
 import { sendRequest } from "./utils";
@@ -10,7 +10,7 @@ const API_URL_TS_VOLUME = "/ts/volume";
  * POST /ts/offset
  * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#post-tsoffset
  */
-export const postTsOffset: ApiCall<All<TranslationOffsetSettings>> = (offsetSettings) => {
+export const postTsOffset: ApiCall<LangMap<TranslationOffsetSettings>> = (offsetSettings) => {
 	const data = {
 		offset_settings: offsetSettings,
 	};
@@ -31,7 +31,7 @@ export const postTsOffset: ApiCall<All<TranslationOffsetSettings>> = (offsetSett
  * POST /ts/volume
  * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#post-tsvolume
  */
-export const postTsVolume: ApiCall<All<TranslationVolumeSettings>> = (volumeSettings) => {
+export const postTsVolume: ApiCall<LangMap<TranslationVolumeSettings>> = (volumeSettings) => {
 	const data = {
 		volume_settings: volumeSettings,
 	};

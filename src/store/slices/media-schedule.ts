@@ -3,18 +3,12 @@ import { AsyncThunk, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import * as ApiService from "../../services/api/index";
 import {
 	MediaSchedule,
-	MediaScheduleItem,
 	MediaScheduleStatus,
 	SheetInitialSettings,
 	UpdatedMediaScheduleItem,
 } from "../../services/types";
 import { RootSelector, RootState } from "../store";
-import {
-	playMedia as playMediaSocket,
-	pullTiming,
-	removeTiming,
-	stopMedia as stopMediaSocket,
-} from "../../services/soketApi";
+import { pullTiming } from "../../services/soketApi";
 
 type MediaScheduleState = {
 	mediaSchedule: MediaSchedule;
@@ -57,31 +51,6 @@ export const resetMediaSchedule: AsyncThunk<void, never, { state: RootState }> =
 		return rejectWithValue(result.message);
 	}
 	//TODO find proper emit
-});
-
-export const deleteTiming: AsyncThunk<void, never, { state: RootState }> = createAsyncThunk<
-	void,
-	never,
-	{ state: RootState }
->("media-schedule/deleteTiming", async () => {
-	removeTiming();
-});
-
-export const playMedia: AsyncThunk<void, MediaScheduleItem, { state: RootState }> = createAsyncThunk<
-	void,
-	MediaScheduleItem,
-	{ state: RootState }
->("media-schedule/playMedia", async (mediaScheduleItem) => {
-	const mediaNamePrefix = mediaScheduleItem.name.split(/^([0-9]+)_.+/)[1];
-	playMediaSocket(mediaNamePrefix, true, "check_any");
-});
-
-export const stopMedia: AsyncThunk<void, void, { state: RootState }> = createAsyncThunk<
-	void,
-	void,
-	{ state: RootState }
->("media-schedule/stopMedia", async () => {
-	stopMediaSocket(); //lang?
 });
 
 const { reducer } = createSlice({

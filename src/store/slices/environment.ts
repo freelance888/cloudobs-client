@@ -1,7 +1,7 @@
 import { AsyncThunk, createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { RootSelector, RootState } from "../store";
-import { NewVMixPlayer, VMixPlayer } from "../../services/types";
+import { NewVMixPlayer, VMixPlayerOld } from "../../services/types";
 import { dispose, vmixPlayersAdd, vmixSetActive } from "../../services/soketApi";
 
 export type HostAddress = {
@@ -13,7 +13,7 @@ export type HostAddress = {
 
 type EnvironmentState = {
 	hostAddress: HostAddress;
-	vMixPlayers: VMixPlayer[];
+	vMixPlayers: VMixPlayerOld[];
 };
 
 export const LS_KEY_HOST_ADDRESS = "cloudobs__host_address";

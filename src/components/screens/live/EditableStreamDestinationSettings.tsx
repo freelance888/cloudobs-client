@@ -5,8 +5,8 @@ import { useDispatch } from "react-redux";
 
 import useLogger from "../../../hooks/useLogger";
 import { MinionConfig } from "../../../services/types";
-import { setStreamSettings } from "../../../store/slices/app";
 import { AppDispatch } from "../../../store/store";
+import { setStreamSettings } from "../../../services/soketApi";
 
 type Props = {
 	language: string;
@@ -30,7 +30,7 @@ const EditableStreamDestinationSettings = ({ language, languageSettings }: Props
 	}, [updatedDestinationSettings]);
 
 	const saveDestinationSettings = useCallback(() => {
-		dispatch(setStreamSettings({ [language]: updatedDestinationSettings }));
+		setStreamSettings(updatedDestinationSettings.server, updatedDestinationSettings.key, language);
 
 		setDestinationSettingsOpen(false);
 	}, [dispatch, updatedDestinationSettings, language]);

@@ -1,8 +1,6 @@
-import { useDispatch } from "react-redux";
+import { startStreaming, stopStreaming } from "../../../services/soketApi";
 
 import { MinionConfig } from "../../../services/types";
-import { startStreaming, stopStreaming } from "../../../store/slices/app";
-import { AppDispatch } from "../../../store/store";
 
 export type Props = {
 	language: string;
@@ -10,8 +8,6 @@ export type Props = {
 };
 
 const StreamActiveToggle = ({ language, languageSettings }: Props) => {
-	const dispatch = useDispatch<AppDispatch>();
-
 	const { stream_on } = languageSettings;
 
 	return (
@@ -26,9 +22,9 @@ const StreamActiveToggle = ({ language, languageSettings }: Props) => {
 					const active = event.target.checked;
 
 					if (active) {
-						await dispatch(startStreaming([language]));
+						startStreaming(language);
 					} else {
-						await dispatch(stopStreaming([language]));
+						stopStreaming(language);
 					}
 				}}
 			/>

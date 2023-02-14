@@ -1,14 +1,12 @@
 import { useMemo } from "react";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+import { startStreaming, stopStreaming } from "../../../services/soketApi";
 
 import { LanguageSettings } from "../../../services/types";
-import { stopStreaming, startStreaming, selectLanguagesSettings, selectActiveRequest } from "../../../store/slices/app";
-import { AppDispatch } from "../../../store/store";
+import { selectLanguagesSettings } from "../../../store/slices/app";
 
 const StartStopStreamingButton = () => {
-	const dispatch = useDispatch<AppDispatch>();
-	const activeRequest = useSelector(selectActiveRequest);
 	const languagesSettings = useSelector(selectLanguagesSettings);
 
 	const streamsActive = useMemo(() => {
@@ -27,19 +25,18 @@ const StartStopStreamingButton = () => {
 	return (
 		<button
 			className={streamsActive ? "btn btn-danger" : "btn btn-success"}
-			disabled={languagesCount === 0 || activeRequest === "postStreamStart" || activeRequest === "postStreamStop"}
 			title={(streamsActive ? "Stop" : "Start") + " streaming of all languages"}
 			onClick={() => {
 				if (streamsActive) {
 					if (window.confirm("❗️ Stop all streams?") === true) {
-						dispatch(stopStreaming());
+						stopStreaming();
 					}
 				} else {
-					dispatch(startStreaming());
+					startStreaming();
 				}
 			}}
 		>
-			<i className={activeRequest === "postStreamStop" ? "bi bi-arrow-clockwise spin" : "bi bi-broadcast"} />
+			<i className="bi bi-broadcast" />
 			<span>
 				{streamsActive ? "Stop" : "Start"} streaming ({languagesCount} langs)
 			</span>

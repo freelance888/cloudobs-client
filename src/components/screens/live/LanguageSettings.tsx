@@ -1,21 +1,19 @@
 import { useMemo, useState } from "react";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
-import { refreshServers, refreshSource, selectRegistry } from "../../../store/slices/app";
+import { selectRegistry } from "../../../store/slices/app";
 import ContentPanel from "../../ContentPanel";
 import StopMediaButton from "../../StopMediaButton";
-import { AppDispatch } from "../../../store/store";
 import { Registry } from "../../../services/types";
 import { ServerStatus } from "../../../services/api/state";
 
 import Language from "./Language";
 import LanguageFilter from "./LanguageFilter";
 import StartStopStreamingButton from "./StartStopStreamingButton";
+import { pullConfig, refreshSource } from "../../../services/soketApi";
 
 const LanguageSettings = () => {
-	const dispatch = useDispatch<AppDispatch>();
-
 	const registry: Registry = useSelector(selectRegistry);
 	const languagesSettings = registry?.minion_configs;
 
@@ -35,7 +33,7 @@ const LanguageSettings = () => {
 							className="btn btn-info me-2"
 							title="Refresh servers data from spreadsheet table and update UI"
 							onClick={() => {
-								dispatch(refreshServers());
+								pullConfig();
 							}}
 						>
 							<i className="bi bi-arrow-clockwise" />
@@ -46,7 +44,7 @@ const LanguageSettings = () => {
 							className="btn btn-dark ms-2"
 							onClick={() => {
 								if (window.confirm("Are you sure?") === true) {
-									dispatch(refreshSource(["__all__"]));
+									refreshSource();
 								}
 							}}
 						>

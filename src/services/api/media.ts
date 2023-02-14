@@ -1,5 +1,5 @@
 import {
-	All,
+	LangMap,
 	MediaPlaySettings,
 	MediaSchedule,
 	MediaScheduleStatus,
@@ -22,7 +22,7 @@ const API_URL_MEDIA_SCHEDULE_STATUS = "/media/schedule/status";
  * POST /media/play
  * https://github.com/ALLATRA-IT/cloudobs/blob/main/api_docs.md#post-mediaplay
  */
-export const postMediaPlay: ApiCall<All<MediaPlaySettings>, never> = (mediaPlaySettings) => {
+export const postMediaPlay: ApiCall<LangMap<MediaPlaySettings>, never> = (mediaPlaySettings) => {
 	const data = {
 		params: mediaPlaySettings,
 	};

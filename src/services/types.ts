@@ -1,6 +1,7 @@
 import { ServerStatus } from "./api/state";
 
-export type All<T> = Record<string, T>;
+type LangCode = string;
+export type LangMap<T> = Record<LangCode, T>;
 
 export type MediaScheduleItem = {
 	name: string;
@@ -83,13 +84,6 @@ export type SidechainSettings = {
 	output_gain: number;
 };
 
-type AnySettings =
-	| InitialSettings
-	| StreamParametersSettings
-	| StreamDestinationSettings
-	| SidechainSettings
-	| GDriveSettings;
-
 export type SourceVolumeSettings = Pick<StreamParametersSettings, "sourceVolume">["sourceVolume"];
 export type TranslationVolumeSettings = Pick<StreamParametersSettings, "translationVolume">["translationVolume"];
 export type TranslationOffsetSettings = Pick<StreamParametersSettings, "translationOffset">["translationOffset"];
@@ -98,9 +92,7 @@ export type OptionsFlags<Type> = {
 	[Property in keyof Type]: boolean;
 };
 
-export type SyncableSettings = Omit<StreamParametersSettings, "streamActive"> &
-	SidechainSettings &
-	Pick<TransitionSettings, "transition_point">;
+export type SyncableSettings = Omit<StreamParametersSettings, "streamActive"> & SidechainSettings & TransitionSettings;
 export type SyncableSettingsFlags = OptionsFlags<SyncableSettings>;
 
 export type LanguageSettings = {
@@ -112,15 +104,15 @@ export type LanguageSettings = {
 	gDrive: GDriveSettings;
 };
 
-export type LanguagesSettings = All<LanguageSettings>;
+export type LanguagesSettings = LangMap<LanguageSettings>;
 
-export type VMixPlayer = {
+export type VMixPlayerOld = {
 	ip: string;
 	name: string;
 	active: boolean;
 };
 
-export type NewVMixPlayer = Omit<VMixPlayer, "active">;
+export type NewVMixPlayer = Omit<VMixPlayerOld, "active">;
 
 export type GDriveFile = [
 	string, // filename
@@ -204,50 +196,21 @@ export interface TimingEntry {
 	is_played: boolean;
 }
 
+export type VMixPlayer = {
+	name: string;
+	active: boolean;
+};
+
 export type Registry = {
 	obs_sheet_url: string;
 	obs_sheet_name: string;
-	minion_configs: All<MinionConfig>;
+	minion_configs: LangMap<MinionConfig>;
 	infrastructure_lock: boolean;
 	server_status: ServerStatus;
 	timing_sheet_url: string | null;
 	timing_sheet_name: string | null;
 	timing_start_time: string | null;
-	vmix_players: All<{
-		name: string;
-		active: boolean;
-	}>;
+	vmix_players: Record<string, VMixPlayer>;
 	active_vmix_player: string;
 	timing_list: TimingEntry[];
-};
-
-const getAllSettings = <T extends AnySettings>(
-	languagesSettings: LanguagesSettings,
-	parameter: keyof LanguageSettings
-): All<T> => {
-	const allSettings: All<T> = {};
-
-	Object.keys(languagesSettings).forEach((language) => {
-		allSettings[language] = languagesSettings[language][parameter] as T;
-	});
-
-	return allSettings;
-};
-
-export const getAllInitialSettings = (languagesSettings: LanguagesSettings): All<InitialSettings> => {
-	return getAllSettings(languagesSettings, "initial");
-};
-
-export const getAllStreamDestinationSettings = (
-	languagesSettings: LanguagesSettings
-): Record<string, StreamDestinationSettings> => {
-	return getAllSettings(languagesSettings, "streamDestination");
-};
-
-export const getAllSidechainSettings = (languagesSettings: LanguagesSettings): All<SidechainSettings> => {
-	return getAllSettings(languagesSettings, "sidechain");
-};
-
-export const getAllGDriveSettings = (languagesSettings: LanguagesSettings): All<GDriveSettings> => {
-	return getAllSettings(languagesSettings, "gDrive");
 };
