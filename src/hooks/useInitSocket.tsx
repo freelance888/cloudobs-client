@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 
 import { AppDispatch } from "../store/store";
 import { updateRegistry } from "../store/slices/app";
-import { getInfo, pullConfig, socket } from "../services/soketApi";
+import { getInfo, pullConfig, socket } from "../services/socketApi";
 import { InfoResponse } from "../services/types";
 
 const useInitSocket = () => {

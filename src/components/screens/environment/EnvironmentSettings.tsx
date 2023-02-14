@@ -3,16 +3,11 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { NewVMixPlayer, Registry } from "../../../services/types";
-import {
-	deleteMinions,
-	initializeVMixPlayers,
-	selectHostAddress,
-	setVMixPlayerActive,
-	updateHostAddress,
-} from "../../../store/slices/environment";
+import { deleteMinions, selectHostAddress, updateHostAddress } from "../../../store/slices/environment";
 import ContentPanel from "../../ContentPanel";
 import { AppDispatch } from "../../../store/store";
 import { selectRegistry } from "../../../store/slices/app";
+import { vmixPlayersAdd, vmixPlayersSetActive } from "../../../services/socketApi";
 
 const INITIAL_NEW_VMIX_PLAYER: NewVMixPlayer = { ip: "", name: "" };
 
@@ -141,7 +136,7 @@ const EnvironmentSettings: React.FC = () => {
 							className="form-check-input mt-0"
 							type="radio"
 							checked={allActive}
-							onChange={() => dispatch(setVMixPlayerActive("*"))}
+							onChange={() => vmixPlayersSetActive("*")}
 						/>
 					</div>
 					<div className="form-control" style={{ maxWidth: "160px" }}>
@@ -159,7 +154,7 @@ const EnvironmentSettings: React.FC = () => {
 									className="form-check-input mt-0"
 									type="radio"
 									checked={active && !allActive}
-									onChange={() => dispatch(setVMixPlayerActive(ip))}
+									onChange={() => vmixPlayersSetActive(ip)}
 								/>
 							</div>
 							<div className="form-control" style={{ maxWidth: "160px" }}>
@@ -205,14 +200,8 @@ const EnvironmentSettings: React.FC = () => {
 						className="btn btn-outline-primary"
 						type="button"
 						onClick={() => {
-							const newVMixPlayers = [
-								...Object.entries(vMixPlayers).map(([ip, { active, name }]) => ({ ip, active, name })),
-								newVMixPlayer,
-							];
-
-							dispatch(initializeVMixPlayers(newVMixPlayers));
-
-							setNewVMixPlayer(INITIAL_NEW_VMIX_PLAYER);
+							const { ip, name } = newVMixPlayer;
+							vmixPlayersAdd(ip, name);
 						}}
 					>
 						Add

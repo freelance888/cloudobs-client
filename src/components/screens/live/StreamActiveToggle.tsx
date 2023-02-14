@@ -1,5 +1,4 @@
-import { startStreaming, stopStreaming } from "../../../services/soketApi";
-
+import { startStreaming, stopStreaming } from "../../../services/socketApi";
 import { MinionConfig } from "../../../services/types";
 
 export type Props = {

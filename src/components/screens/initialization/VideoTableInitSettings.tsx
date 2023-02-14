@@ -1,6 +1,7 @@
 import { useState } from "react";
+
 import ContentPanel from "../../ContentPanel";
-import { pullConfig } from "../../../services/soketApi";
+import { pullConfig } from "../../../services/socketApi";
 
 const VideoTableInitSettings: React.FC = () => {
 	const [sheetUrl, setSheetUrl] = useState("");

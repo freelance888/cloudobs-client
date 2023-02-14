@@ -3,13 +3,11 @@ import { Selector } from "react-redux";
 
 import { loggerMiddleware } from "./loggerMiddleware";
 import app from "./slices/app";
-import mediaSchedule from "./slices/media-schedule";
 import environment from "./slices/environment";
 import logs from "./slices/logs";
 
 const rootReducer = combineReducers({
 	app,
-	mediaSchedule,
 	environment,
 	logs,
 });

@@ -1,6 +1,5 @@
 import { AsyncThunk, createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import * as ApiService from "../../services/api/index";
 import {
 	LangMap,
 	GDriveFile,
@@ -9,7 +8,6 @@ import {
 	Registry,
 	SourceVolumeSettings,
 	SyncableSettingsFlags,
-	TransitionSettings,
 	TranslationOffsetSettings,
 	TranslationVolumeSettings,
 } from "../../services/types";
@@ -18,16 +16,12 @@ import {
 	setSourceVolume as setSourceVolumeSocket,
 	setTeamspeakOffset,
 	setTeamspeakVolume,
-	setTransitionSettings,
-} from "../../services/soketApi";
-
-type ActiveRequest = keyof typeof ApiService;
+} from "../../services/socketApi";
 
 type AppState = {
 	initialized: boolean;
 	initialLanguageSettingsLoaded: boolean;
 	streamParametersLoaded: boolean;
-	activeRequest: ActiveRequest | null;
 	syncedParameters: SyncableSettingsFlags;
 	languagesSettings: LanguagesSettings;
 	videoData: LangMap<GDriveFile[]>;
@@ -38,7 +32,6 @@ const initialState: AppState = {
 	initialized: true,
 	initialLanguageSettingsLoaded: false,
 	streamParametersLoaded: false,
-	activeRequest: null,
 	syncedParameters: {
 		sourceVolume: false,
 		translationVolume: false,
@@ -133,26 +126,10 @@ export const setTranslationOffset: AsyncThunk<
 	}
 );
 
-export const setTransition: AsyncThunk<
-	void,
-	LangMap<Partial<TransitionSettings>>,
-	{ state: RootState }
-> = createAsyncThunk<void, LangMap<Partial<TransitionSettings>>, { state: RootState }>(
-	"app/setTransition",
-	async (transitionSettings) => {
-		Object.entries(transitionSettings).forEach(([language, settings]) => {
-			setTransitionSettings(settings?.transition_point, language);
-		});
-	}
-);
-
 const { actions, reducer } = createSlice({
 	name: "app",
 	initialState,
 	reducers: {
-		updateActiveRequest(state, { payload }: PayloadAction<ActiveRequest | null>) {
-			state.activeRequest = payload;
-		},
 		updateSyncedParameters(state, { payload }: PayloadAction<Partial<SyncableSettingsFlags>>) {
 			state.syncedParameters = {
 				...state.syncedParameters,
@@ -167,14 +144,12 @@ const { actions, reducer } = createSlice({
 
 export const { updateSyncedParameters, updateRegistry } = actions;
 
-export const selectActiveRequest: RootSelector<ActiveRequest | null> = ({ app }) => app.activeRequest;
-
 export const selectSyncedParameters: RootSelector<SyncableSettingsFlags> = ({ app }) => app.syncedParameters;
 
 export const selectLanguagesSettings: RootSelector<LanguagesSettings> = ({ app }) => app.languagesSettings;
 
 export const selectVideosData: RootSelector<LangMap<GDriveFile[]>> = ({ app }) => app.videoData;
 
-export const selectRegistry: RootSelector<any> = ({ app }) => app.registry;
+export const selectRegistry: RootSelector<Registry> = ({ app }) => app.registry as Registry;
 
 export default reducer;

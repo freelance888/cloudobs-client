@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from "react";
+
 import { useSelector } from "react-redux";
 import classNames from "classnames";
-import { selectMediaScheduleStatus } from "../../../store/slices/media-schedule";
+
 import { convertTimeStampToTime } from "../../../utils/timestamp";
 import StopMediaButton from "../../StopMediaButton";
+import { removeTiming, stopTiming } from "../../../services/socketApi";
+import { selectRegistry } from "../../../store/slices/app";
+
 import { DisplayMode } from "./MediaScheduleSettings";
-import { removeTiming, stopTiming } from "../../../services/soketApi";
 
 type Props = {
 	onDisplayModeChanged: (displayMode: DisplayMode) => void;
@@ -13,8 +16,10 @@ type Props = {
 
 const TimingStatus = ({ onDisplayModeChanged }: Props) => {
 	const intervalTicker = useRef<ReturnType<typeof setInterval>>();
-	const mediaScheduleStatus = useSelector(selectMediaScheduleStatus);
-	const { running, timestamp } = mediaScheduleStatus;
+	const registry = useSelector(selectRegistry);
+
+	const running = registry.timing_start_time !== null;
+	const timestamp = registry.timing_start_time;
 
 	const classes = running ? "timing-status--running" : "timing-status--inactive";
 	const text = running ? "RUNNING" : "INACTIVE";
@@ -45,7 +50,7 @@ const TimingStatus = ({ onDisplayModeChanged }: Props) => {
 			<div>
 				<span>Timing:&nbsp;</span>
 				<span className={classNames("timing-status", classes)}>{text}</span>
-				{mediaScheduleStatus.running && (
+				{running && (
 					<span className="ms-3">
 						Current time: <b>{convertTimeStampToTime(currentTimeMillis, true)}</b>
 					</span>

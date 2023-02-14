@@ -1,8 +1,7 @@
 import { AsyncThunk, createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { RootSelector, RootState } from "../store";
-import { NewVMixPlayer, VMixPlayerOld } from "../../services/types";
-import { dispose, vmixPlayersAdd, vmixSetActive } from "../../services/soketApi";
+import { dispose } from "../../services/socketApi";
 
 export type HostAddress = {
 	protocol: string;
@@ -13,7 +12,6 @@ export type HostAddress = {
 
 type EnvironmentState = {
 	hostAddress: HostAddress;
-	vMixPlayers: VMixPlayerOld[];
 };
 
 export const LS_KEY_HOST_ADDRESS = "cloudobs__host_address";
@@ -38,40 +36,6 @@ const loadHostAddress = () => {
 	return hostAddress;
 };
 
-// export const fetchVMixPlayers: AsyncThunk<ApiResult<VMixPlayer[]>, void, { state: RootState }> = createAsyncThunk<
-// 	ApiResult<VMixPlayer[]>,
-// 	void,
-// 	{ state: RootState }
-// >("environment/fetchVMixPlayers", async (_, { rejectWithValue }) => {
-// 	const result = await ApiService.getVMixPlayers();
-// 	//in registry
-//
-// 	if (result.status === "error") {
-// 		return rejectWithValue(result.message);
-// 	}
-//
-// 	return result;
-// });
-
-export const initializeVMixPlayers: AsyncThunk<void, NewVMixPlayer[], { state: RootState }> = createAsyncThunk<
-	void,
-	NewVMixPlayer[],
-	{ state: RootState }
->("environment/initializeVMixPlayers", async (vMixPlayers) => {
-	// also we have {'*': {'name': 'All', 'active': True}} case
-	vMixPlayers.forEach((player) => {
-		vmixPlayersAdd(player.ip, player.name);
-	});
-});
-
-export const setVMixPlayerActive: AsyncThunk<void, string, { state: RootState }> = createAsyncThunk<
-	void,
-	string,
-	{ state: RootState }
->("environment/setVMixPlayerActive", async (vMixPlayer) => {
-	vmixSetActive(vMixPlayer);
-});
-
 export const deleteMinions: AsyncThunk<void, void, { state: RootState }> = createAsyncThunk<
 	void,
 	void,
@@ -82,7 +46,6 @@ export const deleteMinions: AsyncThunk<void, void, { state: RootState }> = creat
 
 const initialState: EnvironmentState = {
 	hostAddress: loadHostAddress(),
-	vMixPlayers: [],
 };
 
 const { actions, reducer } = createSlice({

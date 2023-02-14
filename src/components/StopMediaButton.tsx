@@ -1,5 +1,6 @@
 import classNames from "classnames";
-import { stopMedia } from "../services/soketApi";
+
+import { stopMedia } from "../services/socketApi";
 
 type Props = {
 	class?: string;

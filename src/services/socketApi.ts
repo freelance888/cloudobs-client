@@ -153,7 +153,7 @@ export const vmixPlayersRemove = (ip: string) => {
 	});
 };
 
-export const vmixSetActive = (ip: string) => {
+export const vmixPlayersSetActive = (ip: string) => {
 	sendCommand(Command.VmixPlayersSetActive, {
 		details: { ip },
 	});
@@ -213,18 +213,4 @@ export const refreshSource = (lang?: string) => {
 
 export const listGdriveFiles = (lang?: string) => {
 	sendCommand(Command.ListGdriveFiles, { lang });
-	//   "result": true/false,
-	//   "details": "... message ...",
-	//   "serializable_object": {
-	//     "lang": {
-	//       "result": true/false,
-	//       "details": "... message ...",
-	//       "serializable_object": {
-	//         "01_video_rus.mp4": true,  # true - downloaded
-	//         "02_audio_eng.mp3": false,  # false - not downloaded yet
-	//         ...
-	//       }
-	//     }
-	//   }
-	// }
 };

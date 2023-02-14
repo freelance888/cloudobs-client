@@ -1,51 +1,44 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { MediaSchedule, Registry } from "../../../services/types";
-import * as ApiService from "../../../services/api/index";
-import { selectMediaSchedule, updateMedia } from "../../../store/slices/media-schedule";
+
+import { useSelector } from "react-redux";
+
 import ContentPanel from "../../ContentPanel";
 import MediaScheduleTableInitSettings from "../initialization/MediaScheduleTableInitSettings";
-import { AppDispatch } from "../../../store/store";
 import { selectRegistry } from "../../../store/slices/app";
-import { playMedia, pullTiming } from "../../../services/soketApi";
+import { playMedia, pullTiming } from "../../../services/socketApi";
+
 import TimingStatus from "./TimingStatus";
 
 export type DisplayMode = "BLANK" | "NOT_INITIALIZED" | "NOT_PULLED" | "READY";
 
 const MediaScheduleSettings = () => {
-	const dispatch = useDispatch<AppDispatch>();
 	const [displayMode, setDisplayMode] = useState<DisplayMode>("BLANK");
+	const registry = useSelector(selectRegistry);
 
-	const mediaSchedule = useSelector(selectMediaSchedule);
-	const registry: Registry = useSelector(selectRegistry);
-	const [editedMediaSchedule, setEditedMediaSchedule] = useState<MediaSchedule>({});
-
-	useEffect(() => {
-		setEditedMediaSchedule(mediaSchedule);
-	}, [mediaSchedule]);
+	const timingList = registry.timing_list;
 
 	useEffect(() => {
 		(async () => {
 			pullTiming(registry.timing_sheet_url || "", registry.timing_sheet_name || ""); // clarify params
 
-			const res = await ApiService.getMediaSchedule(); // pulled config before
+			// const res = await ApiService.getMediaSchedule(); // pulled config before
 
 			// let interval: ReturnType<typeof setInterval> | null = null;
 
-			if (res.status === "error") {
-				if (res.message === "Please complete Timing Google Sheets initialization first") {
-					setDisplayMode("NOT_INITIALIZED");
-				} else if (res.message === "Please pull Timing Google Sheets first") {
-					setDisplayMode("NOT_PULLED");
-				}
-			} else {
-				setDisplayMode("READY");
-				// await dispatch(fetchMediaSchedule());
-				// dispatch(fetchTimingStatus());
-				//get from registry
-			}
+			// if (res.status === "error") {
+			// 	if (res.message === "Please complete Timing Google Sheets initialization first") {
+			// 		setDisplayMode("NOT_INITIALIZED");
+			// 	} else if (res.message === "Please pull Timing Google Sheets first") {
+			// 		setDisplayMode("NOT_PULLED");
+			// 	}
+			// } else {
+			// 	setDisplayMode("READY");
+			// await dispatch(fetchMediaSchedule());
+			// dispatch(fetchTimingStatus());
+			//get from registry
+			// }
 		})();
-	}, [dispatch]);
+	}, []);
 
 	if (displayMode === "BLANK") {
 		return <ContentPanel>Loading...</ContentPanel>;
@@ -88,7 +81,7 @@ const MediaScheduleSettings = () => {
 						<div className="col-5">Media name</div>
 						<div className="col-2">Start time</div>
 					</div>
-					{Object.entries(editedMediaSchedule)
+					{Object.entries(timingList)
 						.sort(([, a], [, b]) => Number(a.timestamp) - Number(b.timestamp))
 						.map(([mediaId, item]) => {
 							const { name, timestamp, is_enabled, is_played } = item;
@@ -96,19 +89,7 @@ const MediaScheduleSettings = () => {
 							return (
 								<div className={`stream-settings-video-list-item row ${is_played ? "played" : ""}`} key={mediaId}>
 									<div className="col-1 d-flex align-items-center">
-										<input
-											className="form-check-input mt-0"
-											type="checkbox"
-											checked={is_enabled}
-											onChange={(event) => {
-												dispatch(
-													updateMedia({
-														id: mediaId,
-														is_enabled: event.target.checked,
-													})
-												);
-											}}
-										/>
+										<input className="form-check-input mt-0" type="checkbox" checked={is_enabled} />
 									</div>
 									<div className="col-5">
 										<div>{name}</div>

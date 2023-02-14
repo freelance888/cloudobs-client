@@ -7,11 +7,11 @@ import ContentPanel from "../../ContentPanel";
 import StopMediaButton from "../../StopMediaButton";
 import { Registry } from "../../../services/types";
 import { ServerStatus } from "../../../services/api/state";
+import { pullConfig, refreshSource } from "../../../services/socketApi";
 
 import Language from "./Language";
 import LanguageFilter from "./LanguageFilter";
 import StartStopStreamingButton from "./StartStopStreamingButton";
-import { pullConfig, refreshSource } from "../../../services/soketApi";
 
 const LanguageSettings = () => {
 	const registry: Registry = useSelector(selectRegistry);

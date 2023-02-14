@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import useLogger from "../../../hooks/useLogger";
 import { MinionConfig } from "../../../services/types";
 import { AppDispatch } from "../../../store/store";
-import { setStreamSettings } from "../../../services/soketApi";
+import { setStreamSettings } from "../../../services/socketApi";
 
 type Props = {
 	language: string;

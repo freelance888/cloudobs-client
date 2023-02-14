@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
 import { useSelector } from "react-redux";
-import { startStreaming, stopStreaming } from "../../../services/soketApi";
 
+import { startStreaming, stopStreaming } from "../../../services/socketApi";
 import { LanguageSettings } from "../../../services/types";
 import { selectLanguagesSettings } from "../../../store/slices/app";
 

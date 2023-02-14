@@ -7,19 +7,24 @@ import useLogger from "../../../hooks/useLogger";
 import { EMPTY_LANGUAGE_SETTINGS } from "../../../services/emptyData";
 import {
 	selectSyncedParameters,
-	selectVideosData,
-	setSourceVolume,
-	setTranslationOffset,
-	setTranslationVolume,
+	// selectVideosData,
+	// setSourceVolume,
 	updateSyncedParameters,
 } from "../../../store/slices/app";
 import { AppDispatch } from "../../../store/store";
 import { MinionConfig } from "../../../services/types";
+import {
+	refreshSource,
+	setSidechainSettings,
+	setSourceVolume,
+	setTeamspeakOffset,
+	setTeamspeakVolume,
+	setTransitionSettings,
+} from "../../../services/socketApi";
 
 import EditableStreamDestinationSettings from "./EditableStreamDestinationSettings";
 import RangeInput from "./RangeInput";
 import StreamActiveToggle from "./StreamActiveToggle";
-import { refreshSource, setSidechainSettings, setTransitionSettings } from "../../../services/soketApi";
 
 const MIN_TS_OFFSET = 0;
 const MAX_TS_OFFSET = 20000;
@@ -59,7 +64,7 @@ const Language: React.FC<LanguageProps> = ({
 	const { source_volume, ts_volume, ts_offset } = languageSettings;
 	const { ratio, release_time, threshold, output_gain } = languageSettings.sidechain_settings;
 
-	const videosData = useSelector(selectVideosData);
+	const videosData = {};
 
 	const videosCounts = useMemo(() => {
 		if (!videosData[language]) {
@@ -139,7 +144,7 @@ const Language: React.FC<LanguageProps> = ({
 								syncAll={syncedParameters.sourceVolume}
 								value={source_volume.value}
 								units={"dB"}
-								onValueChanged={(updatedSourceVolume) => dispatch(setSourceVolume({ [language]: updatedSourceVolume }))}
+								onValueChanged={(value) => setSourceVolume(value, language)}
 								onSyncAllChanged={(updatedSyncAll) =>
 									dispatch(updateSyncedParameters({ sourceVolume: updatedSyncAll }))
 								}
@@ -153,9 +158,7 @@ const Language: React.FC<LanguageProps> = ({
 								syncAll={syncedParameters.translationVolume}
 								value={ts_volume.value}
 								units={"dB"}
-								onValueChanged={(updatedTranslationVolume) =>
-									dispatch(setTranslationVolume({ [language]: updatedTranslationVolume }))
-								}
+								onValueChanged={(value) => setTeamspeakVolume(value, language)}
 								onSyncAllChanged={(updatedSyncAll) =>
 									dispatch(updateSyncedParameters({ translationVolume: updatedSyncAll }))
 								}
@@ -170,9 +173,7 @@ const Language: React.FC<LanguageProps> = ({
 								syncAll={syncedParameters.translationOffset}
 								value={ts_offset.value}
 								units={"ms"}
-								onValueChanged={(updatedTranslationOffset) =>
-									dispatch(setTranslationOffset({ [language]: updatedTranslationOffset }))
-								}
+								onValueChanged={(value) => setTeamspeakOffset(value, language)}
 								onSyncAllChanged={(updatedSyncAll) =>
 									dispatch(updateSyncedParameters({ translationOffset: updatedSyncAll }))
 								}
