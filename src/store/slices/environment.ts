@@ -1,7 +1,6 @@
-import { AsyncThunk, createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { RootSelector, RootState } from "../store";
-import { dispose } from "../../services/socketApi";
+import { RootSelector } from "../store";
 
 export type HostAddress = {
 	protocol: string;
@@ -35,14 +34,6 @@ const loadHostAddress = () => {
 	const hostAddress: HostAddress = hostAddrSerialized ? JSON.parse(hostAddrSerialized) : getDefaultHostAddress();
 	return hostAddress;
 };
-
-export const deleteMinions: AsyncThunk<void, void, { state: RootState }> = createAsyncThunk<
-	void,
-	void,
-	{ state: RootState }
->("environment/deleteMinions", async () => {
-	dispose(); // clear up and delete minions
-});
 
 const initialState: EnvironmentState = {
 	hostAddress: loadHostAddress(),

@@ -5,8 +5,7 @@ import { useSelector } from "react-redux";
 import { selectRegistry } from "../../../store/slices/app";
 import ContentPanel from "../../ContentPanel";
 import StopMediaButton from "../../StopMediaButton";
-import { Registry } from "../../../services/types";
-import { ServerStatus } from "../../../services/api/state";
+import { Registry, ServerStatus } from "../../../services/types";
 import { pullConfig, refreshSource } from "../../../services/socketApi";
 
 import Language from "./Language";

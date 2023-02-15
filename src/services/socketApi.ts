@@ -1,5 +1,6 @@
 import io from "socket.io-client";
 
+import { AppDispatch } from "../store/store";
 import { updateRegistry } from "../store/slices/app";
 
 import { InfoResponse } from "./types";
@@ -47,7 +48,26 @@ const sendCommand = (command: Command, data: Record<string, unknown> = {}, callb
 	);
 };
 
-export const getInfo = (dispatch) => {
+export const subscribe = (dispatch: AppDispatch) => {
+	socket.on("connect", () => {
+		getInfo(dispatch);
+		pullConfig();
+		getInfo(dispatch);
+
+		socket.on("on registry change", (data: InfoResponse) => {
+			console.log("on registry change", data);
+			if (data.result && data.serializable_object) {
+				dispatch(updateRegistry(JSON.stringify(data?.serializable_object?.registry)));
+			}
+		});
+	});
+
+	return () => {
+		socket.disconnect();
+	};
+};
+
+export const getInfo = (dispatch: AppDispatch) => {
 	sendCommand(Command.GetInfo, {}, (data: string) => {
 		const parsedData: InfoResponse = JSON.parse(data);
 		if (parsedData?.result && parsedData?.serializable_object) {
@@ -97,9 +117,7 @@ export const setTeamspeakVolume = (value: number, lang?: string) => {
 
 export const setSourceVolume = (value: number, lang?: string) => {
 	sendCommand(Command.SetSourceVolume, {
-		details: {
-			value,
-		},
+		details: { value },
 		lang,
 	});
 };
@@ -113,9 +131,7 @@ type SidechainSettings = {
 
 export const setSidechainSettings = (settings: SidechainSettings, lang?: string) => {
 	sendCommand(Command.SetSidechainSettings, {
-		details: {
-			...settings,
-		},
+		details: { ...settings },
 		lang,
 	});
 };

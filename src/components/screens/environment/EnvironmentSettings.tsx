@@ -3,11 +3,11 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { NewVMixPlayer, Registry } from "../../../services/types";
-import { deleteMinions, selectHostAddress, updateHostAddress } from "../../../store/slices/environment";
+import { selectHostAddress, updateHostAddress } from "../../../store/slices/environment";
 import ContentPanel from "../../ContentPanel";
 import { AppDispatch } from "../../../store/store";
 import { selectRegistry } from "../../../store/slices/app";
-import { vmixPlayersAdd, vmixPlayersSetActive } from "../../../services/socketApi";
+import { dispose, vmixPlayersAdd, vmixPlayersSetActive } from "../../../services/socketApi";
 
 const INITIAL_NEW_VMIX_PLAYER: NewVMixPlayer = { ip: "", name: "" };
 
@@ -32,7 +32,7 @@ const EnvironmentSettings: React.FC = () => {
 						onClick={() => {
 							if (window.confirm("❗️ You are going to delete all minion servers") === true) {
 								if (window.confirm("Are you really sure? 🙂") === true) {
-									dispatch(deleteMinions());
+									dispose();
 								}
 							}
 						}}

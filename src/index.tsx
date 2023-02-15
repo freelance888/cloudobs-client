@@ -10,7 +10,7 @@ import "./index.css";
 const container = document.getElementById("root");
 const root = createRoot(container as Element);
 
-window["APP_VERSION"] = "1.7.5";
+window["APP_VERSION"] = "2.0.0";
 
 root.render(
 	<Provider store={store}>

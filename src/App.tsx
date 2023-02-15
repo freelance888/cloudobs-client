@@ -5,9 +5,9 @@ import { useSelector } from "react-redux";
 import AppContentScreen from "./components/screens/AppContentScreen";
 import VideoTableInitSettings from "./components/screens/initialization/VideoTableInitSettings";
 import "./App.css";
-import { ServerStatus } from "./services/api/state";
 import { selectRegistry } from "./store/slices/app";
 import useInitSocket from "./hooks/useInitSocket";
+import { ServerStatus } from "./services/types";
 
 const App: React.FC = () => {
 	useInitSocket();

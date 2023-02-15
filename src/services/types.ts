@@ -1,4 +1,10 @@
-import { ServerStatus } from "./api/state";
+export enum ServerStatus {
+	SLEEPING = "sleeping",
+	NOT_INITIALIZED = "not initialized",
+	INITIALIZING = "initializing",
+	RUNNING = "running",
+	DISPOSING = "disposing",
+}
 
 type LangCode = string;
 export type LangMap<T> = Record<LangCode, T>;

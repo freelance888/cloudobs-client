@@ -3,24 +3,18 @@ import { useMemo } from "react";
 import { useSelector } from "react-redux";
 
 import { startStreaming, stopStreaming } from "../../../services/socketApi";
-import { LanguageSettings } from "../../../services/types";
-import { selectLanguagesSettings } from "../../../store/slices/app";
+import { selectRegistry } from "../../../store/slices/app";
 
 const StartStopStreamingButton = () => {
-	const languagesSettings = useSelector(selectLanguagesSettings);
+	const registry = useSelector(selectRegistry);
 
 	const streamsActive = useMemo(() => {
-		const languages = Object.keys(languagesSettings);
-
-		return languages.reduce((active, language) => {
-			const languageSettings: LanguageSettings = languagesSettings[language];
-			return active || languageSettings.streamParameters.streamActive;
-		}, false);
-	}, [languagesSettings]);
+		return Object.values(registry.minion_configs).some(({ stream_on }) => stream_on);
+	}, [registry.minion_configs]);
 
 	const languagesCount = useMemo(() => {
-		return Object.keys(languagesSettings).length;
-	}, [languagesSettings]);
+		return Object.keys(registry.minion_configs).length;
+	}, [registry.minion_configs]);
 
 	return (
 		<button
