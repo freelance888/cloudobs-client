@@ -61,11 +61,12 @@ const LanguageSettings = () => {
 						<button
 							className="btn btn-outline-info"
 							onClick={() => {
-								const updated = Object.keys(languagesSettings).reduce((obj, lang) => {
-									obj[lang] = true;
-									return obj;
-								}, {});
-
+								const isAllCollapsed =
+									Object.values(collapsedStates).length > 0 &&
+									Object.values(collapsedStates).every((isLanguageCollapsed) => isLanguageCollapsed);
+								const updated = Object.fromEntries(
+									Object.keys(languagesSettings).map((lang) => [lang, !isAllCollapsed])
+								);
 								setCollapsedStates(updated);
 							}}
 						>
@@ -101,6 +102,7 @@ const LanguageSettings = () => {
 										[language]: !collapsedStates[language],
 									});
 								}}
+								videosData={registry.gdrive_files[language]}
 							/>
 						))}
 				</>

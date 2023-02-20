@@ -199,6 +199,10 @@ export type VMixPlayer = {
 	active: boolean;
 };
 
+type VideoName = string;
+
+export type VideoLoaded = Record<VideoName, boolean>;
+
 export type Registry = {
 	obs_sheet_url: string;
 	obs_sheet_name: string;
@@ -211,4 +215,5 @@ export type Registry = {
 	vmix_players: Record<string, VMixPlayer>;
 	active_vmix_player: string;
 	timing_list: TimingEntry[];
+	gdrive_files: LangMap<VideoLoaded>;
 };

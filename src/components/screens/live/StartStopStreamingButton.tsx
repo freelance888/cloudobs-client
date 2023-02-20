@@ -9,7 +9,7 @@ const StartStopStreamingButton = () => {
 	const registry = useSelector(selectRegistry);
 
 	const streamsActive = useMemo(() => {
-		return Object.values(registry.minion_configs).some(({ stream_on }) => stream_on);
+		return Object.values(registry.minion_configs).some(({ stream_on }) => stream_on.value);
 	}, [registry.minion_configs]);
 
 	const languagesCount = useMemo(() => {

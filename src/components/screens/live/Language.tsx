@@ -5,12 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import useLogger from "../../../hooks/useLogger";
 import { EMPTY_LANGUAGE_SETTINGS } from "../../../services/emptyData";
-import {
-	selectSyncedParameters,
-	// selectVideosData,
-	// setSourceVolume,
-	updateSyncedParameters,
-} from "../../../store/slices/app";
+import { selectSyncedParameters, updateSyncedParameters } from "../../../store/slices/app";
 import { AppDispatch } from "../../../store/store";
 import { MinionConfig } from "../../../services/types";
 import {
@@ -45,6 +40,7 @@ export type LanguageProps = {
 	languageSettings: MinionConfig;
 	collapsed: boolean;
 	onCollapsedToggled: () => void;
+	videosData: Record<string, boolean>;
 };
 
 const Language: React.FC<LanguageProps> = ({
@@ -52,6 +48,7 @@ const Language: React.FC<LanguageProps> = ({
 	languageSettings,
 	collapsed,
 	onCollapsedToggled,
+	videosData,
 }: LanguageProps) => {
 	const dispatch = useDispatch<AppDispatch>();
 	const { logSuccess } = useLogger();
@@ -64,24 +61,12 @@ const Language: React.FC<LanguageProps> = ({
 	const { source_volume, ts_volume, ts_offset } = languageSettings;
 	const { ratio, release_time, threshold, output_gain } = languageSettings.sidechain_settings;
 
-	const videosData = {};
-
 	const videosCounts = useMemo(() => {
-		if (!videosData[language]) {
-			return {
-				downloaded: "-",
-				all: "-",
-			};
-		}
-
-		const languageVideosData = videosData[language];
-
-		const downloadedVideosCount = languageVideosData.filter(([, videoStatus]) => videoStatus === true).length;
-		const allVideosCount = languageVideosData.length;
-
+		const downloadedVideosCount = Object.values(videosData).filter((videoStatus) => videoStatus).length;
+		const allVideosCount = Object.values(videosData).length;
 		return {
-			downloaded: downloadedVideosCount,
-			all: allVideosCount,
+			downloaded: downloadedVideosCount || "-",
+			all: allVideosCount || "-",
 		};
 	}, [language, videosData]);
 
@@ -144,7 +129,7 @@ const Language: React.FC<LanguageProps> = ({
 								syncAll={syncedParameters.sourceVolume}
 								value={source_volume.value}
 								units={"dB"}
-								onValueChanged={(value) => setSourceVolume(value, language)}
+								onValueChanged={(value) => setSourceVolume(value, syncedParameters.sourceVolume ? undefined : language)}
 								onSyncAllChanged={(updatedSyncAll) =>
 									dispatch(updateSyncedParameters({ sourceVolume: updatedSyncAll }))
 								}
@@ -158,7 +143,9 @@ const Language: React.FC<LanguageProps> = ({
 								syncAll={syncedParameters.translationVolume}
 								value={ts_volume.value}
 								units={"dB"}
-								onValueChanged={(value) => setTeamspeakVolume(value, language)}
+								onValueChanged={(value) =>
+									setTeamspeakVolume(value, syncedParameters.translationVolume ? undefined : language)
+								}
 								onSyncAllChanged={(updatedSyncAll) =>
 									dispatch(updateSyncedParameters({ translationVolume: updatedSyncAll }))
 								}
@@ -173,7 +160,9 @@ const Language: React.FC<LanguageProps> = ({
 								syncAll={syncedParameters.translationOffset}
 								value={ts_offset.value}
 								units={"ms"}
-								onValueChanged={(value) => setTeamspeakOffset(value, language)}
+								onValueChanged={(value) =>
+									setTeamspeakOffset(value, syncedParameters.translationOffset ? undefined : language)
+								}
 								onSyncAllChanged={(updatedSyncAll) =>
 									dispatch(updateSyncedParameters({ translationOffset: updatedSyncAll }))
 								}
@@ -245,7 +234,7 @@ const Language: React.FC<LanguageProps> = ({
 								onValueChanged={(updatedTransitionPoint) => {
 									setTransitionSettings(
 										updatedTransitionPoint,
-										syncedParameters.transition_point ? language : undefined
+										syncedParameters.transition_point ? undefined : language
 									);
 								}}
 								onSyncAllChanged={(updatedSyncAll) =>
