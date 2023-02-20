@@ -125,14 +125,6 @@ export type GDriveFile = [
 	boolean // loaded
 ];
 
-export interface InfoResponse {
-	result: boolean;
-	details: string;
-	serializable_object?: {
-		registry: object;
-	};
-}
-
 export interface AddrConfig {
 	obs_host: string;
 	minion_server_addr: string;

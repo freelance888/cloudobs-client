@@ -3,8 +3,6 @@ import io from "socket.io-client";
 import { AppDispatch } from "../store/store";
 import { updateRegistry } from "../store/slices/app";
 
-import { InfoResponse } from "./types";
-
 export const socket = io("http://192.168.31.146:5010/");
 
 enum Command {
@@ -34,16 +32,20 @@ enum Command {
 	ListGdriveFiles = "list gdrive files",
 }
 
-const sendCommand = (command: Command, data: Record<string, unknown> = {}, callback?: (data: string) => void) => {
+const sendCommand = (
+	command: Command,
+	data: Record<string, unknown> = {},
+	callback?: (data: Record<string, any>) => void
+) => {
 	socket.emit(
 		"command",
-		{
+		JSON.stringify({
 			command,
 			...data,
-		},
+		}),
 		(response: string) => {
 			console.log(`--> ${command} response`, JSON.parse(response));
-			callback?.(JSON.stringify(data));
+			callback?.(JSON.parse(response));
 		}
 	);
 };
@@ -52,26 +54,22 @@ export const subscribe = (dispatch: AppDispatch) => {
 	socket.on("connect", () => {
 		getInfo(dispatch);
 		pullConfig();
-		getInfo(dispatch);
-
-		socket.on("on registry change", (data: InfoResponse) => {
-			console.log("on registry change", data);
-			if (data.result && data.serializable_object) {
-				dispatch(updateRegistry(JSON.stringify(data?.serializable_object?.registry)));
-			}
-		});
 	});
 
+	socket.on("on_registry_change", (data: string) => {
+		if (data) {
+			dispatch(updateRegistry(JSON.parse(data)));
+		}
+	});
 	return () => {
 		socket.disconnect();
 	};
 };
 
 export const getInfo = (dispatch: AppDispatch) => {
-	sendCommand(Command.GetInfo, {}, (data: string) => {
-		const parsedData: InfoResponse = JSON.parse(data);
-		if (parsedData?.result && parsedData?.serializable_object) {
-			dispatch(updateRegistry(parsedData?.serializable_object?.registry));
+	sendCommand(Command.GetInfo, {}, (data: Record<string, any>) => {
+		if (data?.result && data?.serializable_object) {
+			dispatch(updateRegistry(data?.serializable_object?.registry));
 		}
 	});
 };
