@@ -1,13 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { LangMap, GDriveFile, Registry, SyncableSettingsFlags, ServerStatus } from "../../services/types";
+import { LangMap, GDriveFile, SyncableSettingsFlags } from "../../services/types";
 import { RootSelector } from "../store";
 
 type AppState = {
 	syncedParameters: SyncableSettingsFlags;
 	videoData: LangMap<GDriveFile[]>;
-	// TODO extract registry to a separate slice
-	registry: Registry | null;
 };
 
 const initialState: AppState = {
@@ -22,7 +20,6 @@ const initialState: AppState = {
 		transition_point: false,
 	},
 	videoData: {},
-	registry: null,
 };
 
 // const processSynchronization = <T extends LangMap<number>>(
@@ -54,16 +51,11 @@ const { actions, reducer } = createSlice({
 				...payload,
 			};
 		},
-		updateRegistry(state, { payload }: PayloadAction<any | null>) {
-			state.registry = payload;
-		},
 	},
 });
 
-export const { updateSyncedParameters, updateRegistry } = actions;
+export const { updateSyncedParameters } = actions;
 
 export const selectSyncedParameters: RootSelector<SyncableSettingsFlags> = ({ app }) => app.syncedParameters;
-
-export const selectRegistry: RootSelector<Registry> = ({ app }) => app.registry as Registry;
 
 export default reducer;

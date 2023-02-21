@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useSelector } from "react-redux";
 
 import { startStreaming, stopStreaming } from "../../../services/socketApi";
-import { selectRegistry } from "../../../store/slices/app";
+import { selectRegistry } from "../../../store/slices/registry";
 
 const StartStopStreamingButton = () => {
 	const registry = useSelector(selectRegistry);

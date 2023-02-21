@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 
 import { Registry } from "../../../services/types";
-import { selectRegistry } from "../../../store/slices/app";
+import { selectRegistry } from "../../../store/slices/registry";
 
 import TimingVideoTable from "./TimingVideoTable";
 import TimingInitializationForm from "./TimingInitializationForm";

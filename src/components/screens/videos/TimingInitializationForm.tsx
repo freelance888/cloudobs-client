@@ -4,6 +4,7 @@ import ContentPanel from "../../ContentPanel";
 import { pullTiming } from "../../../services/socketApi";
 
 const TimingInitializationForm: React.FC = () => {
+	// TODO remove demo values
 	const [sheetUrl, setSheetUrl] = useState(
 		"https://docs.google.com/spreadsheets/d/10J2FG-6nKodpXcTVPmNwKGOwGXSxPUWf1MppT7yUgME/edit#gid=2006470615"
 	);

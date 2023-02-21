@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import AppContentScreen from "./components/screens/AppContentScreen";
 import Initialization from "./components/screens/Initialization";
 import "./App.css";
-import { selectRegistry } from "./store/slices/app";
+import { selectRegistry } from "./store/slices/registry";
 import useInitSocket from "./hooks/useInitSocket";
 import { ServerStatus } from "./services/types";
 

@@ -2,7 +2,7 @@ import { Fragment, useMemo, useState } from "react";
 
 import { useSelector } from "react-redux";
 
-import { selectRegistry } from "../../../store/slices/app";
+import { selectRegistry } from "../../../store/slices/registry";
 import ContentPanel from "../../ContentPanel";
 import StopMediaButton from "../../StopMediaButton";
 import { Registry, ServerStatus } from "../../../services/types";

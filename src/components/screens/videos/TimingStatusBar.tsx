@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import classNames from "classnames";
 
 import { convertTimeStampToTime } from "../../../utils/timestamp";
-import { selectRegistry } from "../../../store/slices/app";
+import { selectRegistry } from "../../../store/slices/registry";
 import { removeTiming, runTiming, stopTiming } from "../../../services/socketApi";
 import StopMediaButton from "../../StopMediaButton";
 import TimingSchedule from "./TimingSchedule";

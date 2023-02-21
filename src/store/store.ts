@@ -4,11 +4,13 @@ import { Selector } from "react-redux";
 import app from "./slices/app";
 import environment from "./slices/environment";
 import logs from "./slices/logs";
+import registry from "./slices/registry";
 
 const rootReducer = combineReducers({
 	app,
 	environment,
 	logs,
+	registry,
 });
 
 const store = configureStore({

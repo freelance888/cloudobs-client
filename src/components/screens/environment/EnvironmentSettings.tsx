@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectHostAddress, updateHostAddress } from "../../../store/slices/environment";
 import ContentPanel from "../../ContentPanel";
 import { AppDispatch } from "../../../store/store";
-import { selectRegistry } from "../../../store/slices/app";
+import { selectRegistry } from "../../../store/slices/registry";
 import { dispose, vmixPlayersAdd, vmixPlayersRemove, vmixPlayersSetActive } from "../../../services/socketApi";
 
 type NewVMixPlayer = { ip: string; name: string };

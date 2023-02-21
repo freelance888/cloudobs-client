@@ -1,9 +1,9 @@
-import io from "socket.io-client";
+import { default as io } from "socket.io-client";
 
 import { AppDispatch } from "../store/store";
-import { updateRegistry } from "../store/slices/app";
+import { updateRegistry } from "../store/slices/registry";
 
-export const socket = io("http://192.168.68.106:5010/");
+const socket = io("http://localhost:5010/");
 
 enum Command {
 	PullConfig = "pull config",
@@ -54,7 +54,6 @@ const sendCommand = (
 export const subscribe = (dispatch: AppDispatch) => {
 	socket.on("connect", () => {
 		getInfo(dispatch);
-		// pullConfig();
 	});
 
 	socket.on("on_registry_change", (data: string) => {

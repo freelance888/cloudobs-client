@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useSelector } from "react-redux";
 
 import ContentPanel from "../../ContentPanel";
-import { selectRegistry } from "../../../store/slices/app";
+import { selectRegistry } from "../../../store/slices/registry";
 import { playMedia, pullTiming } from "../../../services/socketApi";
 
 import TimingStatusBar from "./TimingStatusBar";
