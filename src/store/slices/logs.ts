@@ -5,11 +5,14 @@ import { RootSelector } from "../store";
 
 type LogMessageSeverity = "success" | "error" | "warn" | "log";
 
-type LogMessage = {
-	id: string;
+type NewLogMessage = {
 	text: string;
-	timestamp: string;
 	severity: LogMessageSeverity;
+};
+
+type LogMessage = NewLogMessage & {
+	id: string;
+	timestamp: string;
 };
 
 type LogsState = {
@@ -18,12 +21,12 @@ type LogsState = {
 
 const MAX_MESSAGES = 100;
 
-const buildMessage = (text: string, severity?: LogMessageSeverity): LogMessage => {
+const buildMessage = (text: string, severity: LogMessageSeverity = "log"): LogMessage => {
 	return {
 		id: generateId(),
 		text,
 		timestamp: new Date().toLocaleString(),
-		severity: severity || "log",
+		severity,
 	};
 };
 
@@ -35,7 +38,7 @@ const { actions, reducer } = createSlice({
 	name: "logs",
 	initialState,
 	reducers: {
-		logMessage(state, { payload }: PayloadAction<string | { text: string; severity: LogMessageSeverity }>) {
+		logMessage(state, { payload }: PayloadAction<string | NewLogMessage>) {
 			if (state.messages.length >= MAX_MESSAGES) {
 				state.messages.shift();
 			}

@@ -2,6 +2,7 @@ import { default as io } from "socket.io-client";
 
 import { AppDispatch } from "../store/store";
 import { updateRegistry } from "../store/slices/registry";
+import { Registry } from "./types";
 
 const socket = io("http://localhost:5010/");
 
@@ -32,33 +33,24 @@ enum Command {
 	ListGdriveFiles = "list gdrive files",
 }
 
-const sendCommand = (
-	command: Command,
-	data: Record<string, unknown> = {},
-	callback?: (data: Record<string, any>) => void
-) => {
-	socket.emit(
-		"command",
-		JSON.stringify({
-			command,
-			...data,
-		}),
-		(response: string) => {
-			console.log(`--> '${command}' request`, JSON.stringify(data));
-			console.log(`--> '${command}' response`, JSON.parse(response));
-			callback?.(JSON.parse(response));
-		}
-	);
+type ServerResponse<T> = {
+	result: boolean;
+	details: string;
+	serializable_object: T | null;
 };
 
+let appDispatch: AppDispatch;
+
 export const subscribe = (dispatch: AppDispatch) => {
+	appDispatch = dispatch;
+
 	socket.on("connect", () => {
-		getInfo(dispatch);
+		getInfo();
 	});
 
 	socket.on("on_registry_change", (data: string) => {
 		if (data) {
-			dispatch(updateRegistry(JSON.parse(data)));
+			appDispatch(updateRegistry(JSON.parse(data)));
 		}
 	});
 	return () => {
@@ -66,11 +58,11 @@ export const subscribe = (dispatch: AppDispatch) => {
 	};
 };
 
-export const getInfo = (dispatch: AppDispatch) => {
-	sendCommand(Command.GetInfo, {}, (data: Record<string, any>) => {
-		// if (data?.result && data?.serializable_object) {
-		dispatch(updateRegistry(data?.serializable_object?.registry));
-		// }
+export const getInfo = () => {
+	sendCommand(Command.GetInfo, {}, (response: ServerResponse<{ registry: Registry }>) => {
+		if (response.result && response.serializable_object) {
+			appDispatch(updateRegistry(response.serializable_object.registry));
+		}
 	});
 };
 
@@ -226,4 +218,23 @@ export const refreshSource = (lang?: string) => {
 
 export const listGdriveFiles = (lang?: string) => {
 	sendCommand(Command.ListGdriveFiles, { lang });
+};
+
+const sendCommand = <T>(
+	command: Command,
+	data: Record<string, unknown> = {},
+	callback?: (response: ServerResponse<T>) => void
+) => {
+	socket.emit(
+		"command",
+		JSON.stringify({
+			command,
+			...data,
+		}),
+		(response: string) => {
+			console.log(`--> '${command}' request`, JSON.stringify(data));
+			console.log(`--> '${command}' response`, JSON.parse(response));
+			callback?.(JSON.parse(response));
+		}
+	);
 };
