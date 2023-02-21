@@ -1,4 +1,5 @@
 import { Link, NavLink } from "react-router-dom";
+
 import InfrastructureLockButton from "./InfrastructureLockButton";
 
 export const URL_PATH_LIVE = "/";
@@ -9,7 +10,7 @@ export const STREAM_CHECK = "/stream-check";
 
 const NavigationBar: React.FC = () => {
 	return (
-		<nav className="navigation-bar navbar navbar-expand navbar-light bg-light">
+		<nav className="navigation-bar navbar navbar-expand navbar-light bg-light m-auto">
 			<div className="container-fluid">
 				<Link className="navbar-brand" to="/">
 					<img src="images/cs-logo.svg" alt="" width="30" height="24" className="d-inline-block align-text-top" />

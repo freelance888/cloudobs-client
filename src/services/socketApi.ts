@@ -2,6 +2,7 @@ import { default as io } from "socket.io-client";
 
 import { AppDispatch } from "../store/store";
 import { updateRegistry } from "../store/slices/registry";
+
 import { Registry } from "./types";
 
 const socket = io("http://localhost:5010/");

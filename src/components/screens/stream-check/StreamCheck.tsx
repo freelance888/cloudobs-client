@@ -55,15 +55,17 @@ const StreamCheck = () => {
 
 	return (
 		<div className="container">
-			<h2 style={{ marginTop: "10px" }}>Check YouTube Streams</h2>
-			<div className="form-group" style={{ paddingRight: "45px" }}>
-				<textarea
-					className="form-control"
-					onChange={handleStreamInput}
-					placeholder="Enter YouTube stream links, each link on a new line"
-					value={streams.map((stream) => stream.link).join("\n")}
-					style={{ height: "200px", marginBottom: "25px", borderStyle: "dashed" }}
-				/>
+			<div className="content-panel m-auto">
+				<h2 style={{ marginTop: "10px" }}>Check YouTube Streams</h2>
+				<div className="form-group">
+					<textarea
+						className="form-control"
+						onChange={handleStreamInput}
+						placeholder="Enter YouTube stream links, each link on a new line"
+						value={streams.map((stream) => stream.link).join("\n")}
+						style={{ height: "200px", marginBottom: "25px", borderStyle: "dashed" }}
+					/>
+				</div>
 			</div>
 			<ul className="list-unstyled d-flex flex-wrap justify-content-start">
 				{streams

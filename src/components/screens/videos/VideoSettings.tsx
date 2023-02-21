@@ -14,7 +14,7 @@ const VideoSettings = () => {
 	const timingNotInitialized = !timing_sheet_url || !timing_sheet_name;
 
 	return (
-		<div>
+		<div className="m-auto">
 			{timingNotInitialized && <TimingInitializationForm />}
 			<TimingVideoTable />
 		</div>
