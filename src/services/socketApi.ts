@@ -209,7 +209,7 @@ export const playMedia = (name: string, search_by_num: boolean, mode: PlayMediaM
 };
 
 export const stopMedia = (lang?: string) => {
-	sendCommand(Command.RemoveTiming, { lang });
+	sendCommand(Command.StopMedia, { lang });
 };
 
 export const refreshSource = (lang?: string) => {
