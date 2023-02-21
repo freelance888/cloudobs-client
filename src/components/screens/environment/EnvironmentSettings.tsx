@@ -2,23 +2,21 @@ import { useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 
-import { NewVMixPlayer, Registry } from "../../../services/types";
 import { selectHostAddress, updateHostAddress } from "../../../store/slices/environment";
 import ContentPanel from "../../ContentPanel";
 import { AppDispatch } from "../../../store/store";
 import { selectRegistry } from "../../../store/slices/app";
-import { dispose, vmixPlayersAdd, vmixPlayersSetActive } from "../../../services/socketApi";
+import { dispose, vmixPlayersAdd, vmixPlayersRemove, vmixPlayersSetActive } from "../../../services/socketApi";
 
-const INITIAL_NEW_VMIX_PLAYER: NewVMixPlayer = { ip: "", name: "" };
+type NewVMixPlayer = { ip: string; name: string };
 
 const EnvironmentSettings: React.FC = () => {
 	const dispatch = useDispatch<AppDispatch>();
-	const registry: Registry = useSelector(selectRegistry);
+	const registry = useSelector(selectRegistry);
 	const [editedHostAddress, setEditedHostAddress] = useState(useSelector(selectHostAddress));
 	const vMixPlayers = registry.vmix_players;
-	const [newVMixPlayer, setNewVMixPlayer] = useState<NewVMixPlayer>(INITIAL_NEW_VMIX_PLAYER);
-
-	const allActive = Object.values(vMixPlayers).every(({ active }) => !!active);
+	const activeVMixPlayer = registry.active_vmix_player;
+	const [newVMixPlayer, setNewVMixPlayer] = useState<NewVMixPlayer>({ ip: "", name: "" });
 
 	return (
 		<>
@@ -130,30 +128,14 @@ const EnvironmentSettings: React.FC = () => {
 					vMix players
 				</label>
 
-				<div className="input-group mb-1">
-					<div className="input-group-text">
-						<input
-							className="form-check-input mt-0"
-							type="radio"
-							checked={allActive}
-							onChange={() => vmixPlayersSetActive("*")}
-						/>
-					</div>
-					<div className="form-control" style={{ maxWidth: "160px" }}>
-						All active
-					</div>
-				</div>
-
-				{Object.entries(vMixPlayers).map(([ip, vMixPlayer]) => {
-					const { name, active } = vMixPlayer;
-
+				{Object.entries(vMixPlayers).map(([ip, { name }]) => {
 					return (
 						<div className="input-group mb-1" key={`${ip}-${name}`}>
 							<div className="input-group-text">
 								<input
 									className="form-check-input mt-0"
 									type="radio"
-									checked={active && !allActive}
+									checked={activeVMixPlayer === ip}
 									onChange={() => vmixPlayersSetActive(ip)}
 								/>
 							</div>
@@ -161,8 +143,18 @@ const EnvironmentSettings: React.FC = () => {
 								{ip}
 							</div>
 							<div className="form-control" style={{ maxWidth: "160px" }}>
-								{name}
+								{name.toUpperCase()}
 							</div>
+							{ip !== "*" && (
+								<button
+									className="btn btn-sm btn-outline-primary"
+									onClick={() => {
+										vmixPlayersRemove(ip);
+									}}
+								>
+									Remove
+								</button>
+							)}
 						</div>
 					);
 				})}
@@ -202,6 +194,7 @@ const EnvironmentSettings: React.FC = () => {
 						onClick={() => {
 							const { ip, name } = newVMixPlayer;
 							vmixPlayersAdd(ip, name);
+							setNewVMixPlayer({ ip: "", name: "" });
 						}}
 					>
 						Add

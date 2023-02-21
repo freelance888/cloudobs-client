@@ -118,8 +118,6 @@ export type VMixPlayerOld = {
 	active: boolean;
 };
 
-export type NewVMixPlayer = Omit<VMixPlayerOld, "active">;
-
 export type GDriveFile = [
 	string, // filename
 	boolean // loaded
