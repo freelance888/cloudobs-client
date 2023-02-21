@@ -15,7 +15,7 @@ const StreamActiveToggle = ({ language, languageSettings }: Props) => {
 				className="form-check-input"
 				type="checkbox"
 				role="switch"
-				id="stream-on"
+				id={`stream-on-${language}`}
 				checked={stream_on.value}
 				onChange={async (event: React.ChangeEvent<HTMLInputElement>) => {
 					const active = event.target.checked;

@@ -3,7 +3,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 
 import AppContentScreen from "./components/screens/AppContentScreen";
-import VideoTableInitSettings from "./components/screens/initialization/VideoTableInitSettings";
+import Initialization from "./components/screens/Initialization";
 import "./App.css";
 import { selectRegistry } from "./store/slices/app";
 import useInitSocket from "./hooks/useInitSocket";
@@ -11,11 +11,11 @@ import { ServerStatus } from "./services/types";
 
 const App: React.FC = () => {
 	useInitSocket();
+
 	const registry = useSelector(selectRegistry);
 	const serverStatus = registry?.server_status;
 
-	console.log("registry", registry);
-	console.log("serverState", registry?.server_status);
+	console.log("### REGISTRY", registry);
 
 	switch (serverStatus) {
 		case ServerStatus.INITIALIZING:
@@ -25,7 +25,7 @@ const App: React.FC = () => {
 		case ServerStatus.DISPOSING:
 			return <div>Server is being disposed...</div>;
 		default:
-			return <VideoTableInitSettings />;
+			return <Initialization />;
 	}
 };
 

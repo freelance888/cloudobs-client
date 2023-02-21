@@ -154,19 +154,6 @@ export interface SourceVolume {
 	value: number;
 }
 
-export interface SidechainRegSettings {
-	ratio: number;
-	release_time: number;
-	threshold: number;
-	output_gain: number;
-}
-
-export interface TransitionRegSettings {
-	transition_name: string;
-	path: string;
-	transition_point: number;
-}
-
 export interface GdriveSettings {
 	folder_id: string;
 	media_dir: string;
@@ -182,8 +169,8 @@ export interface MinionConfig {
 	ts_offset: TsOffset;
 	ts_volume: TsVolume;
 	source_volume: SourceVolume;
-	sidechain_settings: SidechainRegSettings;
-	transition_settings: TransitionRegSettings;
+	sidechain_settings: SidechainSettings;
+	transition_settings: TransitionSettings;
 	gdrive_settings: GdriveSettings;
 }
 

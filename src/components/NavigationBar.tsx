@@ -1,4 +1,5 @@
 import { Link, NavLink } from "react-router-dom";
+import InfrastructureLockButton from "./InfrastructureLockButton";
 
 export const URL_PATH_LIVE = "/";
 export const URL_PATH_VIDEOS = "/videos";
@@ -59,6 +60,8 @@ const NavigationBar: React.FC = () => {
 						</li>
 					</ul>
 				</div>
+
+				<InfrastructureLockButton />
 			</div>
 		</nav>
 	);

@@ -3,7 +3,7 @@ import io from "socket.io-client";
 import { AppDispatch } from "../store/store";
 import { updateRegistry } from "../store/slices/app";
 
-export const socket = io("http://192.168.31.146:5010/");
+export const socket = io("http://192.168.68.106:5010/");
 
 enum Command {
 	PullConfig = "pull config",
@@ -44,7 +44,8 @@ const sendCommand = (
 			...data,
 		}),
 		(response: string) => {
-			console.log(`--> ${command} response`, JSON.parse(response));
+			console.log(`--> '${command}' request`, JSON.stringify(data));
+			console.log(`--> '${command}' response`, JSON.parse(response));
 			callback?.(JSON.parse(response));
 		}
 	);
@@ -53,7 +54,7 @@ const sendCommand = (
 export const subscribe = (dispatch: AppDispatch) => {
 	socket.on("connect", () => {
 		getInfo(dispatch);
-		pullConfig();
+		// pullConfig();
 	});
 
 	socket.on("on_registry_change", (data: string) => {
@@ -68,28 +69,27 @@ export const subscribe = (dispatch: AppDispatch) => {
 
 export const getInfo = (dispatch: AppDispatch) => {
 	sendCommand(Command.GetInfo, {}, (data: Record<string, any>) => {
-		if (data?.result && data?.serializable_object) {
-			dispatch(updateRegistry(data?.serializable_object?.registry));
-		}
+		// if (data?.result && data?.serializable_object) {
+		dispatch(updateRegistry(data?.serializable_object?.registry));
+		// }
 	});
 };
 
-export const pullConfig = (
-	sheet_url = "https://docs.google.com/spreadsheets/d/10J2FG-6nKodpXcTVPmNwKGOwGXSxPUWf1MppT7yUgME",
-	sheet_name = "table_4"
-) => {
+type PullConfigPayload = {
+	sheet_url?: string;
+	sheet_name?: string;
+	langs?: string[];
+	ip_langs?: Record<string, string>;
+};
+
+export const pullConfig = (payload?: PullConfigPayload) => {
 	sendCommand(Command.PullConfig, {
-		details: { sheet_url, sheet_name },
+		details: { ...payload },
 	});
 };
 
-export const dispose = (
-	sheet_url = "https://docs.google.com/spreadsheets/d/10J2FG-6nKodpXcTVPmNwKGOwGXSxPUWf1MppT7yUgME",
-	sheet_name = "table_4"
-) => {
-	sendCommand(Command.Dispose, {
-		details: { sheet_url, sheet_name },
-	});
+export const dispose = () => {
+	sendCommand(Command.Dispose);
 };
 
 export const setStreamSettings = (server: string, key: string, lang?: string) => {
@@ -181,14 +181,14 @@ export const stopStreaming = (lang?: string) => {
 	sendCommand(Command.StopStreaming, { lang });
 };
 
-export const pullTiming = (sheet_url: string, sheet_name: string) => {
-	sendCommand(Command.StartStreaming, {
+export const pullTiming = (sheet_url?: string, sheet_name?: string) => {
+	sendCommand(Command.PullTiming, {
 		details: { sheet_url, sheet_name },
 	});
 };
 
 export const runTiming = (countdown?: string, daytime?: string) => {
-	sendCommand(Command.StartStreaming, {
+	sendCommand(Command.RunTiming, {
 		details: { countdown, daytime },
 	});
 };

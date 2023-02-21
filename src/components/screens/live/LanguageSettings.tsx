@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 
 import { useSelector } from "react-redux";
 
@@ -16,7 +16,6 @@ const LanguageSettings = () => {
 	const registry: Registry = useSelector(selectRegistry);
 	const languagesSettings = registry?.minion_configs;
 
-	console.log(registry);
 	const initialized = registry.server_status === ServerStatus.RUNNING;
 	const languagesCount = useMemo(() => Object.keys(languagesSettings).length, [languagesSettings]);
 
@@ -82,10 +81,14 @@ const LanguageSettings = () => {
 				<div>Server is not initialized. Please, go to Stream Settings and initialize the server.</div>
 			) : (
 				<>
-					<hr />
-					<div className="mb-4">
-						<LanguageFilter value={languageFilter} onValueChanged={setLanguageFilter} />
-					</div>
+					{languagesCount > 0 && (
+						<Fragment>
+							<hr />
+							<div className="mb-4">
+								<LanguageFilter value={languageFilter} onValueChanged={setLanguageFilter} />
+							</div>
+						</Fragment>
+					)}
 					{Object.entries(languagesSettings)
 						.filter(([language]) => {
 							return language.toLowerCase().includes(languageFilter.toLowerCase());
