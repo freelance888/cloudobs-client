@@ -1,31 +1,14 @@
 import React, { useState } from "react";
 
 import YouTube from "react-youtube";
-
-interface Stream {
-	link: string;
-	player: any;
-	muted: boolean;
-	name: string;
-}
+import ReactPlayer from "react-player";
 
 const StreamCheck = () => {
-	const [streams, setStreams] = useState<Stream[]>([]);
+	const [streams, setStreams] = useState<string[]>([]);
 	const handleStreamInput = async (event) => {
 		const streamLinks = event.target.value;
-
 		const streamLinkArray = streamLinks.split("\n");
-
-		const newStreams = streamLinkArray.map((link) => {
-			return {
-				link: link,
-				player: null,
-				muted: true,
-				name: streams.find((stream) => stream.link === link)?.name || "",
-			};
-		});
-
-		setStreams(newStreams);
+		setStreams(streamLinkArray);
 	};
 	const handleDeleteStream = (index) => {
 		const newStreams = [...streams];
@@ -37,20 +20,15 @@ const StreamCheck = () => {
 		window.open(link, "_blank");
 	};
 
-	const onReady = async (event, index) => {
-		const newStreams = [...streams];
-		const player = event.target;
-		newStreams[index].player = player;
-
-		const videoData = await player.getVideoData();
-		newStreams[index].name = videoData.title;
-
-		setStreams(newStreams);
-	};
-
 	const getYouTubeID = (url) => {
 		url = url.split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
 		return url[2] !== undefined ? url[2].split(/[^0-9a-z_-]/i)[0] : url[0];
+	};
+
+	const isYoutubeUrl = (url: string) => {
+		const valid =
+			/^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w-]+\?v=|embed\/|v\/)?)([\w-]+)(\S+)?$/;
+		return valid.test(url);
 	};
 
 	return (
@@ -69,23 +47,25 @@ const StreamCheck = () => {
 			</div>
 			<ul className="list-unstyled d-flex flex-wrap justify-content-start">
 				{streams
-					.filter((stream) => stream.link !== "")
+					.filter((stream) => stream !== "")
 					.map((stream, index) => (
 						<li key={index} style={{ marginBottom: "20px", maxWidth: "400px", marginRight: "25px" }}>
-							<h6 style={{ textOverflow: "hidden", height: "40px" }}>{stream.name}</h6>
-							<YouTube
-								videoId={getYouTubeID(stream.link)}
-								onReady={(event) => onReady(event, index)}
-								opts={{
-									height: "280",
-									width: "400",
-									playerVars: {
-										mute: stream.muted ? 1 : 0,
-										vq: "144p",
-										autoplay: 1,
-									},
-								}}
-							/>
+							{isYoutubeUrl(stream) ? (
+								<YouTube
+									videoId={getYouTubeID(stream)}
+									opts={{
+										height: "280",
+										width: "400",
+										playerVars: {
+											mute: true,
+											vq: "144p",
+											autoplay: 1,
+										},
+									}}
+								/>
+							) : (
+								<ReactPlayer url={stream} height={280} width={400} muted playing style={{ marginBottom: "6px" }} />
+							)}
 							<div className="btn-group" role="group">
 								<button
 									className="btn btn-primary"
