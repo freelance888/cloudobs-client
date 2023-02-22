@@ -1,31 +1,22 @@
-import { useEffect } from "react";
-
 import { useSelector } from "react-redux";
 
 import ContentPanel from "../../ContentPanel";
 import { selectRegistry } from "../../../store/slices/registry";
-import { playMedia, pullTiming } from "../../../services/socketApi";
+import { playMedia } from "../../../services/socketApi";
 
 import TimingStatusBar from "./TimingStatusBar";
 
 export type DisplayMode = "BLANK" | "NOT_INITIALIZED" | "NOT_PULLED" | "READY";
 
 const TimingVideoTable = () => {
-	// const [displayMode, setDisplayMode] = useState<DisplayMode>("BLANK");
 	const registry = useSelector(selectRegistry);
 	const timingList = registry.timing_list;
-
-	useEffect(() => {
-		pullTiming();
-	}, []);
 
 	return (
 		<ContentPanel>
 			<div className="row sticky-top" style={{ backgroundColor: "white", paddingTop: "5px", paddingBottom: "10px" }}>
 				<div className="video-schedule-list-now col">
-					<div>
-						<TimingStatusBar />
-					</div>
+					<TimingStatusBar />
 				</div>
 			</div>
 			<div className="video-schedule-list col-12 mb-3">

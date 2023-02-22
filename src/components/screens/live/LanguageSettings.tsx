@@ -105,7 +105,7 @@ const LanguageSettings = () => {
 										[language]: !collapsedStates[language],
 									});
 								}}
-								videosData={registry.gdrive_files[language]}
+								videosData={registry.gdrive_files[language] || {}}
 							/>
 						))}
 				</>

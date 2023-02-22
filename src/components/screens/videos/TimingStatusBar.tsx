@@ -5,7 +5,7 @@ import classNames from "classnames";
 
 import { convertTimeStampToTime } from "../../../utils/timestamp";
 import { selectRegistry } from "../../../store/slices/registry";
-import { removeTiming, runTiming, stopTiming } from "../../../services/socketApi";
+import { pullTiming, removeTiming, runTiming, stopTiming } from "../../../services/socketApi";
 import StopMediaButton from "../../StopMediaButton";
 
 import TimingSchedule from "./TimingSchedule";
@@ -88,9 +88,17 @@ const TimingStatusBar = () => {
 					)}
 				</div>
 				<div className="d-flex">
-					<StopMediaButton class="ms-3 btn-sm" />
 					<button
-						className="btn btn-sm btn-danger ms-3"
+						className="btn btn-info"
+						title="Pull actual timing from Google spreadsheet"
+						onClick={() => pullTiming()}
+					>
+						Refresh
+					</button>
+					<StopMediaButton class="ms-2 btn-sm" />
+					<button
+						className="btn btn-sm btn-danger ms-2"
+						title="Delete timing and stop played video."
 						onClick={() => {
 							if (window.confirm("Remove timing and stop video?")) {
 								removeTiming();

@@ -12,6 +12,7 @@ const InfrastructureLockButton = () => {
 	return (
 		<button
 			className="infrastructure-lock-button btn"
+			title={locked ? "Unlock infrastructure" : "Lock infrastructure"}
 			onClick={() => {
 				if (locked) {
 					if (window.confirm("❗️ Unlock the infrastructure?") === true) {

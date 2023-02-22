@@ -133,7 +133,7 @@ const Initialization: React.FC = () => {
 							value={ipLangsString}
 							name="ip_langs"
 							id="ip_langs"
-							placeholder=""
+							placeholder={"Format:\n192.168.1.1 ENG\n192.168.1.2 RUS\n192.168.1.3 CES"}
 							rows={4}
 							onChange={(event) => setIpLangsString(event.target.value)}
 						/>

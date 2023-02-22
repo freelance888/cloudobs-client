@@ -24,8 +24,10 @@ const App: React.FC = () => {
 			return <AppContentScreen />;
 		case ServerStatus.DISPOSING:
 			return <div>Server is being disposed...</div>;
-		default:
+		case ServerStatus.SLEEPING:
 			return <Initialization />;
+		default:
+			return <div>Loading...</div>;
 	}
 };
 
