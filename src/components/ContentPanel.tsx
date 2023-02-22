@@ -20,7 +20,7 @@ const ContentPanel: React.FC<Props> = (props: Props) => {
 	}, [props.mainActions, props.endActions]);
 
 	return (
-		<div className="content-panel">
+		<div className="content-panel m-auto">
 			{props.actionsOnTop && renderActions()}
 			<div className="content-panel__children">{props.children}</div>
 			{!props.actionsOnTop && renderActions()}

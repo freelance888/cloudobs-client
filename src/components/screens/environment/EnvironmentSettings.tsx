@@ -2,27 +2,21 @@ import { useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 
-import { NewVMixPlayer } from "../../../services/types";
-import {
-	deleteMinions,
-	initializeVMixPlayers,
-	selectHostAddress,
-	selectVMixPlayers,
-	setVMixPlayerActive,
-	updateHostAddress,
-} from "../../../store/slices/environment";
+import { selectHostAddress, updateHostAddress } from "../../../store/slices/environment";
 import ContentPanel from "../../ContentPanel";
 import { AppDispatch } from "../../../store/store";
+import { selectRegistry } from "../../../store/slices/registry";
+import { dispose, vmixPlayersAdd, vmixPlayersRemove, vmixPlayersSetActive } from "../../../services/socketApi";
 
-const INITIAL_NEW_VMIX_PLAYER: NewVMixPlayer = { ip: "", label: "" };
+type NewVMixPlayer = { ip: string; name: string };
 
 const EnvironmentSettings: React.FC = () => {
 	const dispatch = useDispatch<AppDispatch>();
+	const registry = useSelector(selectRegistry);
 	const [editedHostAddress, setEditedHostAddress] = useState(useSelector(selectHostAddress));
-	const vMixPlayers = useSelector(selectVMixPlayers);
-	const [newVMixPlayer, setNewVMixPlayer] = useState<NewVMixPlayer>(INITIAL_NEW_VMIX_PLAYER);
-
-	const allActive = Object.values(vMixPlayers).every(({ active }) => !!active);
+	const vMixPlayers = registry.vmix_players;
+	const activeVMixPlayer = registry.active_vmix_player;
+	const [newVMixPlayer, setNewVMixPlayer] = useState<NewVMixPlayer>({ ip: "", name: "" });
 
 	return (
 		<>
@@ -36,7 +30,7 @@ const EnvironmentSettings: React.FC = () => {
 						onClick={() => {
 							if (window.confirm("❗️ You are going to delete all minion servers") === true) {
 								if (window.confirm("Are you really sure? 🙂") === true) {
-									dispatch(deleteMinions());
+									dispose();
 								}
 							}
 						}}
@@ -134,39 +128,33 @@ const EnvironmentSettings: React.FC = () => {
 					vMix players
 				</label>
 
-				<div className="input-group mb-1">
-					<div className="input-group-text">
-						<input
-							className="form-check-input mt-0"
-							type="radio"
-							checked={allActive}
-							onChange={() => dispatch(setVMixPlayerActive("*"))}
-						/>
-					</div>
-					<div className="form-control" style={{ maxWidth: "160px" }}>
-						All active
-					</div>
-				</div>
-
-				{vMixPlayers.map((vMixPlayer) => {
-					const { ip, label, active } = vMixPlayer;
-
+				{Object.entries(vMixPlayers).map(([ip, { name }]) => {
 					return (
-						<div className="input-group mb-1" key={`${ip}-${label}`}>
+						<div className="input-group mb-1" key={`${ip}-${name}`}>
 							<div className="input-group-text">
 								<input
 									className="form-check-input mt-0"
 									type="radio"
-									checked={active && !allActive}
-									onChange={() => dispatch(setVMixPlayerActive(ip))}
+									checked={activeVMixPlayer === ip}
+									onChange={() => vmixPlayersSetActive(ip)}
 								/>
 							</div>
 							<div className="form-control" style={{ maxWidth: "160px" }}>
 								{ip}
 							</div>
 							<div className="form-control" style={{ maxWidth: "160px" }}>
-								{label}
+								{name.toUpperCase()}
 							</div>
+							{ip !== "*" && (
+								<button
+									className="btn btn-sm btn-outline-primary"
+									onClick={() => {
+										vmixPlayersRemove(ip);
+									}}
+								>
+									Remove
+								</button>
+							)}
 						</div>
 					);
 				})}
@@ -192,11 +180,11 @@ const EnvironmentSettings: React.FC = () => {
 						style={{ maxWidth: "200px" }}
 						placeholder="Label"
 						aria-label="Label"
-						value={newVMixPlayer.label}
+						value={newVMixPlayer.name}
 						onChange={(event) =>
 							setNewVMixPlayer({
 								...newVMixPlayer,
-								label: event.target.value,
+								name: event.target.value,
 							})
 						}
 					/>
@@ -204,14 +192,9 @@ const EnvironmentSettings: React.FC = () => {
 						className="btn btn-outline-primary"
 						type="button"
 						onClick={() => {
-							const newVMixPlayers: NewVMixPlayer[] = [
-								...vMixPlayers.map(({ ip, label }) => ({ ip, label })),
-								newVMixPlayer,
-							];
-
-							dispatch(initializeVMixPlayers(newVMixPlayers));
-
-							setNewVMixPlayer(INITIAL_NEW_VMIX_PLAYER);
+							const { ip, name } = newVMixPlayer;
+							vmixPlayersAdd(ip, name);
+							setNewVMixPlayer({ ip: "", name: "" });
 						}}
 					>
 						Add

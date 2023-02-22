@@ -1,45 +1,36 @@
 import { useMemo } from "react";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
-import { LanguageSettings } from "../../../services/types";
-import { stopStreaming, startStreaming, selectLanguagesSettings, selectActiveRequest } from "../../../store/slices/app";
-import { AppDispatch } from "../../../store/store";
+import { startStreaming, stopStreaming } from "../../../services/socketApi";
+import { selectRegistry } from "../../../store/slices/registry";
 
 const StartStopStreamingButton = () => {
-	const dispatch = useDispatch<AppDispatch>();
-	const activeRequest = useSelector(selectActiveRequest);
-	const languagesSettings = useSelector(selectLanguagesSettings);
+	const registry = useSelector(selectRegistry);
 
 	const streamsActive = useMemo(() => {
-		const languages = Object.keys(languagesSettings);
-
-		return languages.reduce((active, language) => {
-			const languageSettings: LanguageSettings = languagesSettings[language];
-			return active || languageSettings.streamParameters.streamActive;
-		}, false);
-	}, [languagesSettings]);
+		return Object.values(registry.minion_configs).some(({ stream_on }) => stream_on.value);
+	}, [registry.minion_configs]);
 
 	const languagesCount = useMemo(() => {
-		return Object.keys(languagesSettings).length;
-	}, [languagesSettings]);
+		return Object.keys(registry.minion_configs).length;
+	}, [registry.minion_configs]);
 
 	return (
 		<button
 			className={streamsActive ? "btn btn-danger" : "btn btn-success"}
-			disabled={languagesCount === 0 || activeRequest === "postStreamStart" || activeRequest === "postStreamStop"}
 			title={(streamsActive ? "Stop" : "Start") + " streaming of all languages"}
 			onClick={() => {
 				if (streamsActive) {
 					if (window.confirm("❗️ Stop all streams?") === true) {
-						dispatch(stopStreaming());
+						stopStreaming();
 					}
 				} else {
-					dispatch(startStreaming());
+					startStreaming();
 				}
 			}}
 		>
-			<i className={activeRequest === "postStreamStop" ? "bi bi-arrow-clockwise spin" : "bi bi-broadcast"} />
+			<i className="bi bi-broadcast" />
 			<span>
 				{streamsActive ? "Stop" : "Start"} streaming ({languagesCount} langs)
 			</span>

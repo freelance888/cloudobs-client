@@ -29,6 +29,10 @@ h6 {
 .content-panel {
 	/* height: calc(100% - 60px); */
 	padding: 0.5rem;
+}
+
+.navigation-bar,
+.content-panel {
 	max-width: 1060px;
 }
 
