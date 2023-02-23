@@ -1,11 +1,10 @@
-import { default as io } from "socket.io-client";
+import { default as io, Socket } from "socket.io-client";
 
 import { AppDispatch } from "../store/store";
 import { updateRegistry } from "../store/slices/registry";
 
 import { Registry } from "./types";
-
-const socket = io("http://localhost:5010/");
+import { buildUrlFromHostAddress, HostAddress } from "../store/slices/environment";
 
 enum Command {
 	PullConfig = "pull config",
@@ -41,9 +40,13 @@ type ServerResponse<T> = {
 };
 
 let appDispatch: AppDispatch;
+let socket: Socket | undefined;
 
-export const subscribe = (dispatch: AppDispatch) => {
+export const initialize = (dispatch: AppDispatch, hostAddress: HostAddress) => {
 	appDispatch = dispatch;
+
+	const url = buildUrlFromHostAddress(hostAddress);
+	socket = io(url);
 
 	socket.on("connect", () => {
 		getInfo();
@@ -54,8 +57,9 @@ export const subscribe = (dispatch: AppDispatch) => {
 			appDispatch(updateRegistry(JSON.parse(data)));
 		}
 	});
+
 	return () => {
-		socket.disconnect();
+		socket?.disconnect();
 	};
 };
 
@@ -226,6 +230,10 @@ const sendCommand = <T>(
 	data: Record<string, unknown> = {},
 	callback?: (response: ServerResponse<T>) => void
 ) => {
+	if (!socket) {
+		throw new Error("Socket is not initialized.");
+	}
+
 	socket.emit(
 		"command",
 		JSON.stringify({
