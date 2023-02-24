@@ -1,19 +1,16 @@
 import { useState } from "react";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
-import { selectHostAddress, updateHostAddress } from "../../../store/slices/environment";
 import ContentPanel from "../../ContentPanel";
-import { AppDispatch } from "../../../store/store";
 import { selectRegistry } from "../../../store/slices/registry";
 import { dispose, vmixPlayersAdd, vmixPlayersRemove, vmixPlayersSetActive } from "../../../services/socketApi";
+import HostAddressSelection from "../HostAddressSelection";
 
 type NewVMixPlayer = { ip: string; name: string };
 
 const EnvironmentSettings: React.FC = () => {
-	const dispatch = useDispatch<AppDispatch>();
 	const registry = useSelector(selectRegistry);
-	const [editedHostAddress, setEditedHostAddress] = useState(useSelector(selectHostAddress));
 	const vMixPlayers = registry.vmix_players;
 	const activeVMixPlayer = registry.active_vmix_player;
 	const [newVMixPlayer, setNewVMixPlayer] = useState<NewVMixPlayer>({ ip: "", name: "" });
@@ -40,89 +37,7 @@ const EnvironmentSettings: React.FC = () => {
 					</button>
 				</div>
 			</ContentPanel>
-			<ContentPanel
-				mainActions={
-					<button
-						className="btn btn-sm btn-primary"
-						onClick={() => {
-							dispatch(updateHostAddress(editedHostAddress));
-						}}
-					>
-						<span>Save</span>
-					</button>
-				}
-			>
-				<label htmlFor="server-ip" className="form-label">
-					Host server address
-				</label>
-				<div className="form-check mb-3">
-					<input
-						id="use-localhost"
-						className="form-check-input"
-						type="checkbox"
-						checked={editedHostAddress.useLocalhost}
-						onChange={() =>
-							setEditedHostAddress({
-								...editedHostAddress,
-								useLocalhost: !editedHostAddress.useLocalhost,
-							})
-						}
-					/>
-					<label htmlFor="use-localhost" className="form-check-label">
-						Use localhost
-					</label>
-				</div>
-
-				<div className="input-group mb-3">
-					<input
-						type="text"
-						className="form-control"
-						style={{ maxWidth: "80px" }}
-						disabled={editedHostAddress.useLocalhost}
-						placeholder="http"
-						aria-label="Protocol"
-						value={editedHostAddress.protocol}
-						onChange={(event) =>
-							setEditedHostAddress({
-								...editedHostAddress,
-								protocol: event.target.value,
-							})
-						}
-					/>
-					<span className="input-group-text">://</span>
-					<input
-						type="text"
-						className="form-control"
-						style={{ maxWidth: "160px" }}
-						disabled={editedHostAddress.useLocalhost}
-						placeholder="IP address"
-						aria-label="IP address"
-						value={editedHostAddress.ipAddress}
-						onChange={(event) =>
-							setEditedHostAddress({
-								...editedHostAddress,
-								ipAddress: event.target.value,
-							})
-						}
-					/>
-					<span className="input-group-text">:</span>
-					<input
-						type="text"
-						className="form-control"
-						style={{ maxWidth: "80px" }}
-						disabled={editedHostAddress.useLocalhost}
-						placeholder="Port"
-						aria-label="Port"
-						value={editedHostAddress.port}
-						onChange={(event) =>
-							setEditedHostAddress({
-								...editedHostAddress,
-								port: event.target.value,
-							})
-						}
-					/>
-				</div>
-			</ContentPanel>
+			<HostAddressSelection />
 			<ContentPanel>
 				<label htmlFor="vmix-triggerers" className="form-label">
 					vMix players

@@ -3,8 +3,8 @@ import { default as io, Socket } from "socket.io-client";
 import { AppDispatch } from "../store/store";
 import { updateRegistry } from "../store/slices/registry";
 
-import { Registry } from "./types";
 import { buildUrlFromHostAddress, HostAddress } from "../store/slices/environment";
+import { connectionFailed } from "../store/slices/app";
 
 enum Command {
 	PullConfig = "pull config",
@@ -39,6 +39,8 @@ type ServerResponse<T> = {
 	serializable_object: T | null;
 };
 
+const ON_REGISTRY_CHANGE_EVENT = "on_registry_change";
+
 let appDispatch: AppDispatch;
 let socket: Socket | undefined;
 
@@ -46,27 +48,31 @@ export const initialize = (dispatch: AppDispatch, hostAddress: HostAddress) => {
 	appDispatch = dispatch;
 
 	const url = buildUrlFromHostAddress(hostAddress);
-	socket = io(url);
+
+	socket = io(url, { reconnectionAttempts: 1, timeout: 500 });
+
+	socket.io.on("reconnect_failed", () => {
+		appDispatch(connectionFailed());
+	});
 
 	socket.on("connect", () => {
 		getInfo();
 	});
 
-	socket.on("on_registry_change", (data: string) => {
-		if (data) {
-			appDispatch(updateRegistry(JSON.parse(data)));
-		}
+	socket.on(ON_REGISTRY_CHANGE_EVENT, (data: string) => {
+		data && appDispatch(updateRegistry(JSON.parse(data)));
 	});
 
 	return () => {
 		socket?.disconnect();
+		socket = undefined;
 	};
 };
 
 export const getInfo = () => {
-	sendCommand(Command.GetInfo, {}, (response: ServerResponse<{ registry: Registry }>) => {
+	sendCommand(Command.GetInfo, {}, (response: ServerResponse<string>) => {
 		if (response.result && response.serializable_object) {
-			appDispatch(updateRegistry(response.serializable_object.registry));
+			appDispatch(updateRegistry(JSON.parse(response.serializable_object)?.registry));
 		}
 	});
 };

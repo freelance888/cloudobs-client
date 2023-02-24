@@ -4,11 +4,8 @@ import ContentPanel from "../ContentPanel";
 import { pullConfig } from "../../services/socketApi";
 
 const Initialization: React.FC = () => {
-	// TODO remove demo values
-	const [sheetUrl, setSheetUrl] = useState(
-		"https://docs.google.com/spreadsheets/d/10J2FG-6nKodpXcTVPmNwKGOwGXSxPUWf1MppT7yUgME/edit#gid=2006470615"
-	);
-	const [sheetName, setSheetName] = useState("table_4");
+	const [sheetUrl, setSheetUrl] = useState("");
+	const [sheetName, setSheetName] = useState("");
 	const [langs, setLangs] = useState("");
 	const [useManualConfiguration, setUseManualConfiguration] = useState(false);
 	const [ipLangsString, setIpLangsString] = useState("");

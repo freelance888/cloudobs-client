@@ -1,10 +1,12 @@
 import { ReactNode, useCallback } from "react";
+import classNames from "classnames";
 
 type Props = {
 	children: ReactNode;
 	mainActions?: ReactNode;
 	endActions?: ReactNode;
 	actionsOnTop?: boolean;
+	centered?: boolean;
 };
 
 const ContentPanel: React.FC<Props> = (props: Props) => {
@@ -20,7 +22,7 @@ const ContentPanel: React.FC<Props> = (props: Props) => {
 	}, [props.mainActions, props.endActions]);
 
 	return (
-		<div className="content-panel m-auto">
+		<div className={classNames("content-panel", { "m-auto": props.centered })}>
 			{props.actionsOnTop && renderActions()}
 			<div className="content-panel__children">{props.children}</div>
 			{!props.actionsOnTop && renderActions()}

@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 
 import AppContentScreen from "./components/screens/AppContentScreen";
 import Initialization from "./components/screens/Initialization";
+import Connecting from "./components/screens/Connecting";
 import "./App.css";
 import { selectRegistry } from "./store/slices/registry";
 import useInitSocket from "./hooks/useInitSocket";
@@ -27,7 +28,7 @@ const App: React.FC = () => {
 		case ServerStatus.SLEEPING:
 			return <Initialization />;
 		default:
-			return <div>Loading...</div>;
+			return <Connecting />;
 	}
 };
 

@@ -3,12 +3,19 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { LangMap, GDriveFile, SyncableSettingsFlags } from "../../services/types";
 import { RootSelector } from "../store";
 
+export enum SocketConnectionStatus {
+	CONNECTING = "CONNECTING",
+	FAILED = "FAILED",
+}
+
 type AppState = {
+	socketConnectionStatus: SocketConnectionStatus;
 	syncedParameters: SyncableSettingsFlags;
 	videoData: LangMap<GDriveFile[]>;
 };
 
 const initialState: AppState = {
+	socketConnectionStatus: SocketConnectionStatus.CONNECTING,
 	syncedParameters: {
 		sourceVolume: false,
 		translationVolume: false,
@@ -45,6 +52,12 @@ const { actions, reducer } = createSlice({
 	name: "app",
 	initialState,
 	reducers: {
+		connectionInitiated(state) {
+			state.socketConnectionStatus = SocketConnectionStatus.CONNECTING;
+		},
+		connectionFailed(state) {
+			state.socketConnectionStatus = SocketConnectionStatus.FAILED;
+		},
 		updateSyncedParameters(state, { payload }: PayloadAction<Partial<SyncableSettingsFlags>>) {
 			state.syncedParameters = {
 				...state.syncedParameters,
@@ -54,8 +67,10 @@ const { actions, reducer } = createSlice({
 	},
 });
 
-export const { updateSyncedParameters } = actions;
+export const { connectionInitiated, connectionFailed, updateSyncedParameters } = actions;
 
+export const selectSocketConnectionStatus: RootSelector<SocketConnectionStatus> = ({ app }) =>
+	app.socketConnectionStatus;
 export const selectSyncedParameters: RootSelector<SyncableSettingsFlags> = ({ app }) => app.syncedParameters;
 
 export default reducer;

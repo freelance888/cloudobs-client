@@ -10,7 +10,7 @@ const useInitSocket = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const hostAddress = useSelector(selectHostAddress);
 
-	useEffect(() => initialize(dispatch, hostAddress), []);
+	useEffect(() => initialize(dispatch, hostAddress), [hostAddress]);
 };
 
 export default useInitSocket;

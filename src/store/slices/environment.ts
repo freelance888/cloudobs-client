@@ -21,17 +21,15 @@ export const buildUrlFromHostAddress = (hostAddress: HostAddress) => {
 };
 
 const getDefaultHostAddress = (): HostAddress => {
-	const DEFAULT_SERVER_IP = "65.109.13.24";
+	const DEFAULT_SERVER_IP = window.location.hostname;
+	const CURRENT_PORT = window.location.port;
 
-	// TODO uncomment this before merge to production
-	// const port = window.location.port;
-	// const SERVER_PORT: string = port === "3010" ? "5010" : "5000";
-	const SERVER_PORT = "5010";
+	const BACKEND_PORT: string = ["3010", "8080"].includes(CURRENT_PORT) ? "5010" : "5000";
 
 	return {
 		protocol: "http",
 		ipAddress: DEFAULT_SERVER_IP,
-		port: SERVER_PORT,
+		port: BACKEND_PORT,
 		useLocalhost: false,
 	};
 };
