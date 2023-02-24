@@ -60,7 +60,7 @@ export const initialize = (dispatch: AppDispatch, hostAddress: HostAddress) => {
 	});
 
 	socket.on(ON_REGISTRY_CHANGE_EVENT, (data: string) => {
-		data && appDispatch(updateRegistry(JSON.parse(data)));
+		data && appDispatch(updateRegistry(JSON.parse(data).registry));
 	});
 
 	return () => {
