@@ -55,8 +55,7 @@ const Language: React.FC<LanguageProps> = ({
 
 	const syncedParameters = useSelector(selectSyncedParameters);
 
-	const serverIp: string =
-		languageSettings.addr_config.original_media_url.match(/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/)?.[0] || "";
+	const serverIp = languageSettings.addr_config.minion_server_addr;
 
 	const { source_volume, ts_volume, ts_offset } = languageSettings;
 	const { ratio, release_time, threshold, output_gain } = languageSettings.sidechain_settings;
