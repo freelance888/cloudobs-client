@@ -40,7 +40,7 @@ const StreamCheck = () => {
 						className="form-control"
 						onChange={handleStreamInput}
 						placeholder="Enter YouTube stream links, each link on a new line"
-						value={streams.map((stream) => stream.link).join("\n")}
+						value={streams.join("\n")}
 						style={{ height: "200px", marginBottom: "25px", borderStyle: "dashed" }}
 					/>
 				</div>
