@@ -9,6 +9,7 @@ import { selectSyncedParameters, updateSyncedParameters } from "../../../store/s
 import { AppDispatch } from "../../../store/store";
 import { MinionConfig } from "../../../services/types";
 import {
+	pullConfig,
 	refreshSource,
 	setSidechainSettings,
 	setSourceVolume,
@@ -101,7 +102,19 @@ const Language: React.FC<LanguageProps> = ({
 				</div>
 
 				<button
+					className="btn btn-sm btn-info ms-auto"
+					title={`Refresh servers data from spreadsheet table and update UI for ${language}`}
+					onClick={() => {
+						pullConfig({ langs: [language] });
+					}}
+				>
+					<i className="bi bi-arrow-clockwise" />
+					Refresh data
+				</button>
+
+				<button
 					className="btn btn-sm btn-dark ms-auto"
+					title={`Refreshes original media source for ${language}`}
 					onClick={() => {
 						refreshSource(language);
 					}}
@@ -110,7 +123,7 @@ const Language: React.FC<LanguageProps> = ({
 					Refresh source
 				</button>
 
-				<button className="language-block-collapse-btn btn btn-sm ms-5" type="button" onClick={onCollapsedToggled}>
+				<button className="language-block-collapse-btn btn btn-sm ms-3" type="button" onClick={onCollapsedToggled}>
 					<i className={classNames("bi bi-no-margin", collapsed ? "bi-chevron-down" : "bi-chevron-up")} />
 				</button>
 			</div>

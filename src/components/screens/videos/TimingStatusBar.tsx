@@ -16,30 +16,34 @@ const TimingStatusBar = () => {
 
 	const running = registry.timing_start_time !== null;
 	const timestamp = registry.timing_start_time;
+	const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Kyiv" }));
+	const scheduled = now.getTime() - new Date(`${timestamp}`).getTime() < 0;
 
-	const classes = running ? "timing-status--running" : "timing-status--inactive";
-	const text = running ? "RUNNING" : "INACTIVE";
+	const classes = scheduled
+		? "timing-status--scheduled"
+		: running
+		? "timing-status--running"
+		: "timing-status--inactive";
+	const text = scheduled ? "SCHEDULED" : running ? "RUNNING" : "INACTIVE";
 
 	const [currentTimeMillis, setCurrentTimeMillis] = useState(0);
 	const [scheduleOpen, setScheduleOpen] = useState(false);
 
 	useEffect(() => {
+		intervalTicker.current && clearInterval(intervalTicker.current);
+		intervalTicker.current = setInterval(() => {
+			setCurrentTimeMillis((prevTimeMillis) => prevTimeMillis + 1000);
+		}, 1000);
+
 		if (running) {
-			intervalTicker.current && clearInterval(intervalTicker.current);
-
-			const timestampZero = `${timestamp}Z`;
-
-			const now = new Date();
-			const timingStartTime = new Date(timestampZero);
-
+			const timingStartTime = new Date(`${timestamp}`);
 			const millisFromStart = now.getTime() - timingStartTime.getTime();
 
 			setCurrentTimeMillis(millisFromStart);
-
-			intervalTicker.current = setInterval(() => {
-				setCurrentTimeMillis((prevTimeMillis) => prevTimeMillis + 1000);
-			}, 1000);
 		}
+		return () => {
+			intervalTicker.current && clearInterval(intervalTicker.current);
+		};
 	}, [running, timestamp]);
 
 	return (
@@ -51,7 +55,8 @@ const TimingStatusBar = () => {
 					{running ? (
 						<Fragment>
 							<span className="ms-3">
-								Current time: <b>{convertTimeStampToTime(currentTimeMillis, true)}</b>
+								{scheduled ? "Time to start: " : "Time from start: "}
+								<b>{convertTimeStampToTime(Math.abs(currentTimeMillis), true)}</b>
 							</span>
 
 							<button
@@ -86,6 +91,9 @@ const TimingStatusBar = () => {
 							</button>
 						</Fragment>
 					)}
+					<span className="ms-3">
+						Current time (GMT+2): <b>{now.toLocaleString("en-GB").substring(11, 20)}</b>
+					</span>
 				</div>
 				<div className="d-flex">
 					<button
