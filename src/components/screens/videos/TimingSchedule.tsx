@@ -15,7 +15,7 @@ const TimingSchedule: React.FC<Props> = ({ onClose }: Props) => {
 			<div className="row g-3">
 				<div className="col-4">
 					<label htmlFor="countdown" className="form-label">
-						Countdown
+						Countdown:
 					</label>
 					<div className="input-group mb-3">
 						<input
@@ -31,7 +31,7 @@ const TimingSchedule: React.FC<Props> = ({ onClose }: Props) => {
 				</div>
 				<div className="col-4">
 					<label htmlFor="daytime" className="form-label">
-						Daytime
+						Daytime (GMT+2):
 					</label>
 					<div className="input-group mb-3">
 						<input
