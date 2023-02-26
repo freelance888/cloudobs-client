@@ -5,6 +5,7 @@ import { selectRegistry } from "../../../store/slices/registry";
 import { playMedia } from "../../../services/socketApi";
 
 import TimingStatusBar from "./TimingStatusBar";
+import { convertTimeStampToTime } from "../../../utils/timestamp";
 
 export type DisplayMode = "BLANK" | "NOT_INITIALIZED" | "NOT_PULLED" | "READY";
 
@@ -40,7 +41,7 @@ const TimingVideoTable = () => {
 										<div>{name}</div>
 									</div>
 									<div className="col-2">
-										<div key={`edited-${mediaId}-seconds`}>{timestamp}</div>
+										<div key={`edited-${mediaId}-seconds`}>{convertTimeStampToTime(Number(timestamp))}</div>
 									</div>
 									<div className="col-4 d-flex justify-content-end">
 										<div>
