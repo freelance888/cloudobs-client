@@ -355,3 +355,7 @@ i.bi:not(.bi-no-margin) {
 	color: white;
 	padding: 0 11px;
 }
+
+.red-text {
+	color: #db1717;
+}
