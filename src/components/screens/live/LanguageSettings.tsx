@@ -40,8 +40,9 @@ const LanguageSettings = () => {
 						{initialized && <StartStopStreamingButton />}
 						<button
 							className="btn btn-dark ms-2"
+							title="Refreshes original media source for all languages"
 							onClick={() => {
-								if (window.confirm("Are you sure?") === true) {
+								if (window.confirm("Are you sure?")) {
 									refreshSource();
 								}
 							}}
