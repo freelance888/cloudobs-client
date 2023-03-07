@@ -31,7 +31,7 @@ const StatusBar = () => {
 		setTimeout(() => {
 			setClasses(statusClasses);
 		}, STATUS_BAR_TIMEOUT_MS);
-	}, [logMessages.length]);
+	}, [latestLogMessage?.timestamp]);
 
 	return (
 		<div
