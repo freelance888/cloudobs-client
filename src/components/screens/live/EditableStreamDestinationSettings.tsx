@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from "react";
 import { produce } from "immer";
 import { useDispatch } from "react-redux";
 
-import useLogger from "../../../hooks/useLogger";
 import { MinionConfig } from "../../../services/types";
 import { AppDispatch } from "../../../store/store";
 import { setStreamSettings } from "../../../services/socketApi";
@@ -15,7 +14,6 @@ type Props = {
 
 const EditableStreamDestinationSettings = ({ language, languageSettings }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
-	const { logSuccess, logError } = useLogger();
 
 	const [destinationSettingsOpen, setDestinationSettingsOpen] = useState(false);
 	const [updatedDestinationSettings, setUpdatedDestinationSettings] = useState(languageSettings.stream_settings);
@@ -24,9 +22,8 @@ const EditableStreamDestinationSettings = ({ language, languageSettings }: Props
 		const { server, key } = updatedDestinationSettings;
 
 		const serverUrl = server.replace(/\/$/, "");
-		const streamKey = key;
 
-		return `${serverUrl}/${streamKey}`;
+		return `${serverUrl}/${key}`;
 	}, [updatedDestinationSettings]);
 
 	const saveDestinationSettings = useCallback(() => {
@@ -125,9 +122,8 @@ const EditableStreamDestinationSettings = ({ language, languageSettings }: Props
 									onClick={async () => {
 										try {
 											await navigator.clipboard.writeText(streamUrl);
-											logSuccess(`RTMP URL '${streamUrl}' copied to clipboard`);
 										} catch (error) {
-											logError(`RTMP URL '${streamUrl}' copying to clipboard failed`);
+											console.error(`RTMP URL '${streamUrl}' copying to clipboard failed`);
 										}
 									}}
 								>

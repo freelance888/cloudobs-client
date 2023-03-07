@@ -3,7 +3,6 @@ import { useMemo } from "react";
 import classNames from "classnames";
 import { useDispatch, useSelector } from "react-redux";
 
-import useLogger from "../../../hooks/useLogger";
 import { EMPTY_LANGUAGE_SETTINGS } from "../../../services/emptyData";
 import { selectSyncedParameters, updateSyncedParameters } from "../../../store/slices/app";
 import { AppDispatch } from "../../../store/store";
@@ -52,7 +51,6 @@ const Language: React.FC<LanguageProps> = ({
 	videosData,
 }: LanguageProps) => {
 	const dispatch = useDispatch<AppDispatch>();
-	const { logSuccess } = useLogger();
 
 	const syncedParameters = useSelector(selectSyncedParameters);
 
@@ -82,7 +80,6 @@ const Language: React.FC<LanguageProps> = ({
 						onClick={async () => {
 							try {
 								await navigator.clipboard.writeText(serverIp);
-								logSuccess(`Server IP '${serverIp}' copied to clipboard`);
 							} catch (error) {
 								// pass
 							}

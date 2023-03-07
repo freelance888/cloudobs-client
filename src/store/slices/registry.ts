@@ -4,11 +4,11 @@ import { Registry } from "../../services/types";
 import { RootSelector } from "../store";
 
 type RegistryState = {
-	registry: Registry | null;
+	data: Registry | null;
 };
 
 const initialState: RegistryState = {
-	registry: null,
+	data: null,
 };
 
 const { actions, reducer } = createSlice({
@@ -16,13 +16,13 @@ const { actions, reducer } = createSlice({
 	initialState,
 	reducers: {
 		updateRegistry(state, { payload }: PayloadAction<Registry>) {
-			state.registry = payload;
+			state.data = { ...state.data, ...payload };
 		},
 	},
 });
 
 export const { updateRegistry } = actions;
 
-export const selectRegistry: RootSelector<Registry> = ({ registry }) => registry.registry as Registry;
+export const selectRegistry: RootSelector<Registry> = ({ registry }) => registry.data as Registry;
 
 export default reducer;

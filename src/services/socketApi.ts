@@ -5,6 +5,7 @@ import { updateRegistry } from "../store/slices/registry";
 
 import { buildUrlFromHostAddress, HostAddress } from "../store/slices/environment";
 import { connectionFailed } from "../store/slices/app";
+import { addNewLog, MAX_MESSAGES, setLogs } from "../store/slices/logs";
 
 enum Command {
 	PullConfig = "pull config",
@@ -31,6 +32,14 @@ enum Command {
 	StopMedia = "stop media",
 	RefreshSource = "refresh source",
 	ListGdriveFiles = "list gdrive files",
+	GetLogs = "get logs",
+}
+
+enum Event {
+	Connect = "connect",
+	ReconnectFailed = "reconnect_failed",
+	OnRegistryChange = "on_registry_change",
+	OnLog = "on_log",
 }
 
 type ServerResponse<T> = {
@@ -38,8 +47,6 @@ type ServerResponse<T> = {
 	details: string;
 	serializable_object: T | null;
 };
-
-const ON_REGISTRY_CHANGE_EVENT = "on_registry_change";
 
 let appDispatch: AppDispatch;
 let socket: Socket | undefined;
@@ -51,16 +58,21 @@ export const initialize = (dispatch: AppDispatch, hostAddress: HostAddress) => {
 
 	socket = io(url, { reconnectionAttempts: 1, timeout: 500 });
 
-	socket.io.on("reconnect_failed", () => {
+	socket.io.on(Event.ReconnectFailed, () => {
 		appDispatch(connectionFailed());
 	});
 
-	socket.on("connect", () => {
+	socket.on(Event.Connect, () => {
 		getInfo();
+		getLogs();
 	});
 
-	socket.on(ON_REGISTRY_CHANGE_EVENT, (data: string) => {
+	socket.on(Event.OnRegistryChange, (data: string) => {
 		data && appDispatch(updateRegistry(JSON.parse(data).registry));
+	});
+
+	socket.on(Event.OnLog, (data: string) => {
+		data && appDispatch(addNewLog(JSON.parse(data).log));
 	});
 
 	return () => {
@@ -75,6 +87,20 @@ export const getInfo = () => {
 			appDispatch(updateRegistry(JSON.parse(response.serializable_object)?.registry));
 		}
 	});
+};
+
+export const getLogs = (count = MAX_MESSAGES) => {
+	sendCommand(
+		Command.GetLogs,
+		{
+			details: { count },
+		},
+		(response: ServerResponse<Record<string, any>>) => {
+			if (response.result && response.serializable_object) {
+				appDispatch(setLogs(response.serializable_object?.logs));
+			}
+		}
+	);
 };
 
 type PullConfigPayload = {

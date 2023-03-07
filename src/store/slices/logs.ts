@@ -1,33 +1,29 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { generateId } from "../../utils/generateId";
 import { RootSelector } from "../store";
 
-type LogMessageSeverity = "success" | "error" | "warn" | "log";
+export const MAX_MESSAGES = 200;
 
-type NewLogMessage = {
-	text: string;
-	severity: LogMessageSeverity;
-};
+type LogMessageSeverity = "info" | "warn" | "error";
 
-type LogMessage = NewLogMessage & {
-	id: string;
+type Log = {
+	level: LogMessageSeverity;
+	type: string;
+	message: string;
+	error: string | null;
 	timestamp: string;
+	extra: {
+		minion_ip: string;
+		minion_lang: string;
+		command: string;
+		details: string;
+		lang: string;
+		ip: string;
+	};
 };
 
 type LogsState = {
-	messages: LogMessage[];
-};
-
-const MAX_MESSAGES = 100;
-
-const buildMessage = (text: string, severity: LogMessageSeverity = "log"): LogMessage => {
-	return {
-		id: generateId(),
-		text,
-		timestamp: new Date().toLocaleString(),
-		severity,
-	};
+	messages: Log[];
 };
 
 const initialState: LogsState = {
@@ -38,26 +34,20 @@ const { actions, reducer } = createSlice({
 	name: "logs",
 	initialState,
 	reducers: {
-		logMessage(state, { payload }: PayloadAction<string | NewLogMessage>) {
+		addNewLog(state, { payload }: PayloadAction<Log>) {
 			if (state.messages.length >= MAX_MESSAGES) {
 				state.messages.shift();
 			}
-
-			let message: LogMessage;
-			if (typeof payload === "string") {
-				message = buildMessage(payload);
-			} else {
-				const { text, severity } = payload;
-				message = buildMessage(text, severity);
-			}
-
-			state.messages.unshift(message);
+			state.messages.push(payload);
+		},
+		setLogs(state, { payload }: PayloadAction<Log[]>) {
+			state.messages = payload;
 		},
 	},
 });
 
-export const { logMessage } = actions;
+export const { addNewLog, setLogs } = actions;
 
-export const selectLogMessages: RootSelector<LogMessage[]> = ({ logs }) => logs.messages;
+export const selectLogMessages: RootSelector<Log[]> = ({ logs }) => logs.messages;
 
 export default reducer;
