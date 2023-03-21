@@ -2,10 +2,13 @@ import { useState } from "react";
 
 import ContentPanel from "../../ContentPanel";
 import { pullTiming } from "../../../services/socketApi";
+import { useSelector } from "react-redux";
+import { selectRegistry } from "../../../store/slices/registry";
 
 const TimingInitializationForm: React.FC = () => {
-	const [sheetUrl, setSheetUrl] = useState("");
-	const [sheetName, setSheetName] = useState("");
+	const registry = useSelector(selectRegistry);
+	const [sheetUrl, setSheetUrl] = useState(registry.timing_sheet_url ?? "");
+	const [sheetName, setSheetName] = useState(registry.timing_sheet_name ?? "");
 
 	return (
 		<ContentPanel

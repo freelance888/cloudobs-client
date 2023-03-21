@@ -189,8 +189,8 @@ type VideoName = string;
 export type VideoLoaded = Record<VideoName, boolean>;
 
 export type Registry = {
-	obs_sheet_url: string;
-	obs_sheet_name: string;
+	obs_sheet_url: string | null;
+	obs_sheet_name: string | null;
 	minion_configs: LangMap<MinionConfig>;
 	infrastructure_lock: boolean;
 	server_status: ServerStatus;

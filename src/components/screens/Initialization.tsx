@@ -2,10 +2,13 @@ import { Fragment, useCallback, useState } from "react";
 
 import ContentPanel from "../ContentPanel";
 import { pullConfig } from "../../services/socketApi";
+import { useSelector } from "react-redux";
+import { selectRegistry } from "../../store/slices/registry";
 
 const Initialization: React.FC = () => {
-	const [sheetUrl, setSheetUrl] = useState("");
-	const [sheetName, setSheetName] = useState("");
+	const registry = useSelector(selectRegistry);
+	const [sheetUrl, setSheetUrl] = useState(registry.obs_sheet_url ?? "");
+	const [sheetName, setSheetName] = useState(registry.obs_sheet_name ?? "");
 	const [langs, setLangs] = useState("");
 	const [useManualConfiguration, setUseManualConfiguration] = useState(false);
 	const [ipLangsString, setIpLangsString] = useState("");
@@ -68,7 +71,6 @@ const Initialization: React.FC = () => {
 			<div className="input-group mb-3">
 				<input
 					className="form-control"
-					disabled={useManualConfiguration}
 					value={sheetUrl}
 					name="sheet_url"
 					id="sheet_url"
@@ -82,7 +84,6 @@ const Initialization: React.FC = () => {
 			<div className="input-group mb-3">
 				<input
 					className="form-control"
-					disabled={useManualConfiguration}
 					value={sheetName}
 					name="sheet_name"
 					id="sheet_name"

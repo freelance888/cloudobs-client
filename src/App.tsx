@@ -6,7 +6,6 @@ import "./App.css";
 import { selectIsRegistryLoaded, selectRegistry } from "./store/slices/registry";
 import useInitSocket from "./hooks/useInitSocket";
 import { ServerStatus } from "./services/types";
-import Loading from "./components/screens/Loading";
 import Connecting from "./components/screens/Connecting";
 import Initialization from "./components/screens/Initialization";
 import AppContentScreen from "./components/screens/AppContentScreen";
@@ -18,7 +17,7 @@ const App: React.FC = () => {
 	const registry = useSelector(selectRegistry);
 
 	if (!registryLoaded) {
-		return <Loading />;
+		return <Connecting />;
 	}
 
 	console.log("### REGISTRY", registry);

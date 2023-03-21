@@ -370,3 +370,28 @@ i.bi:not(.bi-no-margin) {
 .red-text {
 	color: #db1717;
 }
+
+
+.react-time-picker__wrapper {
+	border: unset !important;
+}
+
+.react-time-picker__inputGroup__input:focus-visible {
+	outline: unset;
+}
+
+.timing-schedule-content {
+	display: flex;
+}
+
+.timing-schedule-select {
+	height: 84px;
+	width: 200px;
+	/* display: flex;
+	flex-direction: column;
+	justify-content: center; */
+}
+
+.timing-schedule-input {
+	width: 250px;
+}
