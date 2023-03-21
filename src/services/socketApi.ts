@@ -1,11 +1,12 @@
 import { default as io, Socket } from "socket.io-client";
 
 import { AppDispatch } from "../store/store";
-import { updateRegistry } from "../store/slices/registry";
+import { setRegistry, updateRegistry } from "../store/slices/registry";
 
 import { buildUrlFromHostAddress, HostAddress } from "../store/slices/environment";
 import { connectionFailed } from "../store/slices/app";
 import { addNewLog, MAX_MESSAGES, setLogs } from "../store/slices/logs";
+import { Registry } from "./types";
 
 enum Command {
 	PullConfig = "pull config",
@@ -67,8 +68,15 @@ export const initialize = (dispatch: AppDispatch, hostAddress: HostAddress) => {
 		getLogs();
 	});
 
-	socket.on(Event.OnRegistryChange, (data: string) => {
-		data && appDispatch(updateRegistry(JSON.parse(data).registry));
+	socket.on(Event.OnRegistryChange, (partialRegistryString: string) => {
+		const partialRegistry = JSON.parse(partialRegistryString)?.registry as Partial<Registry>;
+		if (partialRegistry && typeof partialRegistry === "object") {
+			appDispatch(updateRegistry(partialRegistry));
+		} else {
+			const error = `[${Event.OnRegistryChange}]: Invalid registry value received: '${partialRegistry}'`;
+			console.error(error);
+			alert(error);
+		}
 	});
 
 	socket.on(Event.OnLog, (data: string) => {
@@ -84,7 +92,14 @@ export const initialize = (dispatch: AppDispatch, hostAddress: HostAddress) => {
 export const getInfo = () => {
 	sendCommand(Command.GetInfo, {}, (response: ServerResponse<string>) => {
 		if (response.result && response.serializable_object) {
-			appDispatch(updateRegistry(JSON.parse(response.serializable_object)?.registry));
+			const registry = JSON.parse(response.serializable_object)?.registry as Registry | undefined;
+			if (registry && typeof registry === "object") {
+				appDispatch(setRegistry(registry));
+			} else {
+				const error = `[${Command.GetInfo}]: Invalid registry value received: '${registry}'`;
+				console.error(error);
+				alert(error);
+			}
 		}
 	});
 };

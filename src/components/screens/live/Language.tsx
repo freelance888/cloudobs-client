@@ -110,7 +110,7 @@ const Language: React.FC<LanguageProps> = ({
 				</button>
 
 				<button
-					className="btn btn-sm btn-dark ms-auto"
+					className="btn btn-sm btn-dark ms-2"
 					title={`Refreshes original media source for ${language}`}
 					onClick={() => {
 						refreshSource(language);
