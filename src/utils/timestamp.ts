@@ -12,7 +12,7 @@ export function formatTimestamp(timestamp: string | number): string {
 	const hours = Math.floor(totalSeconds / 3600);
 	const minutes = Math.floor((totalSeconds % 3600) / 60);
 	const seconds = totalSeconds % 60;
-	const milliseconds = Math.floor((parseFloat(timestamp as string) - totalSeconds) * 1000);
+	const milliseconds = Math.round((parseFloat(timestamp as string) - totalSeconds) * 1000);
 
 	const formattedHours = hours.toString().padStart(2, "0");
 	const formattedMinutes = minutes.toString().padStart(2, "0");
