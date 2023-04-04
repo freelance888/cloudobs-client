@@ -51,7 +51,7 @@ const EnvironmentSettings: React.FC = () => {
 									className="form-check-input mt-0"
 									type="radio"
 									checked={activeVMixPlayer === ip}
-									onChange={() => vmixPlayersSetActive(ip)}
+									onChange={() => vmixPlayersSetActive(name)}
 								/>
 							</div>
 							<div className="form-control" style={{ maxWidth: "160px" }}>
@@ -64,7 +64,7 @@ const EnvironmentSettings: React.FC = () => {
 								<button
 									className="btn btn-sm btn-outline-primary"
 									onClick={() => {
-										vmixPlayersRemove(ip);
+										vmixPlayersRemove(ip, name);
 									}}
 								>
 									Remove

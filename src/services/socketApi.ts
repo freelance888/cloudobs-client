@@ -200,19 +200,19 @@ export const vmixPlayersAdd = (ip: string, name: string) => {
 	});
 };
 
-export const vmixPlayersRemove = (ip: string) => {
+export const vmixPlayersRemove = (ip: string, name: string) => {
 	if (ip === "*") {
 		throw new Error("You cannot delete vMix player with ip '*'");
 	}
 
 	sendCommand(Command.VmixPlayerRemove, {
-		details: { ip },
+		details: { name },
 	});
 };
 
-export const vmixPlayersSetActive = (ip: string) => {
+export const vmixPlayersSetActive = (name: string) => {
 	sendCommand(Command.VmixPlayersSetActive, {
-		details: { ip },
+		details: { name },
 	});
 };
 
