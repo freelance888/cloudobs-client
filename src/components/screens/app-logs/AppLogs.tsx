@@ -8,7 +8,7 @@ const LogMessage = ({ id, log, collapsed = false }) => {
 		message,
 		timestamp,
 		level,
-		extra: { ip = "", minion_ip, minion_lang, command, details, lang },
+		extra: { ip = "", minion_ip, minion_lang, command, details, lang, message: extraMessage },
 		type,
 		error,
 	} = log;
@@ -84,6 +84,12 @@ const LogMessage = ({ id, log, collapsed = false }) => {
 							{Object.keys(details).length > 0 && (
 								<span className="logs__message-text">
 									{"Details: " + JSON.stringify(details)}
+									<br />
+								</span>
+							)}
+							{extraMessage.length > 0 && extraMessage[0].length > 0 && (
+								<span className="logs__message-text">
+									{"Message: " + extraMessage.join("|")}
 									<br />
 								</span>
 							)}
