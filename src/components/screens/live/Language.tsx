@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import classNames from "classnames";
 import { useDispatch, useSelector } from "react-redux";
@@ -68,6 +68,23 @@ const Language: React.FC<LanguageProps> = ({
 		};
 	}, [language, videosData]);
 
+	const [showTooltip, setShowTooltip] = useState(false);
+
+	const tooltipRef = useRef<HTMLDivElement | null>(null);
+
+	const handleClickOutside = (event) => {
+		if (tooltipRef.current && !tooltipRef.current.contains(event.target)) {
+			setShowTooltip(false);
+		}
+	};
+
+	useEffect(() => {
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, []);
+
 	return (
 		<div className={classNames(["Language", { "Language--live": languageSettings.stream_on.value, collapsed }])}>
 			<div className="language-header">
@@ -94,9 +111,27 @@ const Language: React.FC<LanguageProps> = ({
 					className={classNames("videos-downloaded-counter ms-2", {
 						"videos-downloaded-counter--failed": videosCounts.downloaded !== videosCounts.all,
 					})}
+					onClick={() => setShowTooltip(true)}
 				>
-					Videos: {videosCounts.downloaded} / {videosCounts.all}
+					<span className="text-link">{`Videos: ${videosCounts.downloaded} / ${videosCounts.all}`}</span>
 				</div>
+				{showTooltip && (
+					<div
+						className={"custom-tooltip"}
+						onMouseLeave={() => setShowTooltip(false)}
+						onMouseEnter={() => setShowTooltip(true)}
+						ref={tooltipRef}
+					>
+						<div className="downloaded-videos-list">
+							{Object.keys(videosData)
+								.filter((videoName) => videosData[videoName])
+								.sort((a, b) => a.localeCompare(b))
+								.map((videoName, index) => (
+									<div key={index}>{videoName}</div>
+								))}
+						</div>
+					</div>
+				)}
 
 				<button
 					className="btn btn-sm btn-info ms-auto"
@@ -185,10 +220,12 @@ const Language: React.FC<LanguageProps> = ({
 								minValue={1}
 								maxValue={32}
 								value={ratio}
-								// syncAll={syncedParameters.ratio}
+								syncAll={syncedParameters.ratio}
 								units={": 1"}
-								onValueChanged={(updatedRatio) => setSidechainSettings({ ratio: updatedRatio }, language)}
-								// onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ ratio: updatedSyncAll }))}
+								onValueChanged={(updatedRatio) => {
+									setSidechainSettings({ ratio: updatedRatio }, syncedParameters.ratio ? undefined : language);
+								}}
+								onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ ratio: updatedSyncAll }))}
 							/>
 
 							<RangeInput
@@ -196,10 +233,17 @@ const Language: React.FC<LanguageProps> = ({
 								minValue={1}
 								maxValue={1000}
 								value={release_time}
-								// syncAll={syncedParameters.release_time}
+								syncAll={syncedParameters.release_time}
 								units={"ms"}
-								onValueChanged={(updatedRelease) => setSidechainSettings({ release_time: updatedRelease }, language)}
-								// onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ release_time: updatedSyncAll }))}
+								onValueChanged={(updatedRelease) => {
+									setSidechainSettings(
+										{ release_time: updatedRelease },
+										syncedParameters.release_time ? undefined : language
+									);
+								}}
+								onSyncAllChanged={(updatedSyncAll) =>
+									dispatch(updateSyncedParameters({ release_time: updatedSyncAll }))
+								}
 							/>
 
 							<RangeInput
@@ -207,10 +251,15 @@ const Language: React.FC<LanguageProps> = ({
 								minValue={-60}
 								maxValue={0}
 								value={threshold}
-								// syncAll={syncedParameters.threshold}
+								syncAll={syncedParameters.threshold}
 								units={"dB"}
-								onValueChanged={(updatedThreshold) => setSidechainSettings({ threshold: updatedThreshold }, language)}
-								// onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ threshold: updatedSyncAll }))}
+								onValueChanged={(updatedThreshold) => {
+									setSidechainSettings(
+										{ threshold: updatedThreshold },
+										syncedParameters.threshold ? undefined : language
+									);
+								}}
+								onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ threshold: updatedSyncAll }))}
 							/>
 
 							<RangeInput
@@ -218,12 +267,15 @@ const Language: React.FC<LanguageProps> = ({
 								minValue={-32}
 								maxValue={32}
 								value={output_gain}
-								// syncAll={syncedParameters.output_gain}
+								syncAll={syncedParameters.output_gain}
 								units={"dB"}
-								onValueChanged={(updatedOutputGain) =>
-									setSidechainSettings({ output_gain: updatedOutputGain }, language)
-								}
-								// onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ output_gain: updatedSyncAll }))}
+								onValueChanged={(updatedOutputGain) => {
+									setSidechainSettings(
+										{ output_gain: updatedOutputGain },
+										syncedParameters.output_gain ? undefined : language
+									);
+								}}
+								onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ output_gain: updatedSyncAll }))}
 							/>
 						</div>
 

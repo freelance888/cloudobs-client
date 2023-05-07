@@ -236,6 +236,7 @@ i.bi:not(.bi-no-margin) {
     background-color: #f3f3f3;
     margin: -0.5rem -0.5rem 0;
     transition: all 0.6s;
+    position: relative;
 }
 
 .language-name-short {
@@ -259,7 +260,7 @@ i.bi:not(.bi-no-margin) {
 }
 
 .Language.collapsed .language-body {
-    height: 0px !important;
+    height: 0 !important;
     padding: 0 !important;
 }
 
@@ -368,30 +369,56 @@ i.bi:not(.bi-no-margin) {
 }
 
 .red-text {
-	color: #db1717;
+    color: #db1717;
 }
 
 
 .react-time-picker__wrapper {
-	border: unset !important;
+    border: unset !important;
 }
 
 .react-time-picker__inputGroup__input:focus-visible {
-	outline: unset;
+    outline: unset;
 }
 
 .timing-schedule-content {
-	display: flex;
+    display: flex;
 }
 
 .timing-schedule-select {
-	height: 84px;
-	width: 200px;
-	/* display: flex;
-	flex-direction: column;
-	justify-content: center; */
+    height: 84px;
+    width: 200px;
+    /* display: flex;
+    flex-direction: column;
+    justify-content: center; */
 }
 
 .timing-schedule-input {
-	width: 250px;
+    width: 250px;
+}
+
+.custom-tooltip {
+    position: absolute;
+    background-color: #fff;
+    color: #000;
+    border-radius: .25rem;
+    padding: .5rem;
+    font-size: .875rem;
+    z-index: 1000;
+    transition: opacity 250ms;
+    max-width: 500px;
+    border: 1px solid #ccc;
+    top: 0;
+    left: 0;
+}
+
+.downloaded-videos-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.text-link {
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
 }
