@@ -4,7 +4,7 @@ import { AppDispatch } from "../store/store";
 import { setRegistry, updateRegistry } from "../store/slices/registry";
 
 import { buildUrlFromHostAddress, HostAddress } from "../store/slices/environment";
-import { connectionFailed } from "../store/slices/app";
+import { connectionFailed, setServerDateTime } from "../store/slices/app";
 import { addNewLog, MAX_MESSAGES, setLogs } from "../store/slices/logs";
 import { Registry } from "./types";
 
@@ -41,6 +41,7 @@ enum Event {
 	ReconnectFailed = "reconnect_failed",
 	OnRegistryChange = "on_registry_change",
 	OnLog = "on_log",
+	OnDateTimeUpdate = "on_datetime_update",
 }
 
 type ServerResponse<T> = {
@@ -81,6 +82,10 @@ export const initialize = (dispatch: AppDispatch, hostAddress: HostAddress) => {
 
 	socket.on(Event.OnLog, (data: string) => {
 		data && appDispatch(addNewLog(JSON.parse(data).log));
+	});
+
+	socket.on(Event.OnDateTimeUpdate, (data: string) => {
+		data && appDispatch(setServerDateTime(data));
 	});
 
 	return () => {

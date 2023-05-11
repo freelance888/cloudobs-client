@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { LangMap, GDriveFile, SyncableSettingsFlags } from "../../services/types";
+import { GDriveFile, LangMap, SyncableSettingsFlags } from "../../services/types";
 import { RootSelector } from "../store";
 
 export enum SocketConnectionStatus {
@@ -12,6 +12,7 @@ type AppState = {
 	socketConnectionStatus: SocketConnectionStatus;
 	syncedParameters: SyncableSettingsFlags;
 	videoData: LangMap<GDriveFile[]>;
+	serverDateTime: string;
 };
 
 const initialState: AppState = {
@@ -27,6 +28,7 @@ const initialState: AppState = {
 		transition_point: false,
 	},
 	videoData: {},
+	serverDateTime: "",
 };
 
 // const processSynchronization = <T extends LangMap<number>>(
@@ -64,13 +66,18 @@ const { actions, reducer } = createSlice({
 				...payload,
 			};
 		},
+		setServerDateTime(state, { payload }: PayloadAction<string>) {
+			state.serverDateTime = payload;
+		},
 	},
 });
 
-export const { connectionInitiated, connectionFailed, updateSyncedParameters } = actions;
+export const { connectionInitiated, connectionFailed, updateSyncedParameters, setServerDateTime } = actions;
 
 export const selectSocketConnectionStatus: RootSelector<SocketConnectionStatus> = ({ app }) =>
 	app.socketConnectionStatus;
 export const selectSyncedParameters: RootSelector<SyncableSettingsFlags> = ({ app }) => app.syncedParameters;
+
+export const selectCurrentServerDateTime: RootSelector<string> = ({ app }) => app.serverDateTime;
 
 export default reducer;

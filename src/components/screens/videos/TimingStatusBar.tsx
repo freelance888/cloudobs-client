@@ -9,14 +9,16 @@ import { pullTiming, removeTiming, runTiming, stopTiming } from "../../../servic
 import StopMediaButton from "../../StopMediaButton";
 
 import TimingSchedule from "./TimingSchedule";
+import { selectCurrentServerDateTime } from "../../../store/slices/app";
 
 const TimingStatusBar = () => {
 	const intervalTicker = useRef<ReturnType<typeof setInterval>>();
 	const registry = useSelector(selectRegistry);
+	const serverDateTime = useSelector(selectCurrentServerDateTime);
 
 	const running = registry.timing_start_time !== null;
 	const timestamp = registry.timing_start_time;
-	const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Kyiv" }));
+	const now = new Date(serverDateTime);
 	const scheduled = now.getTime() - new Date(`${timestamp}`).getTime() < 0;
 
 	const classes = scheduled
@@ -92,7 +94,7 @@ const TimingStatusBar = () => {
 						</Fragment>
 					)}
 					<span className="ms-3">
-						Current time (GMT+2): <b>{now.toLocaleString("en-GB").substring(11, 20)}</b>
+						Current server time (GMT+2): <b>{now.toLocaleString("en-GB").substring(11, 20)}</b>
 					</span>
 				</div>
 				<div className="d-flex">

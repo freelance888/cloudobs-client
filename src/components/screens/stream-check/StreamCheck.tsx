@@ -32,7 +32,7 @@ const StreamCheck = () => {
 	};
 
 	return (
-		<div className="container">
+		<div>
 			<div className="content-panel m-auto">
 				<h2 style={{ marginTop: "10px" }}>Check YouTube Streams</h2>
 				<div className="form-group">
@@ -74,7 +74,7 @@ const StreamCheck = () => {
 								>
 									Delete
 								</button>
-								<button className="btn btn-danger" onClick={() => handleGoToSource(stream.link)}>
+								<button className="btn btn-danger" onClick={() => handleGoToSource(stream)}>
 									Go to source
 								</button>
 							</div>
