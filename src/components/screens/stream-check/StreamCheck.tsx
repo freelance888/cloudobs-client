@@ -1,19 +1,30 @@
 import { useState } from "react";
-
 import YouTube from "react-youtube";
 import ReactPlayer from "react-player";
 
 const StreamCheck = () => {
-	const [streams, setStreams] = useState<string[]>([]);
+	const [streamsText, setStreamsText] = useState("");
+	const [streams, setStreams] = useState<{ title: string; url: string }[]>([]);
+
 	const handleStreamInput = async (event) => {
-		const streamLinks = event.target.value;
-		const streamLinkArray = streamLinks.split("\n");
-		setStreams(streamLinkArray);
+		const text = event.target.value;
+		setStreamsText(text);
+
+		const streamLines = text.split("\n");
+		const streamArray = streamLines.map((line) => {
+			// eslint-disable-next-line prefer-const
+			let [title, url] = line.split(" "); // Assuming that title and url are separated by a space
+			url = url || ""; // If url is undefined, use an empty string instead
+			return { title, url };
+		});
+		setStreams(streamArray);
 	};
 	const handleDeleteStream = (index) => {
 		const newStreams = [...streams];
 		newStreams.splice(index, 1);
 		setStreams(newStreams);
+		const newStreamsText = newStreams.map((stream) => `${stream.title} ${stream.url}`).join("\n");
+		setStreamsText(newStreamsText);
 	};
 
 	const handleGoToSource = (link) => {
@@ -39,20 +50,30 @@ const StreamCheck = () => {
 					<textarea
 						className="form-control"
 						onChange={handleStreamInput}
-						placeholder="Enter YouTube stream links, each link on a new line"
-						value={streams.join("\n")}
+						placeholder="Enter stream title and YouTube stream link separated by a space, each pair on a new line"
+						value={streamsText}
 						style={{ height: "200px", marginBottom: "25px", borderStyle: "dashed" }}
 					/>
 				</div>
 			</div>
 			<ul className="list-unstyled d-flex flex-wrap justify-content-start">
 				{streams
-					.filter((stream) => stream !== "")
+					.filter((stream) => stream.url !== "")
 					.map((stream, index) => (
 						<li key={index} style={{ marginBottom: "20px", maxWidth: "400px", marginRight: "25px" }}>
-							{isYoutubeUrl(stream) ? (
+							<h4
+								style={{
+									whiteSpace: "nowrap",
+									overflow: "hidden",
+									textOverflow: "ellipsis",
+									maxWidth: "400px",
+								}}
+							>
+								{stream.title}
+							</h4>
+							{isYoutubeUrl(stream.url) ? (
 								<YouTube
-									videoId={getYouTubeID(stream)}
+									videoId={getYouTubeID(stream.url)}
 									opts={{
 										height: "280",
 										width: "400",
@@ -64,7 +85,7 @@ const StreamCheck = () => {
 									}}
 								/>
 							) : (
-								<ReactPlayer url={stream} height={280} width={400} muted playing style={{ marginBottom: "6px" }} />
+								<ReactPlayer url={stream.url} height={280} width={400} muted playing style={{ marginBottom: "6px" }} />
 							)}
 							<div className="btn-group" role="group">
 								<button
@@ -74,7 +95,7 @@ const StreamCheck = () => {
 								>
 									Delete
 								</button>
-								<button className="btn btn-danger" onClick={() => handleGoToSource(stream)}>
+								<button className="btn btn-danger" onClick={() => handleGoToSource(stream.url)}>
 									Go to source
 								</button>
 							</div>
