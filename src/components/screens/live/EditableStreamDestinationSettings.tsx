@@ -1,33 +1,33 @@
-import produce from "immer";
 import { useCallback, useEffect, useState } from "react";
+
+import { produce } from "immer";
 import { useDispatch } from "react-redux";
-import useLogger from "../../../hooks/useLogger";
-import { LanguageSettings } from "../../../services/types";
-import { setStreamSettings } from "../../../store/slices/app";
+
+import { MinionConfig } from "../../../services/types";
+import { AppDispatch } from "../../../store/store";
+import { setStreamSettings } from "../../../services/socketApi";
 
 type Props = {
 	language: string;
-	languageSettings: LanguageSettings;
+	languageSettings: MinionConfig;
 };
 
 const EditableStreamDestinationSettings = ({ language, languageSettings }: Props) => {
-	const dispatch = useDispatch();
-	const { logSuccess, logError } = useLogger();
+	const dispatch = useDispatch<AppDispatch>();
 
 	const [destinationSettingsOpen, setDestinationSettingsOpen] = useState(false);
-	const [updatedDestinationSettings, setUpdatedDestinationSettings] = useState(languageSettings.streamDestination);
+	const [updatedDestinationSettings, setUpdatedDestinationSettings] = useState(languageSettings.stream_settings);
 
 	const buildStreamUrl: () => string = useCallback(() => {
 		const { server, key } = updatedDestinationSettings;
 
 		const serverUrl = server.replace(/\/$/, "");
-		const streamKey = key;
 
-		return `${serverUrl}/${streamKey}`;
+		return `${serverUrl}/${key}`;
 	}, [updatedDestinationSettings]);
 
 	const saveDestinationSettings = useCallback(() => {
-		dispatch(setStreamSettings({ [language]: updatedDestinationSettings }) as any);
+		setStreamSettings(updatedDestinationSettings.server, updatedDestinationSettings.key, language);
 
 		setDestinationSettingsOpen(false);
 	}, [dispatch, updatedDestinationSettings, language]);
@@ -36,11 +36,11 @@ const EditableStreamDestinationSettings = ({ language, languageSettings }: Props
 	const streamUrlEmpty = streamUrl === "/";
 
 	useEffect(() => {
-		if (languageSettings.streamParameters.streamActive) {
-			setUpdatedDestinationSettings(languageSettings.streamDestination);
+		if (languageSettings.stream_on) {
+			setUpdatedDestinationSettings(languageSettings.stream_settings);
 			setDestinationSettingsOpen(false);
 		}
-	}, [languageSettings.streamParameters.streamActive, languageSettings.streamDestination]);
+	}, [languageSettings.stream_on, languageSettings.stream_settings]);
 
 	return (
 		<div className="language-stream-settings">
@@ -114,7 +114,7 @@ const EditableStreamDestinationSettings = ({ language, languageSettings }: Props
 							<div className="language-stream-url me-2">{streamUrl}</div>
 						</>
 					)}
-					{!languageSettings.streamParameters.streamActive && (
+					{!languageSettings.stream_on && (
 						<>
 							{!streamUrlEmpty && (
 								<button
@@ -122,9 +122,8 @@ const EditableStreamDestinationSettings = ({ language, languageSettings }: Props
 									onClick={async () => {
 										try {
 											await navigator.clipboard.writeText(streamUrl);
-											logSuccess(`RTMP URL '${streamUrl}' copied to clipboard`);
 										} catch (error) {
-											logError(`RTMP URL '${streamUrl}' copying to clipboard failed`);
+											console.error(`RTMP URL '${streamUrl}' copying to clipboard failed`);
 										}
 									}}
 								>

@@ -1,25 +1,38 @@
 import React from "react";
-import useServerStatePoller from "./hooks/useServerStatePoller";
-import useInitialization from "./hooks/useInitialization";
-import AppContentScreen from "./components/screens/AppContentScreen";
-import VideoTableInitSettings from "./components/screens/initialization/VideoTableInitSettings";
+
+import { useSelector } from "react-redux";
+
 import "./App.css";
-import { ServerState } from "./services/api/state";
+import { selectIsRegistryLoaded, selectRegistry } from "./store/slices/registry";
+import useInitSocket from "./hooks/useInitSocket";
+import { ServerStatus } from "./services/types";
+import Connecting from "./components/screens/Connecting";
+import Initialization from "./components/screens/Initialization";
+import AppContentScreen from "./components/screens/AppContentScreen";
 
 const App: React.FC = () => {
-	const serverState = useServerStatePoller();
+	useInitSocket();
 
-	useInitialization(serverState === ServerState.RUNNING);
+	const registryLoaded = useSelector(selectIsRegistryLoaded);
+	const registry = useSelector(selectRegistry);
 
-	switch (serverState) {
-		case ServerState.INITIALIZING:
+	if (!registryLoaded) {
+		return <Connecting />;
+	}
+
+	console.log("### REGISTRY", registry);
+
+	switch (registry.server_status) {
+		case ServerStatus.INITIALIZING:
 			return <div>Initializing... Please wait 🙂</div>;
-		case ServerState.RUNNING:
+		case ServerStatus.RUNNING:
 			return <AppContentScreen />;
-		case ServerState.DISPOSING:
+		case ServerStatus.DISPOSING:
 			return <div>Server is being disposed...</div>;
+		case ServerStatus.SLEEPING:
+			return <Initialization />;
 		default:
-			return <VideoTableInitSettings />;
+			return <Connecting />;
 	}
 };
 

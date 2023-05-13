@@ -1,13 +1,16 @@
 import { Link, NavLink } from "react-router-dom";
 
+import InfrastructureLockButton from "./InfrastructureLockButton";
+
 export const URL_PATH_LIVE = "/";
 export const URL_PATH_VIDEOS = "/videos";
 export const URL_PATH_ENVIRONMENT = "/environment";
 export const URL_PATH_LOGS = "/logs";
+export const STREAM_CHECK = "/stream-check";
 
 const NavigationBar: React.FC = () => {
 	return (
-		<nav className="navigation-bar navbar navbar-expand navbar-light bg-light">
+		<nav className="navigation-bar navbar navbar-expand navbar-light bg-light m-auto">
 			<div className="container-fluid">
 				<Link className="navbar-brand" to="/">
 					<img src="images/cs-logo.svg" alt="" width="30" height="24" className="d-inline-block align-text-top" />
@@ -50,8 +53,16 @@ const NavigationBar: React.FC = () => {
 								<span className="ml-2">Logs</span>
 							</NavLink>
 						</li>
+						<li className="nav-item ms-auto">
+							<NavLink className="nav-link" to={STREAM_CHECK}>
+								<i className="bi bi-check2-circle" />
+								<span className="ml-2">Stream Check</span>
+							</NavLink>
+						</li>
 					</ul>
 				</div>
+
+				<InfrastructureLockButton />
 			</div>
 		</nav>
 	);

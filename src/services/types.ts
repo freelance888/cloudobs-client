@@ -1,4 +1,13 @@
-export type All<T> = Record<string, T>;
+export enum ServerStatus {
+	SLEEPING = "sleeping",
+	NOT_INITIALIZED = "not initialized",
+	INITIALIZING = "initializing",
+	RUNNING = "running",
+	DISPOSING = "disposing",
+}
+
+type LangCode = string;
+export type LangMap<T> = Record<LangCode, T>;
 
 export type MediaScheduleItem = {
 	name: string;
@@ -27,7 +36,7 @@ export type GlobalSettings = {
 	ts_volume: { value: number };
 	source_volume: { value: number };
 	sidechain: SidechainSettings;
-	transition: {transition_point: number };
+	transition: { transition_point: number };
 	gdrive_settings: GDriveSettings;
 };
 
@@ -81,13 +90,6 @@ export type SidechainSettings = {
 	output_gain: number;
 };
 
-type AnySettings =
-	| InitialSettings
-	| StreamParametersSettings
-	| StreamDestinationSettings
-	| SidechainSettings
-	| GDriveSettings;
-
 export type SourceVolumeSettings = Pick<StreamParametersSettings, "sourceVolume">["sourceVolume"];
 export type TranslationVolumeSettings = Pick<StreamParametersSettings, "translationVolume">["translationVolume"];
 export type TranslationOffsetSettings = Pick<StreamParametersSettings, "translationOffset">["translationOffset"];
@@ -96,9 +98,7 @@ export type OptionsFlags<Type> = {
 	[Property in keyof Type]: boolean;
 };
 
-export type SyncableSettings = Omit<StreamParametersSettings, "streamActive"> &
-	SidechainSettings &
-	Pick<TransitionSettings, "transition_point">;
+export type SyncableSettings = Omit<StreamParametersSettings, "streamActive"> & SidechainSettings & TransitionSettings;
 export type SyncableSettingsFlags = OptionsFlags<SyncableSettings>;
 
 export type LanguageSettings = {
@@ -110,48 +110,95 @@ export type LanguageSettings = {
 	gDrive: GDriveSettings;
 };
 
-export type LanguagesSettings = All<LanguageSettings>;
+export type LanguagesSettings = LangMap<LanguageSettings>;
 
-export type VMixPlayer = {
+export type VMixPlayerOld = {
 	ip: string;
-	label: string;
+	name: string;
 	active: boolean;
 };
-
-export type NewVMixPlayer = Omit<VMixPlayer, "active">;
 
 export type GDriveFile = [
 	string, // filename
 	boolean // loaded
 ];
 
-const getAllSettings = <T extends AnySettings>(
-	languagesSettings: LanguagesSettings,
-	parameter: keyof LanguageSettings
-): All<T> => {
-	const allSettings: All<T> = {};
+export interface AddrConfig {
+	obs_host: string;
+	minion_server_addr: string;
+	websocket_port: number;
+	password: string;
+	original_media_url: string;
+}
 
-	Object.keys(languagesSettings).forEach((language) => {
-		allSettings[language] = languagesSettings[language][parameter] as T;
-	});
+export interface StreamSettings {
+	server: string;
+	key: string;
+}
 
-	return allSettings;
+export interface StreamOn {
+	value: boolean;
+}
+
+export interface TsOffset {
+	value: number;
+}
+
+export interface TsVolume {
+	value: number;
+}
+
+export interface SourceVolume {
+	value: number;
+}
+
+export interface GdriveSettings {
+	folder_id: string;
+	media_dir: string;
+	api_key: string;
+	sync_seconds: number;
+	gdrive_sync_addr: string;
+}
+
+export interface MinionConfig {
+	addr_config: AddrConfig;
+	stream_settings: StreamSettings;
+	stream_on: StreamOn;
+	ts_offset: TsOffset;
+	ts_volume: TsVolume;
+	source_volume: SourceVolume;
+	sidechain_settings: SidechainSettings;
+	transition_settings: TransitionSettings;
+	gdrive_settings: GdriveSettings;
+}
+
+export interface TimingEntry {
+	name: string;
+	timestamp: string;
+	is_enabled: boolean;
+	is_played: boolean;
+}
+
+export type VMixPlayer = {
+	name: string;
+	active: boolean;
 };
 
-export const getAllInitialSettings = (languagesSettings: LanguagesSettings): All<InitialSettings> => {
-	return getAllSettings(languagesSettings, "initial");
-};
+type VideoName = string;
 
-export const getAllStreamDestinationSettings = (
-	languagesSettings: LanguagesSettings
-): Record<string, StreamDestinationSettings> => {
-	return getAllSettings(languagesSettings, "streamDestination");
-};
+export type VideoLoaded = Record<VideoName, boolean>;
 
-export const getAllSidechainSettings = (languagesSettings: LanguagesSettings): All<SidechainSettings> => {
-	return getAllSettings(languagesSettings, "sidechain");
-};
-
-export const getAllGDriveSettings = (languagesSettings: LanguagesSettings): All<GDriveSettings> => {
-	return getAllSettings(languagesSettings, "gDrive");
+export type Registry = {
+	obs_sheet_url: string | null;
+	obs_sheet_name: string | null;
+	minion_configs: LangMap<MinionConfig>;
+	infrastructure_lock: boolean;
+	server_status: ServerStatus;
+	timing_sheet_url: string | null;
+	timing_sheet_name: string | null;
+	timing_start_time: string | null;
+	vmix_players: Record<string, VMixPlayer>;
+	active_vmix_player: string;
+	timing_list: TimingEntry[];
+	gdrive_files: LangMap<VideoLoaded>;
 };

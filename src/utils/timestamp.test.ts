@@ -1,4 +1,5 @@
 import { MediaSchedule } from "../services/types";
+
 import { convertTimeStampToTime, parseTimestamps } from "./timestamp";
 
 it("convertTimeStampToTime", () => {

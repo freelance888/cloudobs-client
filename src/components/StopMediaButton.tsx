@@ -1,14 +1,12 @@
 import classNames from "classnames";
-import { useDispatch } from "react-redux";
-import { stopMedia } from "../store/slices/media-schedule";
+
+import { stopMedia } from "../services/socketApi";
 
 type Props = {
 	class?: string;
 };
 
 const StopMediaButton = ({ class: cls }: Props) => {
-	const dispatch = useDispatch();
-
 	return (
 		<button
 			className={classNames("btn btn-primary", cls)}
@@ -16,7 +14,7 @@ const StopMediaButton = ({ class: cls }: Props) => {
 			title="Stops currently playing video/audio file."
 			onClick={() => {
 				if (window.confirm("Are you sure?") === true) {
-					dispatch(stopMedia() as any);
+					stopMedia();
 				}
 			}}
 		>

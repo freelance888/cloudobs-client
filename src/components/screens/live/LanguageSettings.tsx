@@ -1,25 +1,22 @@
-import { useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-	selectInitialLanguagesSettingsLoaded,
-	selectInitialized,
-	selectLanguagesSettings,
-	refreshServers,
-	refreshSource,
-} from "../../../store/slices/app";
+import { Fragment, useMemo, useState } from "react";
+
+import { useSelector } from "react-redux";
+
+import { selectRegistry } from "../../../store/slices/registry";
 import ContentPanel from "../../ContentPanel";
 import StopMediaButton from "../../StopMediaButton";
+import { Registry, ServerStatus } from "../../../services/types";
+import { pullConfig, refreshSource } from "../../../services/socketApi";
+
 import Language from "./Language";
 import LanguageFilter from "./LanguageFilter";
 import StartStopStreamingButton from "./StartStopStreamingButton";
 
 const LanguageSettings = () => {
-	const dispatch = useDispatch();
+	const registry: Registry = useSelector(selectRegistry);
+	const languagesSettings = registry?.minion_configs;
 
-	const loaded = useSelector(selectInitialLanguagesSettingsLoaded);
-	const initialized = useSelector(selectInitialized);
-	const languagesSettings = useSelector(selectLanguagesSettings);
-
+	const initialized = registry.server_status === ServerStatus.RUNNING;
 	const languagesCount = useMemo(() => Object.keys(languagesSettings).length, [languagesSettings]);
 
 	const [collapsedStates, setCollapsedStates] = useState({});
@@ -34,7 +31,7 @@ const LanguageSettings = () => {
 							className="btn btn-info me-2"
 							title="Refresh servers data from spreadsheet table and update UI"
 							onClick={() => {
-								dispatch(refreshServers() as any);
+								pullConfig();
 							}}
 						>
 							<i className="bi bi-arrow-clockwise" />
@@ -43,9 +40,10 @@ const LanguageSettings = () => {
 						{initialized && <StartStopStreamingButton />}
 						<button
 							className="btn btn-dark ms-2"
+							title="Refreshes original media source for all languages"
 							onClick={() => {
-								if (window.confirm("Are you sure?") === true) {
-									dispatch(refreshSource(["__all__"]) as any);
+								if (window.confirm("Are you sure?")) {
+									refreshSource();
 								}
 							}}
 						>
@@ -63,11 +61,12 @@ const LanguageSettings = () => {
 						<button
 							className="btn btn-outline-info"
 							onClick={() => {
-								const updated = Object.keys(languagesSettings).reduce((obj, lang) => {
-									obj[lang] = true;
-									return obj;
-								}, {});
-
+								const isAllCollapsed =
+									Object.values(collapsedStates).length > 0 &&
+									Object.values(collapsedStates).every((isLanguageCollapsed) => isLanguageCollapsed);
+								const updated = Object.fromEntries(
+									Object.keys(languagesSettings).map((lang) => [lang, !isAllCollapsed])
+								);
 								setCollapsedStates(updated);
 							}}
 						>
@@ -81,14 +80,16 @@ const LanguageSettings = () => {
 		>
 			{!initialized ? (
 				<div>Server is not initialized. Please, go to Stream Settings and initialize the server.</div>
-			) : !loaded ? (
-				"Loading..."
 			) : (
 				<>
-					<hr />
-					<div className="mb-4">
-						<LanguageFilter value={languageFilter} onValueChanged={setLanguageFilter} />
-					</div>
+					{languagesCount > 0 && (
+						<Fragment>
+							<hr />
+							<div className="mb-4">
+								<LanguageFilter value={languageFilter} onValueChanged={setLanguageFilter} />
+							</div>
+						</Fragment>
+					)}
 					{Object.entries(languagesSettings)
 						.filter(([language]) => {
 							return language.toLowerCase().includes(languageFilter.toLowerCase());
@@ -105,6 +106,7 @@ const LanguageSettings = () => {
 										[language]: !collapsedStates[language],
 									});
 								}}
+								videosData={registry.gdrive_files[language] || {}}
 							/>
 						))}
 				</>
