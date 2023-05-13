@@ -4,7 +4,7 @@ UI client for [cloudobs](https://github.com/ALLATRA-IT/cloudobs) project.
 
 ## Running the project locally
 
-- Clone the repository:
+- Clone the repository: 
 
   `git clone git@github.com:ALLATRA-IT/cloudobs-client.git`
 
