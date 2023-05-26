@@ -1,10 +1,10 @@
 import {
+	GDriveSettings,
 	InitialSettings,
+	LanguageSettings,
+	SidechainSettings,
 	StreamDestinationSettings,
 	StreamParametersSettings,
-	SidechainSettings,
-	LanguageSettings,
-	GDriveSettings,
 	TransitionSettings,
 } from "./types";
 
@@ -25,6 +25,7 @@ const EMPTY_STREAM_PARAMETERS_SETTINGS: StreamParametersSettings = {
 	sourceVolume: 0,
 	translationVolume: 0,
 	translationOffset: 8000,
+	vmixSpeakerBackgroundVolume: 0,
 };
 
 const EMPTY_SIDECHAIN_SETTINGS: SidechainSettings = {

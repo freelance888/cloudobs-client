@@ -76,6 +76,7 @@ export type StreamParametersSettings = {
 	sourceVolume: number;
 	translationVolume: number;
 	translationOffset: number;
+	vmixSpeakerBackgroundVolume: number;
 };
 
 export type StreamDestinationSettings = {
@@ -148,6 +149,10 @@ export interface TsVolume {
 	value: number;
 }
 
+export interface VmixSpeakerBgVolume {
+	value: number;
+}
+
 export interface SourceVolume {
 	value: number;
 }
@@ -166,6 +171,7 @@ export interface MinionConfig {
 	stream_on: StreamOn;
 	ts_offset: TsOffset;
 	ts_volume: TsVolume;
+	vmix_speaker_background_volume: VmixSpeakerBgVolume;
 	source_volume: SourceVolume;
 	sidechain_settings: SidechainSettings;
 	transition_settings: TransitionSettings;

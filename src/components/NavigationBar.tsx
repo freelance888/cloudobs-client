@@ -6,7 +6,6 @@ export const URL_PATH_LIVE = "/";
 export const URL_PATH_TIMING = "/timing";
 export const URL_PATH_ENVIRONMENT = "/environment";
 export const URL_PATH_LOGS = "/logs";
-export const STREAM_CHECK = "/stream-check";
 
 const NavigationBar: React.FC = () => {
 	return (
@@ -51,12 +50,6 @@ const NavigationBar: React.FC = () => {
 							<NavLink className="nav-link" to={URL_PATH_LOGS}>
 								<i className="bi bi-code-slash" />
 								<span className="ml-2">Logs</span>
-							</NavLink>
-						</li>
-						<li className="nav-item ms-auto">
-							<NavLink className="nav-link" to={STREAM_CHECK}>
-								<i className="bi bi-check2-circle" />
-								<span className="ml-2">Stream Check</span>
 							</NavLink>
 						</li>
 					</ul>
