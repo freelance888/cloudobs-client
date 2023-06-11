@@ -23,6 +23,7 @@ enum Command {
 	VmixPlayerAdd = "vmix players add",
 	VmixPlayerRemove = "vmix players remove",
 	VmixPlayersSetActive = "vmix players set active",
+	VmixSpeakerSetBackgroundVolume = "set vmix speaker background volume",
 	StartStreaming = "start streaming",
 	StopStreaming = "stop streaming",
 	PullTiming = "pull timing",
@@ -163,6 +164,13 @@ export const setTeamspeakVolume = (value: number, lang?: string) => {
 
 export const setSourceVolume = (value: number, lang?: string) => {
 	sendCommand(Command.SetSourceVolume, {
+		details: { value },
+		lang,
+	});
+};
+
+export const setVmixSpeakerBackgroundVolume = (value: number, lang?: string) => {
+	sendCommand(Command.VmixSpeakerSetBackgroundVolume, {
 		details: { value },
 		lang,
 	});

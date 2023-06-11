@@ -26,6 +26,7 @@ const initialState: AppState = {
 		threshold: false,
 		output_gain: false,
 		transition_point: false,
+		vmixSpeakerBackgroundVolume: false,
 	},
 	videoData: {},
 	serverDateTime: "",

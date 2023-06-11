@@ -15,11 +15,13 @@ import {
 	setTeamspeakOffset,
 	setTeamspeakVolume,
 	setTransitionSettings,
+	setVmixSpeakerBackgroundVolume,
 } from "../../../services/socketApi";
 
 import EditableStreamDestinationSettings from "./EditableStreamDestinationSettings";
 import RangeInput from "./RangeInput";
 import StreamActiveToggle from "./StreamActiveToggle";
+import { isSameLanguage } from "../../../utils/videos";
 
 const MIN_TS_OFFSET = 0;
 const MAX_TS_OFFSET = 20000;
@@ -30,6 +32,9 @@ const MAX_TS_VOLUME = 0;
 
 const MIN_SOURCE_VOLUME = -100;
 const MAX_SOURCE_VOLUME = 0;
+
+const MIN_VMIX_SPEAKER_BG_VOLUME = -100;
+const MAX_VMIX_SPEAKER_BG_VOLUME = 0;
 
 const MIN_TRANSITION_POINT = 0;
 const MAX_TRANSITION_POINT = 20000;
@@ -56,15 +61,21 @@ const Language: React.FC<LanguageProps> = ({
 
 	const serverIp = languageSettings.addr_config.minion_server_addr;
 
-	const { source_volume, ts_volume, ts_offset } = languageSettings;
+	const { source_volume, ts_volume, ts_offset, vmix_speaker_background_volume } = languageSettings;
 	const { ratio, release_time, threshold, output_gain } = languageSettings.sidechain_settings;
 
 	const videosCounts = useMemo(() => {
-		const downloadedVideosCount = Object.values(videosData).filter((videoStatus) => videoStatus).length;
-		const allVideosCount = Object.values(videosData).length;
+		const allVideosCount = Object.keys(videosData).length;
+		const downloadedVideosCount = Object.values(videosData).filter(Boolean).length;
+		const sameLanguageVideosCount = Object.keys(videosData).filter((videoName) =>
+			isSameLanguage(videoName, language)
+		).length;
+		const differentLanguageVideosCount = allVideosCount - sameLanguageVideosCount;
+
 		return {
 			downloaded: downloadedVideosCount || "-",
 			all: allVideosCount || "-",
+			differentLanguageVideos: differentLanguageVideosCount > 0,
 		};
 	}, [language, videosData]);
 
@@ -109,11 +120,13 @@ const Language: React.FC<LanguageProps> = ({
 
 				<div
 					className={classNames("videos-downloaded-counter ms-2", {
-						"videos-downloaded-counter--failed": videosCounts.downloaded !== videosCounts.all,
+						"videos-downloaded-counter--failed":
+							videosCounts.downloaded !== videosCounts.all || videosCounts.differentLanguageVideos,
 					})}
 					onClick={() => setShowTooltip(true)}
 				>
 					<span className="text-link">{`Videos: ${videosCounts.downloaded} / ${videosCounts.all}`}</span>
+					{videosCounts.differentLanguageVideos && <i className="bi bi-exclamation-triangle-fill text-danger ms-2" />}
 				</div>
 				{showTooltip && (
 					<div
@@ -124,10 +137,19 @@ const Language: React.FC<LanguageProps> = ({
 					>
 						<div className="downloaded-videos-list">
 							{Object.keys(videosData)
-								.filter((videoName) => videosData[videoName])
 								.sort((a, b) => a.localeCompare(b))
 								.map((videoName, index) => (
-									<div key={index}>{videoName}</div>
+									<div
+										key={index}
+										className={classNames({
+											"bg-warning": !videosData[videoName],
+										})}
+									>
+										{videoName}
+										{!isSameLanguage(videoName, language) && (
+											<i className="bi bi-exclamation-triangle-fill text-danger ms-2" />
+										)}
+									</div>
 								))}
 						</div>
 					</div>
@@ -192,6 +214,25 @@ const Language: React.FC<LanguageProps> = ({
 								}
 								onSyncAllChanged={(updatedSyncAll) =>
 									dispatch(updateSyncedParameters({ translationVolume: updatedSyncAll }))
+								}
+							/>
+
+							<RangeInput
+								label="Vmix speaker background volume"
+								icon="volume-up-fill"
+								minValue={MIN_VMIX_SPEAKER_BG_VOLUME}
+								maxValue={MAX_VMIX_SPEAKER_BG_VOLUME}
+								syncAll={syncedParameters.vmixSpeakerBackgroundVolume}
+								value={vmix_speaker_background_volume.value}
+								units={"dB"}
+								onValueChanged={(value) =>
+									setVmixSpeakerBackgroundVolume(
+										value,
+										syncedParameters.vmixSpeakerBackgroundVolume ? undefined : language
+									)
+								}
+								onSyncAllChanged={(updatedSyncAll) =>
+									dispatch(updateSyncedParameters({ vmixSpeakerBackgroundVolume: updatedSyncAll }))
 								}
 							/>
 

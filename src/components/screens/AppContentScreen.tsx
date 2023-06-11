@@ -1,19 +1,12 @@
 import { Route, Routes } from "react-router-dom";
 
-import NavigationBar, {
-	STREAM_CHECK,
-	URL_PATH_ENVIRONMENT,
-	URL_PATH_LIVE,
-	URL_PATH_LOGS,
-	URL_PATH_VIDEOS,
-} from "../NavigationBar";
+import NavigationBar, { URL_PATH_ENVIRONMENT, URL_PATH_LIVE, URL_PATH_LOGS, URL_PATH_TIMING } from "../NavigationBar";
 import StatusBar from "../StatusBar";
 
 import AppLogs from "./app-logs/AppLogs";
 import EnvironmentSettings from "./environment/EnvironmentSettings";
 import LanguageSettings from "./live/LanguageSettings";
-import VideoSettings from "./videos/VideoSettings";
-import StreamCheck from "./stream-check/StreamCheck";
+import TimingSettings from "./timing/TimingSettings";
 
 const AppContentScreen: React.FC = () => {
 	return (
@@ -22,10 +15,9 @@ const AppContentScreen: React.FC = () => {
 
 			<Routes>
 				<Route path={URL_PATH_LIVE} element={<LanguageSettings />} />
-				<Route path={URL_PATH_VIDEOS} element={<VideoSettings />} />
+				<Route path={URL_PATH_TIMING} element={<TimingSettings />} />
 				<Route path={URL_PATH_ENVIRONMENT} element={<EnvironmentSettings />} />
 				<Route path={URL_PATH_LOGS} element={<AppLogs />} />
-				<Route path={STREAM_CHECK} element={<StreamCheck />} />
 			</Routes>
 
 			<StatusBar />

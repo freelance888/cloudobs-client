@@ -363,7 +363,7 @@ i.bi:not(.bi-no-margin) {
 }
 
 .videos-downloaded-counter--failed {
-    background-color: #d63131;
+    background-color: #faff54;
     color: white;
     padding: 0 11px;
 }
@@ -421,4 +421,12 @@ i.bi:not(.bi-no-margin) {
     color: #007bff;
     text-decoration: underline;
     cursor: pointer;
+}
+
+.bg-warning {
+    background-color: #faff54 !important;
+}
+
+.text-danger {
+    color: #dc3545 !important;
 }
