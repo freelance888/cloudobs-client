@@ -1,6 +1,8 @@
 import { Link, NavLink } from "react-router-dom";
 
 import InfrastructureLockButton from "./InfrastructureLockButton";
+import { useSelector } from "react-redux";
+import { selectRegistry } from "../store/slices/registry";
 
 export const URL_PATH_LIVE = "/";
 export const URL_PATH_TIMING = "/timing";
@@ -8,6 +10,16 @@ export const URL_PATH_ENVIRONMENT = "/environment";
 export const URL_PATH_LOGS = "/logs";
 
 const NavigationBar: React.FC = () => {
+	const registry = useSelector(selectRegistry);
+	const vMixPlayers = registry?.vmix_players;
+	const handleLogout = () => {
+		const confirmLogout = window.confirm("Are you sure you want to logout?");
+		if (confirmLogout) {
+			localStorage.removeItem("cloud-obs-login");
+			localStorage.removeItem("cloud-obs-password");
+			window.location.reload();
+		}
+	};
 	return (
 		<nav className="navigation-bar navbar navbar-expand navbar-light bg-light m-auto">
 			<div className="container-fluid">
@@ -40,12 +52,14 @@ const NavigationBar: React.FC = () => {
 								<span className="ml-2">Timing</span>
 							</NavLink>
 						</li>
-						<li className="nav-item ms-auto">
-							<NavLink className="nav-link" to={URL_PATH_ENVIRONMENT}>
-								<i className="bi bi-diagram-2-fill" />
-								<span className="ml-2">Environment</span>
-							</NavLink>
-						</li>
+						{vMixPlayers && (
+							<li className="nav-item ms-auto">
+								<NavLink className="nav-link" to={URL_PATH_ENVIRONMENT}>
+									<i className="bi bi-diagram-2-fill" />
+									<span className="ml-2">Environment</span>
+								</NavLink>
+							</li>
+						)}
 						<li className="nav-item ms-auto">
 							<NavLink className="nav-link" to={URL_PATH_LOGS}>
 								<i className="bi bi-code-slash" />
@@ -56,6 +70,9 @@ const NavigationBar: React.FC = () => {
 				</div>
 
 				<InfrastructureLockButton />
+				<button className="btn btn-secondary" onClick={handleLogout}>
+					Logout
+				</button>
 			</div>
 		</nav>
 	);

@@ -1,8 +1,10 @@
+import React from "react";
 import { useSelector } from "react-redux";
 import { selectSocketConnectionStatus, SocketConnectionStatus } from "../../store/slices/app";
 import { buildUrlFromHostAddress, selectHostAddress } from "../../store/slices/environment";
 import ContentPanel from "../ContentPanel";
 import HostAddressSelection from "./HostAddressSelection";
+import Login from "./Login";
 
 const Connecting: React.FC = () => {
 	const connectionStatus = useSelector(selectSocketConnectionStatus);
@@ -15,6 +17,8 @@ const Connecting: React.FC = () => {
 					<h6>Connecting...</h6>
 				</ContentPanel>
 			);
+		case SocketConnectionStatus.UNAUTHORIZED:
+			return <Login />;
 		case SocketConnectionStatus.FAILED:
 			return (
 				<ContentPanel>

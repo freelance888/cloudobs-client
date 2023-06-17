@@ -4,7 +4,7 @@ import { AppDispatch } from "../store/store";
 import { setRegistry, updateRegistry } from "../store/slices/registry";
 
 import { buildUrlFromHostAddress, HostAddress } from "../store/slices/environment";
-import { connectionFailed, setServerDateTime } from "../store/slices/app";
+import { connectionFailed, setServerDateTime, unauthorized } from "../store/slices/app";
 import { addNewLog, MAX_MESSAGES, setLogs } from "../store/slices/logs";
 import { Registry } from "./types";
 
@@ -43,6 +43,7 @@ enum Event {
 	OnRegistryChange = "on_registry_change",
 	OnLog = "on_log",
 	OnDateTimeUpdate = "on_datetime_update",
+	OnAuth = "on_auth",
 }
 
 type ServerResponse<T> = {
@@ -51,18 +52,38 @@ type ServerResponse<T> = {
 	serializable_object: T | null;
 };
 
+type AuthResponse = {
+	status: true;
+	message: string;
+};
+
 let appDispatch: AppDispatch;
 let socket: Socket | undefined;
 
-export const initialize = (dispatch: AppDispatch, hostAddress: HostAddress) => {
+export const initialize = (dispatch: AppDispatch, hostAddress: HostAddress, login, password) => {
 	appDispatch = dispatch;
 
 	const url = buildUrlFromHostAddress(hostAddress);
 
-	socket = io(url, { reconnectionAttempts: 1, timeout: 500 });
+	socket = io(url, {
+		reconnectionAttempts: 1,
+		timeout: 500,
+		auth: {
+			HTTP_LOGIN: login,
+			HTTP_PASSWORD: password,
+		},
+	});
 
 	socket.io.on(Event.ReconnectFailed, () => {
 		appDispatch(connectionFailed());
+	});
+
+	socket.on(Event.OnAuth, (data: string) => {
+		const response = JSON.parse(data) as AuthResponse;
+		if (!response.status) {
+			appDispatch(unauthorized());
+			alert(response.message);
+		}
 	});
 
 	socket.on(Event.Connect, () => {
@@ -106,6 +127,8 @@ export const getInfo = () => {
 				console.error(error);
 				alert(error);
 			}
+		} else {
+			appDispatch(unauthorized());
 		}
 	});
 };
@@ -129,6 +152,7 @@ type PullConfigPayload = {
 	sheet_name?: string;
 	langs?: string[];
 	ip_langs?: Record<string, string>;
+	users_sheet_name?: string;
 };
 
 export const pullConfig = (payload?: PullConfigPayload) => {

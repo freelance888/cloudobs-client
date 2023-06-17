@@ -4,14 +4,14 @@ import { selectLogMessages } from "../../../store/slices/logs";
 import ContentPanel from "../../ContentPanel";
 
 const LogMessage = ({ id, log, collapsed = false }) => {
-	const {
-		message,
-		timestamp,
-		level,
-		extra: { ip = "", minion_ip, minion_lang, command, details, lang, message: extraMessage },
-		type,
-		error,
-	} = log;
+	if (!log || !log.extra) {
+		console.log("### LogMessage: invalid log", log);
+		return null;
+	}
+
+	const { message, timestamp, level, type, error, extra = {} } = log;
+
+	const { ip = "", minion_ip, minion_lang, command, details, lang, message: extraMessage } = extra;
 
 	let prefix = "";
 	switch (level) {
@@ -81,13 +81,13 @@ const LogMessage = ({ id, log, collapsed = false }) => {
 									<br />
 								</span>
 							)}
-							{Object.keys(details).length > 0 && (
+							{details && Object.keys(details).length > 0 && (
 								<span className="logs__message-text">
 									{"Details: " + JSON.stringify(details)}
 									<br />
 								</span>
 							)}
-							{extraMessage.length > 0 && extraMessage[0].length > 0 && (
+							{extraMessage?.length > 0 && extraMessage[0]?.length > 0 && (
 								<span className="logs__message-text">
 									{"Message: " + extraMessage.join("|")}
 									<br />

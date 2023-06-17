@@ -11,8 +11,8 @@ type NewVMixPlayer = { ip: string; name: string };
 
 const EnvironmentSettings: React.FC = () => {
 	const registry = useSelector(selectRegistry);
-	const vMixPlayers = registry.vmix_players;
-	const activeVMixPlayer = registry.active_vmix_player;
+	const vMixPlayers = registry?.vmix_players || {};
+	const activeVMixPlayer = registry?.active_vmix_player;
 	const [newVMixPlayer, setNewVMixPlayer] = useState<NewVMixPlayer>({ ip: "", name: "" });
 
 	return (

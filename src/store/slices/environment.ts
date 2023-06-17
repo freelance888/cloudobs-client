@@ -7,6 +7,8 @@ export type HostAddress = {
 	ipAddress: string;
 	port: string;
 	useLocalhost: boolean;
+	login: string;
+	password: string;
 };
 
 type EnvironmentState = {
@@ -31,6 +33,8 @@ const getDefaultHostAddress = (): HostAddress => {
 		ipAddress: DEFAULT_SERVER_IP,
 		port: BACKEND_PORT,
 		useLocalhost: false,
+		login: "",
+		password: "",
 	};
 };
 

@@ -197,14 +197,15 @@ export type VideoLoaded = Record<VideoName, boolean>;
 export type Registry = {
 	obs_sheet_url: string | null;
 	obs_sheet_name: string | null;
+	obs_users_sheet_name: string | null;
 	minion_configs: LangMap<MinionConfig>;
 	infrastructure_lock: boolean;
 	server_status: ServerStatus;
 	timing_sheet_url: string | null;
 	timing_sheet_name: string | null;
 	timing_start_time: string | null;
-	vmix_players: Record<string, VMixPlayer>;
-	active_vmix_player: string;
+	vmix_players?: Record<string, VMixPlayer>;
+	active_vmix_player?: string;
 	timing_list: TimingEntry[];
 	gdrive_files: LangMap<VideoLoaded>;
 };

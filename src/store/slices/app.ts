@@ -6,6 +6,7 @@ import { RootSelector } from "../store";
 export enum SocketConnectionStatus {
 	CONNECTING = "CONNECTING",
 	FAILED = "FAILED",
+	UNAUTHORIZED = "UNAUTHORIZED",
 }
 
 type AppState = {
@@ -61,6 +62,9 @@ const { actions, reducer } = createSlice({
 		connectionFailed(state) {
 			state.socketConnectionStatus = SocketConnectionStatus.FAILED;
 		},
+		unauthorized(state) {
+			state.socketConnectionStatus = SocketConnectionStatus.UNAUTHORIZED;
+		},
 		updateSyncedParameters(state, { payload }: PayloadAction<Partial<SyncableSettingsFlags>>) {
 			state.syncedParameters = {
 				...state.syncedParameters,
@@ -73,7 +77,8 @@ const { actions, reducer } = createSlice({
 	},
 });
 
-export const { connectionInitiated, connectionFailed, updateSyncedParameters, setServerDateTime } = actions;
+export const { connectionInitiated, connectionFailed, unauthorized, updateSyncedParameters, setServerDateTime } =
+	actions;
 
 export const selectSocketConnectionStatus: RootSelector<SocketConnectionStatus> = ({ app }) =>
 	app.socketConnectionStatus;
