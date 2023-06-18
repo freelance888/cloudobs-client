@@ -68,8 +68,7 @@ const NavigationBar: React.FC = () => {
 						</li>
 					</ul>
 				</div>
-
-				<InfrastructureLockButton />
+				{vMixPlayers && <InfrastructureLockButton />}
 				<button className="btn btn-secondary" onClick={handleLogout}>
 					Logout
 				</button>
