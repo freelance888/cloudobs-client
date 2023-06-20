@@ -56,6 +56,7 @@ const Initialization: React.FC = () => {
 							});
 
 							setButtonDisabled(true);
+							setTimeout(() => window.location.reload(), 5000);
 						} catch (error) {
 							alert(error);
 						}
