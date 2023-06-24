@@ -9,7 +9,8 @@ const Initialization: React.FC = () => {
 	const registry = useSelector(selectRegistry);
 	const [sheetUrl, setSheetUrl] = useState(registry.obs_sheet_url ?? "");
 	const [sheetName, setSheetName] = useState(registry.obs_sheet_name ?? "");
-	const [usersSheetName, setUsersSheetName] = useState(registry.obs_users_sheet_name ?? "");
+	const [usersSheetUrl, setUsersSheetUrl] = useState((registry.users_sheet_url || registry.obs_sheet_url) ?? "");
+	const [usersSheetName, setUsersSheetName] = useState(registry.users_sheet_name ?? "");
 	const [langs, setLangs] = useState("");
 	const [useManualConfiguration, setUseManualConfiguration] = useState(false);
 	const [ipLangsString, setIpLangsString] = useState("");
@@ -56,7 +57,6 @@ const Initialization: React.FC = () => {
 							});
 
 							setButtonDisabled(true);
-							setTimeout(() => window.location.reload(), 5000);
 						} catch (error) {
 							alert(error);
 						}
@@ -91,6 +91,19 @@ const Initialization: React.FC = () => {
 					name="sheet_name"
 					id="sheet_name"
 					onChange={(event) => setSheetName(event.target.value)}
+				/>
+			</div>
+
+			<label htmlFor="users_sheet_url" className="form-label">
+				Users sheet URL
+			</label>
+			<div className="input-group mb-3">
+				<input
+					className="form-control"
+					value={usersSheetUrl}
+					name="users_sheet_url"
+					id="users_sheet_url"
+					onChange={(event) => setUsersSheetUrl(event.target.value)}
 				/>
 			</div>
 
