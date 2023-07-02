@@ -50,6 +50,14 @@ export type TransitionSettings = {
 	transition_point: number;
 };
 
+export type TeamspeakSettings = {
+	tsGainEnabled: boolean;
+	tsGain: boolean;
+	tsLimiterEnabled: boolean;
+	tsThreshold: boolean;
+	tsReleaseTime: boolean;
+};
+
 export type GDriveSettings = {
 	drive_id: string;
 	media_dir: string;
@@ -89,6 +97,7 @@ export type SidechainSettings = {
 	release_time: number;
 	threshold: number;
 	output_gain: number;
+	enabled: boolean;
 };
 
 export type SourceVolumeSettings = Pick<StreamParametersSettings, "sourceVolume">["sourceVolume"];
@@ -99,7 +108,10 @@ export type OptionsFlags<Type> = {
 	[Property in keyof Type]: boolean;
 };
 
-export type SyncableSettings = Omit<StreamParametersSettings, "streamActive"> & SidechainSettings & TransitionSettings;
+export type SyncableSettings = Omit<StreamParametersSettings, "streamActive"> &
+	SidechainSettings &
+	TransitionSettings &
+	TeamspeakSettings;
 export type SyncableSettingsFlags = OptionsFlags<SyncableSettings>;
 
 export type LanguageSettings = {
@@ -107,6 +119,8 @@ export type LanguageSettings = {
 	streamParameters: StreamParametersSettings;
 	streamDestination: StreamDestinationSettings;
 	sidechain: SidechainSettings;
+	tsGain: TsGainSettings;
+	tsLimiter: TsLimiterSettings;
 	transition: TransitionSettings;
 	gDrive: GDriveSettings;
 };
@@ -149,6 +163,17 @@ export interface TsVolume {
 	value: number;
 }
 
+export interface TsGainSettings {
+	enabled: boolean;
+	gain: number;
+}
+
+export interface TsLimiterSettings {
+	enabled: boolean;
+	release_time: number;
+	threshold: number;
+}
+
 export interface VmixSpeakerBgVolume {
 	value: number;
 }
@@ -171,6 +196,8 @@ export interface MinionConfig {
 	stream_on: StreamOn;
 	ts_offset: TsOffset;
 	ts_volume: TsVolume;
+	ts_gain_settings: TsGainSettings;
+	ts_limiter_settings: TsLimiterSettings;
 	vmix_speaker_background_volume: VmixSpeakerBgVolume;
 	source_volume: SourceVolume;
 	sidechain_settings: SidechainSettings;

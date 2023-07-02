@@ -15,6 +15,8 @@ enum Command {
 	SetStreamSettings = "set stream settings",
 	SetTeamspeakOffset = "set teamspeak offset",
 	SetTeamspeakVolume = "set teamspeak volume",
+	SetTeamspeakLimiterSettings = "set teamspeak limiter settings",
+	SetTeamspeakGainSettings = "set teamspeak gain settings",
 	SetSourceVolume = "set source volume",
 	SetSidechainSettings = "set sidechain settings",
 	SetTransitionSettings = "set transition settings",
@@ -186,6 +188,31 @@ export const setTeamspeakVolume = (value: number, lang?: string) => {
 	});
 };
 
+type TeamspeakLimiterSettings = {
+	enabled?: boolean;
+	threshold?: number;
+	release_time?: number;
+};
+
+export const setTeamspeakLimiterSettings = (settings: TeamspeakLimiterSettings, lang?: string) => {
+	sendCommand(Command.SetTeamspeakLimiterSettings, {
+		details: { ...settings },
+		lang,
+	});
+};
+
+type TeamspeakGainSettings = {
+	enabled?: boolean;
+	gain?: number;
+};
+
+export const setTeamspeakGainSettings = (settings: TeamspeakGainSettings, lang?: string) => {
+	sendCommand(Command.SetTeamspeakGainSettings, {
+		details: { ...settings },
+		lang,
+	});
+};
+
 export const setSourceVolume = (value: number, lang?: string) => {
 	sendCommand(Command.SetSourceVolume, {
 		details: { value },
@@ -205,6 +232,7 @@ type SidechainSettings = {
 	release_time?: number;
 	threshold?: number;
 	output_gain?: number;
+	enabled?: boolean;
 };
 
 export const setSidechainSettings = (settings: SidechainSettings, lang?: string) => {
