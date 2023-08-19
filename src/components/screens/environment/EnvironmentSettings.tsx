@@ -64,7 +64,9 @@ const EnvironmentSettings: React.FC = () => {
 								<button
 									className="btn btn-sm btn-outline-primary"
 									onClick={() => {
-										vmixPlayersRemove(ip, name);
+										if (window.confirm("❗️ Are you sure to remove vMix player?") === true) {
+											vmixPlayersRemove(ip, name);
+										}
 									}}
 								>
 									Remove
