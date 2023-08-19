@@ -9,8 +9,9 @@ import { selectHostAddress } from "../store/slices/environment";
 const useInitSocket = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const hostAddress = useSelector(selectHostAddress);
-
-	useEffect(() => initialize(dispatch, hostAddress), [hostAddress]);
+	const login = localStorage.getItem("cloud-obs-login");
+	const password = localStorage.getItem("cloud-obs-password");
+	useEffect(() => initialize(dispatch, hostAddress, login, password), [hostAddress, login, password]);
 };
 
 export default useInitSocket;

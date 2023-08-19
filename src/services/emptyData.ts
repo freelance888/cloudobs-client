@@ -6,6 +6,8 @@ import {
 	StreamDestinationSettings,
 	StreamParametersSettings,
 	TransitionSettings,
+	TsGainSettings,
+	TsLimiterSettings,
 } from "./types";
 
 const EMPTY_INITIAL_SETTINGS: InitialSettings = {
@@ -33,6 +35,7 @@ const EMPTY_SIDECHAIN_SETTINGS: SidechainSettings = {
 	release_time: 1000,
 	threshold: -15,
 	output_gain: 0,
+	enabled: true,
 };
 
 const EMPTY_TRANSITION_SETTINGS: TransitionSettings = {
@@ -48,11 +51,24 @@ const EMPTY_GDRIVE_SETTINGS: GDriveSettings = {
 	objvers: "",
 };
 
+const EMPTY_TEAMSPEAK_GAIN_SETTINGS: TsGainSettings = {
+	gain: 0,
+	enabled: true,
+};
+
+const EMPTY_TEAMSPEAK_LIMITER_SETTINGS: TsLimiterSettings = {
+	enabled: true,
+	threshold: -6,
+	release_time: 60,
+};
+
 export const EMPTY_LANGUAGE_SETTINGS: LanguageSettings = {
 	initial: EMPTY_INITIAL_SETTINGS,
 	streamParameters: EMPTY_STREAM_PARAMETERS_SETTINGS,
 	streamDestination: EMPTY_STREAM_DESTINATION_SETTINGS,
 	sidechain: EMPTY_SIDECHAIN_SETTINGS,
 	transition: EMPTY_TRANSITION_SETTINGS,
+	tsGain: EMPTY_TEAMSPEAK_GAIN_SETTINGS,
+	tsLimiter: EMPTY_TEAMSPEAK_LIMITER_SETTINGS,
 	gDrive: EMPTY_GDRIVE_SETTINGS,
 };

@@ -4,7 +4,7 @@ import { AppDispatch } from "../store/store";
 import { setRegistry, updateRegistry } from "../store/slices/registry";
 
 import { buildUrlFromHostAddress, HostAddress } from "../store/slices/environment";
-import { connectionFailed, setServerDateTime } from "../store/slices/app";
+import { connectionFailed, setServerDateTime, unauthorized } from "../store/slices/app";
 import { addNewLog, MAX_MESSAGES, setLogs } from "../store/slices/logs";
 import { Registry } from "./types";
 
@@ -15,6 +15,8 @@ enum Command {
 	SetStreamSettings = "set stream settings",
 	SetTeamspeakOffset = "set teamspeak offset",
 	SetTeamspeakVolume = "set teamspeak volume",
+	SetTeamspeakLimiterSettings = "set teamspeak limiter settings",
+	SetTeamspeakGainSettings = "set teamspeak gain settings",
 	SetSourceVolume = "set source volume",
 	SetSidechainSettings = "set sidechain settings",
 	SetTransitionSettings = "set transition settings",
@@ -43,6 +45,7 @@ enum Event {
 	OnRegistryChange = "on_registry_change",
 	OnLog = "on_log",
 	OnDateTimeUpdate = "on_datetime_update",
+	OnAuth = "on_auth",
 }
 
 type ServerResponse<T> = {
@@ -51,18 +54,38 @@ type ServerResponse<T> = {
 	serializable_object: T | null;
 };
 
+type AuthResponse = {
+	status: true;
+	message: string;
+};
+
 let appDispatch: AppDispatch;
 let socket: Socket | undefined;
 
-export const initialize = (dispatch: AppDispatch, hostAddress: HostAddress) => {
+export const initialize = (dispatch: AppDispatch, hostAddress: HostAddress, login, password) => {
 	appDispatch = dispatch;
 
 	const url = buildUrlFromHostAddress(hostAddress);
 
-	socket = io(url, { reconnectionAttempts: 1, timeout: 500 });
+	socket = io(url, {
+		reconnectionAttempts: 1,
+		timeout: 500,
+		auth: {
+			HTTP_LOGIN: login,
+			HTTP_PASSWORD: password,
+		},
+	});
 
 	socket.io.on(Event.ReconnectFailed, () => {
 		appDispatch(connectionFailed());
+	});
+
+	socket.on(Event.OnAuth, (data: string) => {
+		const response = JSON.parse(data) as AuthResponse;
+		if (!response.status) {
+			appDispatch(unauthorized());
+			alert(response.message);
+		}
 	});
 
 	socket.on(Event.Connect, () => {
@@ -106,6 +129,8 @@ export const getInfo = () => {
 				console.error(error);
 				alert(error);
 			}
+		} else {
+			appDispatch(unauthorized());
 		}
 	});
 };
@@ -129,6 +154,7 @@ type PullConfigPayload = {
 	sheet_name?: string;
 	langs?: string[];
 	ip_langs?: Record<string, string>;
+	users_sheet_name?: string;
 };
 
 export const pullConfig = (payload?: PullConfigPayload) => {
@@ -162,6 +188,31 @@ export const setTeamspeakVolume = (value: number, lang?: string) => {
 	});
 };
 
+type TeamspeakLimiterSettings = {
+	enabled?: boolean;
+	threshold?: number;
+	release_time?: number;
+};
+
+export const setTeamspeakLimiterSettings = (settings: TeamspeakLimiterSettings, lang?: string) => {
+	sendCommand(Command.SetTeamspeakLimiterSettings, {
+		details: { ...settings },
+		lang,
+	});
+};
+
+type TeamspeakGainSettings = {
+	enabled?: boolean;
+	gain?: number;
+};
+
+export const setTeamspeakGainSettings = (settings: TeamspeakGainSettings, lang?: string) => {
+	sendCommand(Command.SetTeamspeakGainSettings, {
+		details: { ...settings },
+		lang,
+	});
+};
+
 export const setSourceVolume = (value: number, lang?: string) => {
 	sendCommand(Command.SetSourceVolume, {
 		details: { value },
@@ -181,6 +232,7 @@ type SidechainSettings = {
 	release_time?: number;
 	threshold?: number;
 	output_gain?: number;
+	enabled?: boolean;
 };
 
 export const setSidechainSettings = (settings: SidechainSettings, lang?: string) => {

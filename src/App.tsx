@@ -1,7 +1,5 @@
 import React from "react";
-
 import { useSelector } from "react-redux";
-
 import "./App.css";
 import { selectIsRegistryLoaded, selectRegistry } from "./store/slices/registry";
 import useInitSocket from "./hooks/useInitSocket";

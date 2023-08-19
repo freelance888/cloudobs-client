@@ -11,8 +11,8 @@ type NewVMixPlayer = { ip: string; name: string };
 
 const EnvironmentSettings: React.FC = () => {
 	const registry = useSelector(selectRegistry);
-	const vMixPlayers = registry.vmix_players;
-	const activeVMixPlayer = registry.active_vmix_player;
+	const vMixPlayers = registry?.vmix_players || {};
+	const activeVMixPlayer = registry?.active_vmix_player;
 	const [newVMixPlayer, setNewVMixPlayer] = useState<NewVMixPlayer>({ ip: "", name: "" });
 
 	return (
@@ -64,7 +64,9 @@ const EnvironmentSettings: React.FC = () => {
 								<button
 									className="btn btn-sm btn-outline-primary"
 									onClick={() => {
-										vmixPlayersRemove(ip, name);
+										if (window.confirm("❗️ Are you sure to remove vMix player?") === true) {
+											vmixPlayersRemove(ip, name);
+										}
 									}}
 								>
 									Remove

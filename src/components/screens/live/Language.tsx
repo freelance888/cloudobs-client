@@ -12,6 +12,8 @@ import {
 	refreshSource,
 	setSidechainSettings,
 	setSourceVolume,
+	setTeamspeakGainSettings,
+	setTeamspeakLimiterSettings,
 	setTeamspeakOffset,
 	setTeamspeakVolume,
 	setTransitionSettings,
@@ -22,6 +24,7 @@ import EditableStreamDestinationSettings from "./EditableStreamDestinationSettin
 import RangeInput from "./RangeInput";
 import StreamActiveToggle from "./StreamActiveToggle";
 import { isSameLanguage } from "../../../utils/videos";
+import ToggleInput from "./ToggleInput";
 
 const MIN_TS_OFFSET = 0;
 const MAX_TS_OFFSET = 20000;
@@ -61,8 +64,16 @@ const Language: React.FC<LanguageProps> = ({
 
 	const serverIp = languageSettings.addr_config.minion_server_addr;
 
-	const { source_volume, ts_volume, ts_offset, vmix_speaker_background_volume } = languageSettings;
-	const { ratio, release_time, threshold, output_gain } = languageSettings.sidechain_settings;
+	const {
+		source_volume,
+		ts_volume,
+		ts_offset,
+		vmix_speaker_background_volume,
+		ts_gain_settings,
+		ts_limiter_settings,
+		transition_settings,
+	} = languageSettings;
+	const { ratio, release_time, threshold, output_gain, enabled } = languageSettings.sidechain_settings;
 
 	const videosCounts = useMemo(() => {
 		const allVideosCount = Object.keys(videosData).length;
@@ -256,81 +267,177 @@ const Language: React.FC<LanguageProps> = ({
 
 						<div className="language-sidechain-settings px-3">
 							<h6>Sidechain</h6>
-							<RangeInput
-								label="Ratio"
-								minValue={1}
-								maxValue={32}
-								value={ratio}
-								syncAll={syncedParameters.ratio}
-								units={": 1"}
-								onValueChanged={(updatedRatio) => {
-									setSidechainSettings({ ratio: updatedRatio }, syncedParameters.ratio ? undefined : language);
-								}}
-								onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ ratio: updatedSyncAll }))}
-							/>
-
-							<RangeInput
-								label="Release"
-								minValue={1}
-								maxValue={1000}
-								value={release_time}
-								syncAll={syncedParameters.release_time}
-								units={"ms"}
-								onValueChanged={(updatedRelease) => {
-									setSidechainSettings(
-										{ release_time: updatedRelease },
-										syncedParameters.release_time ? undefined : language
-									);
-								}}
-								onSyncAllChanged={(updatedSyncAll) =>
-									dispatch(updateSyncedParameters({ release_time: updatedSyncAll }))
+							<ToggleInput
+								label="Filter"
+								value={enabled}
+								onValueChanged={() =>
+									setSidechainSettings({ enabled: !enabled }, syncedParameters.enabled ? undefined : language)
 								}
+								onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ enabled: updatedSyncAll }))}
+								syncAll={syncedParameters.enabled}
 							/>
+							<div className={!enabled ? "disabled" : ""}>
+								<RangeInput
+									label="Ratio"
+									minValue={1}
+									maxValue={32}
+									value={ratio}
+									syncAll={syncedParameters.ratio}
+									units={": 1"}
+									onValueChanged={(updatedRatio) => {
+										setSidechainSettings({ ratio: updatedRatio }, syncedParameters.ratio ? undefined : language);
+									}}
+									onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ ratio: updatedSyncAll }))}
+								/>
 
-							<RangeInput
-								label="Threshold"
-								minValue={-60}
-								maxValue={0}
-								value={threshold}
-								syncAll={syncedParameters.threshold}
-								units={"dB"}
-								onValueChanged={(updatedThreshold) => {
-									setSidechainSettings(
-										{ threshold: updatedThreshold },
-										syncedParameters.threshold ? undefined : language
-									);
-								}}
-								onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ threshold: updatedSyncAll }))}
-							/>
+								<RangeInput
+									label="Release"
+									minValue={1}
+									maxValue={1000}
+									value={release_time}
+									syncAll={syncedParameters.release_time}
+									units={"ms"}
+									onValueChanged={(updatedRelease) => {
+										setSidechainSettings(
+											{ release_time: updatedRelease },
+											syncedParameters.release_time ? undefined : language
+										);
+									}}
+									onSyncAllChanged={(updatedSyncAll) =>
+										dispatch(updateSyncedParameters({ release_time: updatedSyncAll }))
+									}
+								/>
 
-							<RangeInput
-								label="Output gain"
-								minValue={-32}
-								maxValue={32}
-								value={output_gain}
-								syncAll={syncedParameters.output_gain}
-								units={"dB"}
-								onValueChanged={(updatedOutputGain) => {
-									setSidechainSettings(
-										{ output_gain: updatedOutputGain },
-										syncedParameters.output_gain ? undefined : language
-									);
-								}}
-								onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ output_gain: updatedSyncAll }))}
-							/>
+								<RangeInput
+									label="Threshold"
+									minValue={-60}
+									maxValue={0}
+									value={threshold}
+									syncAll={syncedParameters.threshold}
+									units={"dB"}
+									onValueChanged={(updatedThreshold) => {
+										setSidechainSettings(
+											{ threshold: updatedThreshold },
+											syncedParameters.threshold ? undefined : language
+										);
+									}}
+									onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ threshold: updatedSyncAll }))}
+								/>
+
+								<RangeInput
+									label="Output gain"
+									minValue={-32}
+									maxValue={32}
+									value={output_gain}
+									syncAll={syncedParameters.output_gain}
+									units={"dB"}
+									onValueChanged={(updatedOutputGain) => {
+										setSidechainSettings(
+											{ output_gain: updatedOutputGain },
+											syncedParameters.output_gain ? undefined : language
+										);
+									}}
+									onSyncAllChanged={(updatedSyncAll) =>
+										dispatch(updateSyncedParameters({ output_gain: updatedSyncAll }))
+									}
+								/>
+							</div>
 						</div>
 
+						<div className={"language-transition-settings px-3"}>
+							<h6>Teamspeak Gain</h6>
+
+							<ToggleInput
+								label="Filter"
+								value={ts_gain_settings?.enabled}
+								onValueChanged={() =>
+									setTeamspeakGainSettings(
+										{ enabled: !ts_gain_settings?.enabled },
+										syncedParameters.tsGainEnabled ? undefined : language
+									)
+								}
+								onSyncAllChanged={(updatedSyncAll) =>
+									dispatch(updateSyncedParameters({ tsGainEnabled: updatedSyncAll }))
+								}
+								syncAll={syncedParameters.tsGainEnabled}
+							/>
+							<div className={!ts_gain_settings?.enabled ? "disabled" : ""}>
+								<RangeInput
+									label="Teamspeak Gain"
+									minValue={-32}
+									maxValue={32}
+									value={ts_gain_settings?.gain || EMPTY_LANGUAGE_SETTINGS.tsGain?.gain}
+									syncAll={syncedParameters?.tsGain}
+									units={"dB"}
+									onValueChanged={(gain) => {
+										setTeamspeakGainSettings({ gain }, syncedParameters.tsGain ? undefined : language);
+									}}
+									onSyncAllChanged={(updatedSyncAll) => dispatch(updateSyncedParameters({ tsGain: updatedSyncAll }))}
+								/>
+							</div>
+						</div>
+
+						<div className={"language-transition-settings px-3"}>
+							<h6>Teamspeak Limiter</h6>
+
+							<ToggleInput
+								label="Filter"
+								value={ts_limiter_settings?.enabled}
+								onValueChanged={() =>
+									setTeamspeakLimiterSettings(
+										{ enabled: !ts_limiter_settings?.enabled },
+										syncedParameters.tsLimiterEnabled ? undefined : language
+									)
+								}
+								onSyncAllChanged={(updatedSyncAll) =>
+									dispatch(updateSyncedParameters({ tsLimiterEnabled: updatedSyncAll }))
+								}
+								syncAll={syncedParameters.tsLimiterEnabled}
+							/>
+							<div className={!ts_limiter_settings?.enabled ? "disabled" : ""}>
+								<RangeInput
+									label="Treshold"
+									minValue={-60}
+									maxValue={0}
+									value={ts_limiter_settings?.threshold || EMPTY_LANGUAGE_SETTINGS.tsLimiter?.threshold}
+									syncAll={syncedParameters?.tsThreshold}
+									units={"dB"}
+									onValueChanged={(threshold) => {
+										setTeamspeakLimiterSettings({ threshold }, syncedParameters.tsThreshold ? undefined : language);
+									}}
+									onSyncAllChanged={(updatedSyncAll) =>
+										dispatch(updateSyncedParameters({ tsThreshold: updatedSyncAll }))
+									}
+								/>
+
+								<RangeInput
+									label="Release time"
+									minValue={1}
+									maxValue={1000}
+									value={ts_limiter_settings?.release_time || EMPTY_LANGUAGE_SETTINGS.tsLimiter?.release_time}
+									syncAll={syncedParameters?.tsReleaseTime}
+									units={"ms"}
+									onValueChanged={(release_time) => {
+										setTeamspeakLimiterSettings(
+											{ release_time },
+											syncedParameters.tsReleaseTime ? undefined : language
+										);
+									}}
+									onSyncAllChanged={(updatedSyncAll) =>
+										dispatch(updateSyncedParameters({ tsReleaseTime: updatedSyncAll }))
+									}
+								/>
+							</div>
+						</div>
 						<div className="language-transition-settings px-3">
 							<h6>Transition</h6>
+
 							<RangeInput
 								label="Transition point"
 								minValue={MIN_TRANSITION_POINT}
 								maxValue={MAX_TRANSITION_POINT}
 								step={TRANSITION_POINT_STEP}
-								value={
-									languageSettings.transition_settings?.transition_point ||
-									EMPTY_LANGUAGE_SETTINGS.transition?.transition_point
-								}
+								value={transition_settings?.transition_point || EMPTY_LANGUAGE_SETTINGS.transition?.transition_point}
 								syncAll={syncedParameters?.transition_point}
 								units={"ms"}
 								onValueChanged={(updatedTransitionPoint) => {

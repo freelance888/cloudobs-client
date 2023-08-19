@@ -33,7 +33,7 @@ h6 {
 
 .navigation-bar,
 .content-panel {
-    max-width: 1060px;
+    max-width: 1360px;
 }
 
 .content-panel__actions {
@@ -288,6 +288,11 @@ i.bi:not(.bi-no-margin) {
     flex-direction: column;
 }
 
+.ToggleInput {
+    display: flex;
+    flex-direction: row;
+}
+
 .language-settings-block {
     display: flex;
 }
@@ -429,4 +434,13 @@ i.bi:not(.bi-no-margin) {
 
 .text-danger {
     color: #dc3545 !important;
+}
+
+.filter-btn {
+    border-radius: 3px;
+}
+
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
 }
