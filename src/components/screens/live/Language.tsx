@@ -161,7 +161,7 @@ const Language: React.FC<LanguageProps> = ({
 										})}
 									>
 										{videoName}
-										{!isSameLanguage(videoName, language) && (
+										{(!isSameLanguage(videoName, language) || !startsWithDigit(videoName)) && (
 											<i className="bi bi-exclamation-triangle-fill text-danger ms-2" />
 										)}
 									</div>
