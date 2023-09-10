@@ -23,7 +23,7 @@ import {
 import EditableStreamDestinationSettings from "./EditableStreamDestinationSettings";
 import RangeInput from "./RangeInput";
 import StreamActiveToggle from "./StreamActiveToggle";
-import { isSameLanguage } from "../../../utils/videos";
+import { isSameLanguage, startsWithDigit } from "../../../utils/videos";
 import ToggleInput from "./ToggleInput";
 
 const MIN_TS_OFFSET = 0;
@@ -82,11 +82,13 @@ const Language: React.FC<LanguageProps> = ({
 			isSameLanguage(videoName, language)
 		).length;
 		const differentLanguageVideosCount = allVideosCount - sameLanguageVideosCount;
+		const wrongNameVideosCount = Object.keys(videosData).filter((videoName) => !startsWithDigit(videoName)).length;
 
 		return {
 			downloaded: downloadedVideosCount || "-",
 			all: allVideosCount || "-",
 			differentLanguageVideos: differentLanguageVideosCount > 0,
+			wrongNameVideosCount: wrongNameVideosCount > 0,
 		};
 	}, [language, videosData]);
 
@@ -132,7 +134,9 @@ const Language: React.FC<LanguageProps> = ({
 				<div
 					className={classNames("videos-downloaded-counter ms-2", {
 						"videos-downloaded-counter--failed":
-							videosCounts.downloaded !== videosCounts.all || videosCounts.differentLanguageVideos,
+							videosCounts.downloaded !== videosCounts.all ||
+							videosCounts.differentLanguageVideos ||
+							videosCounts.wrongNameVideosCount,
 					})}
 					onClick={() => setShowTooltip(true)}
 				>
